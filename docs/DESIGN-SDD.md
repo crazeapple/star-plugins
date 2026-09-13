@@ -169,14 +169,15 @@ sdd/
 ## 十五、落地阶段
 
 1. **设计**：本文件即设计总纲，交仓库所有者审阅。
-2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现——SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/.version`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh——后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。
+2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现——SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh——后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。
 
 ## 十六、插件生命周期：升级与卸载
 
 - **零运行时耦合与卸载裁决**：插件唯一内容是 sdd-init skill，初始化把治理体系复制进目标项目后即断奶——命令、工具、hook 全在项目侧，日常运转不回调插件。卸载插件对已初始化项目零影响，仅失去后续升级通道；**不做项目级拆除**（含清单文档）——项目停用体系删除生成文件即可，`pre-commit.sh` 首行 `[ -f sdd/tools/mdlint.sh ] || exit 0` 自防御（删 `sdd/` 后 hook 自动静默放行，不断链），git 历史保全一切，CLAUDE.md 是项目活文档、插件规格不越权处置。
 - **升级 = sdd-init 升级模式（一个入口两种模式）**：前置检查检测到全套签名文件齐全 → 转「就地合并」而非冲突停止；任一缺失 → 照旧冲突停止并列缺失项，部分存在不触发升级。签名清单、对账细则、验证与回报规格落于 `references/upgrade.md`。
+- **环境重建**：项目在新主机 clone（或 `.git/` 重建）后，客户端 hook 不随 git 目录迁移，`.git/hooks/pre-commit` 必然缺失——运行态齐全，重跑 sdd-init 即命中升级模式并补装 hook（pre-commit 不入签名集，缺失不碍触发）；此属预期动作，非体系损坏。
 - **对账三档**：机械资产静默覆盖（mdlint.sh、pre-commit hook 重装、模板 ×4、命令 ×7、OpenCode 配置与存根）；保护性写入（`.gitignore` 逐行补缺、`AGENTS.md` 与 CONSTITUTION 规格重生成 + 项目名回填、CONSTITUTION 生效日期保留原值）；活文档仲裁（CLAUDE.md 骨架节按规格重写，被改写处以规格为准并在回报逐项列出；项目填写三字段回读保留，自有增补节原样保留）；运行态禁触（INDEX、INITIATIVE、amendments/amend.md 内容与 specs/、exploring/、journal、archive/ 全部——骨架仅锚点只读比对，差异报告提示人工迁移，禁自动改）。
-- **版本标记 `sdd/.version`**：隐藏纯文本单行，内容 = 初始化时插件清单 `plugin.json` 的 `version` 原样；非 `.md`，mdLint 不涉、hook 辖区不拦；入生成清单（28 → 29）与第一次提交（18 → 19）。用途仅为回报与快速判断；**升级行为永不依版本值分支**——缺失或损坏按旧版安装处理，照常全量对账并回报注明。
+- **版本标记 `sdd/VERSION`**：纯文本单行，内容 = 初始化时插件清单 `plugin.json` 的 `version` 原样；非 `.md`，mdLint 不涉、hook 辖区不拦；入生成清单（28 → 29）与第一次提交（18 → 19）。用途仅为回报与快速判断；**升级行为永不依版本值分支**——缺失或损坏按旧版安装处理，照常全量对账并回报注明。
 - **幂等**：对账按「现行规格 vs 磁盘现状」状态化执行，不询问必填项（从既有文件回读，回读失败为唯一询问点）；升级可安全重跑，中断恢复 = 直接重跑。
 - **执行策略**：两路并行——组 U① 治理组（CONSTITUTION 重生成 + INDEX / INITIATIVE / amend.md 骨架锚点只读比对），组 U② 机械资产组（命令 ×7、模板 ×4、mdlint.sh、hook、OpenCode 适配 ×10）；CLAUDE.md 仲裁、全量验证、提交与回报由主会话操盘，CLAUDE.md 最后写（同 init 串行屏障）；不支持 subagents 时按 U① → U② → 主会话串行。
 - **收尾**：复用 init 全量验证（零 error + 交叉一致），提交按实际变更分两批、零变更批次跳过；前置校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止；回报含版本去向、仲裁记录、骨架差异报告与升级耗时。

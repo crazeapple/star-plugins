@@ -35,7 +35,8 @@ Claude Code 插件 monorepo：一个 marketplace（`star-plugins`），多个插
 
 ### 生命周期
 
-- **升级**：目标项目内重跑 `/sdd:sdd-init`——检测到既有安装自动转升级模式（就地合并）：机械资产静默更新、活文档差异仲裁、运行态（INDEX / INITIATIVE / specs 等）永不触碰；版本基线记录于 `sdd/.version`。规格见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
+- **升级**：目标项目内重跑 `/sdd:sdd-init`——检测到既有安装自动转升级模式（就地合并）：机械资产静默更新、活文档差异仲裁、运行态（INDEX / INITIATIVE / specs 等）永不触碰；版本基线记录于 `sdd/VERSION`。规格见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
+- **环境重建**：项目在新主机 clone 后本地 `.git/hooks/pre-commit` 必然缺失（客户端 hook 不随 git 目录迁移）——重跑 `/sdd:sdd-init`，运行态齐全即自动转升级模式并补装 hook。
 - **卸载**：插件卸载对已初始化项目零影响（零运行时耦合，复制交付即断奶），仅失去后续升级通道；不做项目级拆除功能——停用体系删文件即可，pre-commit hook 自防御（`sdd/tools/mdlint.sh` 缺失即静默放行），git 历史保全一切。裁决见 `DESIGN-SDD.md` §十六。
 
 ### 分层读取设计

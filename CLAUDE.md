@@ -21,7 +21,7 @@ sh plugins/sdd/skills/sdd-init/scripts/mdlint.sh <文件或目录>
 
 - 修改 `mdlint.sh` 后必须过 4 条自测向量（见 `references/constitution-design.md`「校验」节）：行内反引号单只不闭合 → error；中英文粘连 → warning；同情形位于代码围栏/行内代码内 → 豁免；「模板 ×4」→ 无输出。
 - 端到端试装：`/plugin marketplace add <本仓路径>` → `/plugin install sdd@star-plugins` → 在临时目标项目根运行 `/sdd:sdd-init` 验证生成流程。
-- 端到端试升级：同上装好插件后，在已初始化的临时项目重跑 `/sdd:sdd-init` 验证升级模式（机械资产更新、运行态未动、`sdd/.version` 更新）；细则见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
+- 端到端试升级：同上装好插件后，在已初始化的临时项目重跑 `/sdd:sdd-init` 验证升级模式（机械资产更新、运行态未动、`sdd/VERSION` 更新）；细则见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
 - 试 pre-commit：临时仓库置 `sdd/tools/mdlint.sh` 并装入 `.git/hooks/pre-commit`（源 `plugins/sdd/skills/sdd-init/scripts/`），过 constitution-design「校验」节的自测向量。
 - **打 tag**：tag = 仓库整体版本，message 列当次包含的插件版本（如 tag `1.0.0` → `sdd v0.1.0 初始发布`）；仓库版本随 marketplace 结构 / 元文档 / 插件集合递增，插件版本独立演进，两个数字勿混用。
 
@@ -38,4 +38,4 @@ sh plugins/sdd/skills/sdd-init/scripts/mdlint.sh <文件或目录>
 - **skill 懒加载**：`SKILL.md` 只含主流程；规格在 `references/`，按步骤按需读取，禁止预载全部。资产以 `${CLAUDE_SKILL_DIR}/` 定位，复制（非引用）进目标项目。
 - **提交兜底链路**：sdd-init 复制 `skills/sdd-init/scripts/pre-commit.sh` 为目标项目 `.git/hooks/pre-commit`（不入库、不占清单）；staged 辖区 `.md` 有 error 非零退出阻止提交，为唯一机械强制 hook；自测向量见 `references/constitution-design.md`「校验」节。
 - **mdlint 契约**：error = 行内反引号/`**` 不配对、全角圆括号/直角引号文件级不配对；warning = 中英文粘连、无序列表标记非 `-`、表格列数与表头不一致；豁免代码围栏与行内代码；有 error 单文件退出 1、汇总退出 1。零依赖（POSIX sh + perl）。
-- **sdd-init 运行时不变量**：生成 29 文件（17 治理 + 1 工具 + 1 版本标记 `sdd/.version` + 10 适配）+ 不入库的 `.git/hooks/pre-commit`（提交兜底）；验证零 error；两次独立 git 提交（19 + 10 文件，消息固定，显式列举路径，禁 `git add -A`/`git add .`）；全套签名文件齐全转升级模式（就地合并，见 DESIGN-SDD.md §十六）、部分存在才冲突即停、禁止覆盖既有文件；卸载插件对已初始化项目零影响。
+- **sdd-init 运行时不变量**：生成 29 文件（17 治理 + 1 工具 + 1 版本标记 `sdd/VERSION` + 10 适配）+ 不入库的 `.git/hooks/pre-commit`（提交兜底）；验证零 error；两次独立 git 提交（19 + 10 文件，消息固定，显式列举路径，禁 `git add -A`/`git add .`）；全套签名文件齐全转升级模式（就地合并，见 DESIGN-SDD.md §十六）、部分存在才冲突即停、禁止覆盖既有文件；卸载插件对已初始化项目零影响。

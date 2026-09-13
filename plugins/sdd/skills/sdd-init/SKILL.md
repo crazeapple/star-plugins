@@ -45,7 +45,7 @@ description: Initialize the SDD requirements governance system (constitution / I
    | 项目名 | 可默认 | 默认 = 当前目录名；用于 CLAUDE.md 与 AGENTS.md 标题 |
    | 项目定位一句话 | 必填 | CLAUDE.md 首行：一句话说明项目是什么、目的 |
 
-3. **生成（全新模式，默认四路并行）**：按回答生成填好的 17 治理文件、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/.version`（内容 = `${CLAUDE_SKILL_DIR}/../../.claude-plugin/plugin.json` 的 `version` 原样），用 subagents 按文件组分派并行，各组自读所需规格——① CONSTITUTION + INDEX + INITIATIVE + amendments/amend.md（读 `references/constitution-design.md` 全文 + `references/command-specs.md` 生成骨架）② 命令 ×7（读 command-specs 命令规格表 + constitution-design「状态转换 × 文档同步矩阵」节，定点读取）③ 模板 ×4 与 `tools/mdlint.sh`、`sdd/.version`、`.git/hooks/pre-commit`（纯复制自 `templates/`、`scripts/`，版本标记取插件清单 version 写入，hook 另加可执行位）+ archive 说明 ④ OpenCode 适配 ×10（读 `references/opencode-adapter.md`）；**CLAUDE.md 最后由主会话写**（引用全部生成物）。环境不支持 subagents 时按组序串行生成，步骤不变。升级模式不走本步生成流程，改按 `references/upgrade.md` §四就地合并（两路并行，CLAUDE.md 同样最后写）。
+3. **生成（全新模式，默认四路并行）**：按回答生成填好的 17 治理文件、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = `${CLAUDE_SKILL_DIR}/../../.claude-plugin/plugin.json` 的 `version` 原样），用 subagents 按文件组分派并行，各组自读所需规格——① CONSTITUTION + INDEX + INITIATIVE + amendments/amend.md（读 `references/constitution-design.md` 全文 + `references/command-specs.md` 生成骨架）② 命令 ×7（读 command-specs 命令规格表 + constitution-design「状态转换 × 文档同步矩阵」节，定点读取）③ 模板 ×4 与 `tools/mdlint.sh`、`sdd/VERSION`、`.git/hooks/pre-commit`（纯复制自 `templates/`、`scripts/`，版本标记取插件清单 version 写入，hook 另加可执行位）+ archive 说明 ④ OpenCode 适配 ×10（读 `references/opencode-adapter.md`）；**CLAUDE.md 最后由主会话写**（引用全部生成物）。环境不支持 subagents 时按组序串行生成，步骤不变。升级模式不走本步生成流程，改按 `references/upgrade.md` §四就地合并（两路并行，CLAUDE.md 同样最后写）。
 4. **收尾**：对全部生成文件（含适配文件）按下方「四、验证与回报」完成 mdLint 与各项验证（零 error）、两次独立 git 提交（19+10）、计算初始化耗时与回报。升级模式收尾按 `references/upgrade.md` §四-§五（复用全量验证，提交按实际变更分批）。
 
 > **中断恢复**：会话中断后续跑时，已生成文件若与「四、验证与回报」清单吻合即视为本初始化产物，跳过前置检查的冲突判定；对照其清单补齐缺失文件、已验证项不重跑、必填项从已生成文件回读（项目名/定位见 CLAUDE.md），回读不到才询问；若存在清单外文件，照常停止报告冲突。升级模式中断 → 直接重跑升级（幂等，见 `references/upgrade.md` §四），恢复条款以该文件为准。
@@ -64,7 +64,7 @@ description: Initialize the SDD requirements governance system (constitution / I
 │   ├── opencode.json              # OpenCode 共享配置（lsp: true）
 │   └── commands/                  # 7 命令存根（@ 引用 .claude/commands/ 同名文件）
 └── sdd/
-    ├── .version                   # 版本标记：初始化时插件清单 version（升级对账的回报基线，非治理文档）
+    ├── VERSION                    # 版本标记：初始化时插件清单 version（升级对账的回报基线，非治理文档）
     ├── CONSTITUTION.md            # SDD 治理宪法（根本法；不用 README.md，防执行者按默认习惯另建）
     ├── INDEX.md                   # 登记簿：Proposal 状态唯一权威 + P/T 发号计数器
     ├── INITIATIVE.md              # 意向池：意向唯一记录 + I 发号计数器
@@ -82,7 +82,7 @@ description: Initialize the SDD requirements governance system (constitution / I
 ## 四、验证与回报
 
 1. **失败处置（总则）**：任何验证失败，修复后必须重跑对应**全量**验证（mdLint 失败即对全部生成文件重跑，非仅复验出错项），全部通过方可进入下一步；禁止跳过任何验证步骤（明示豁免者除外）、禁止带病提交、禁止以「已修过」为由免检。
-2. 29 文件齐全、结构正确、必填项已填（17 治理文件 + 1 治理工具 + 1 版本标记 + 10 OpenCode 适配文件）；`sdd/.version` 与插件清单 version 一致；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单，初始化两次提交经其实测）；
+2. 29 文件齐全、结构正确、必填项已填（17 治理文件 + 1 治理工具 + 1 版本标记 + 10 OpenCode 适配文件）；`sdd/VERSION` 与插件清单 version 一致；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单，初始化两次提交经其实测）；
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`，零 error；
 4. ID/状态机/矩阵在 CONSTITUTION、INDEX、INITIATIVE、模板、7 命令间交叉一致；
 5. `git check-ignore -v .claude/settings.local.json .opencode/tmp.local.json`（后一文件名任取一个不存在的即可）→ 均命中；`git check-ignore .opencode/opencode.json` → 无输出（未被忽略）；

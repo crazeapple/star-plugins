@@ -10,7 +10,7 @@
 
 以下治理设计已全部确认，**直接执行，禁止重新设计、增删决策**。
 
-> 提示词版本：0.1.0（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/.version` 的值源）
+> 提示词版本：0.1.0（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION` 的值源）
 > **TL;DR**：① 前置检查（判定全新 / 升级模式）→ ② 问必填项（仅全新）→ ③ 全新：四路并行生成 29 文件；升级：按 §8 就地合并 → ④ 全量验证后提交（全新两次，升级按实际变更）。
 > **三条禁忌**：禁止擅自覆盖既有文件；禁止重新设计、增删决策；禁止跳过任何验证。
 
@@ -28,13 +28,13 @@
    | 项目名 | 可默认 | 默认 = 当前目录名；用于 CLAUDE.md 与 AGENTS.md 标题 |
    | 项目定位一句话 | 必填 | CLAUDE.md 首行：一句话说明项目是什么、目的 |
 
-3. **生成（全新模式，默认四路并行）**：按回答生成填好的 17 治理文件、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/.version`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`），用 subagents 按文件组分派并行，各组自读本提示词对应章节——
+3. **生成（全新模式，默认四路并行）**：按回答生成填好的 17 治理文件、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`），用 subagents 按文件组分派并行，各组自读本提示词对应章节——
 
    | 组 | 生成物 | 自读章节 |
    |---|---|---|
    | ① | CONSTITUTION、INDEX、INITIATIVE、amendments/amend.md | §4 全文 + §5 生成骨架 |
    | ② | 命令 ×7（`.claude/commands/`） | §5 命令规格表 + §4「状态转换 × 文档同步矩阵」（定点读取） |
-   | ③ | 模板 ×4（按 §5 骨架生成）、`tools/mdlint.sh`（按 §4「校验」节实现并过自测向量）、`sdd/.version`（写版本值）、`.git/hooks/pre-commit`（按 §4「校验」节提交兜底生成并加可执行位）、archive/README（按 §4「归档」节生成） | §4「归档」+「校验」 |
+   | ③ | 模板 ×4（按 §5 骨架生成）、`tools/mdlint.sh`（按 §4「校验」节实现并过自测向量）、`sdd/VERSION`（写版本值）、`.git/hooks/pre-commit`（按 §4「校验」节提交兜底生成并加可执行位）、archive/README（按 §4「归档」节生成） | §4「归档」+「校验」 |
    | ④ | OpenCode 适配 ×10 | §7 全文 |
 
    **CLAUDE.md 最后由主会话写**（引用全部生成物）；环境不支持 subagents 时按组序串行，步骤不变。写 `sdd/` 下文档的组完成时各自先跑 mdLint 自查。升级模式不走本步生成流程，改按 §8 就地合并（两路并行，CLAUDE.md 同样最后写）。
@@ -57,7 +57,7 @@
 │   ├── opencode.json              # OpenCode 共享配置（lsp: true）
 │   └── commands/                  # 7 命令存根（@ 引用 .claude/commands/ 同名文件）
 └── sdd/
-    ├── .version                   # 版本标记：本提示词 / 插件清单 version（升级对账的回报基线，非治理文档）
+    ├── VERSION                    # 版本标记：本提示词 / 插件清单 version（升级对账的回报基线，非治理文档）
     ├── CONSTITUTION.md            # SDD 治理宪法（根本法；不用 README.md，防执行者按默认习惯另建）
     ├── INDEX.md                   # 登记簿：Proposal 状态唯一权威 + P/T 发号计数器
     ├── INITIATIVE.md              # 意向池：意向唯一记录 + I 发号计数器
@@ -327,7 +327,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 ## 六、验证与回报
 
 1. **失败处置（总则）**：任何验证失败，修复后必须重跑对应**全量**验证（mdLint 失败即对全部生成文件重跑，非仅复验出错项），全部通过方可进入下一步；禁止跳过任何验证步骤（明示豁免者除外）、禁止带病提交、禁止以「已修过」为由免检。
-2. 29 文件齐全、结构正确、必填项已填（17 治理文件 + 1 治理工具 + 1 版本标记 + 10 OpenCode 适配文件）；`sdd/.version` 与本提示词顶部版本（或插件清单 version）一致；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单，初始化两次提交经其实测）；
+2. 29 文件齐全、结构正确、必填项已填（17 治理文件 + 1 治理工具 + 1 版本标记 + 10 OpenCode 适配文件）；`sdd/VERSION` 与本提示词顶部版本（或插件清单 version）一致；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单，初始化两次提交经其实测）；
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`，零 error；
 4. ID/状态机/矩阵在 CONSTITUTION、INDEX、INITIATIVE、模板、7 命令间交叉一致；
 5. `git check-ignore -v .claude/settings.local.json .opencode/tmp.local.json`（后一文件名任取一个不存在的即可）→ 均命中；`git check-ignore .opencode/opencode.json` → 无输出（未被忽略）；
@@ -430,7 +430,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 - `CLAUDE.md`、`.claude/commands/` 下 7 命令全在
 - `AGENTS.md`、`.opencode/opencode.json`、`.opencode/commands/` 下 7 存根全在
 
-`.gitignore` 与 `.git/hooks/pre-commit` 不入签名集（补装语义：缺失即补，存在即覆盖 / 补行）。命中后向用户明示「检测到既有安装（版本见 `sdd/.version`），转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止，请用户先处理（防混入升级提交）。
+`.gitignore` 与 `.git/hooks/pre-commit` 不入签名集（补装语义：缺失即补，存在即覆盖 / 补行）。典型场景为环境重建：项目于新主机 clone 后 `.git/hooks/pre-commit` 必然缺失，全套签名文件在库即命中本模式，重装即补。命中后向用户明示「检测到既有安装（版本见 `sdd/VERSION`），转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止，请用户先处理（防混入升级提交）。
 
 ### 对账分类（三档）
 
@@ -450,7 +450,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 ### 执行顺序与幂等
 
 1. 起始时间戳（`date +%s`）→ 触发判定 → 必填项回读
-2. 两路并行对账（见下）→ 主会话最后重写 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/.version`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`）
+2. 两路并行对账（见下）→ 主会话最后重写 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/VERSION`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`）
 3. 全量验证（§6 全量项：mdLint 零 error + 交叉一致 + check-ignore + opencode debug config）→ 提交（见下）→ 回报（见下）
 
 **幂等**：对账按「现行规格 vs 磁盘现状」状态化执行，不依赖版本值分支；升级可安全重跑，中断恢复 = 直接重跑（中断不会造成签名集缺损，重跑仍命中升级模式）。
@@ -469,7 +469,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 ### 提交与回报
 
-- 提交按实际变更文件显式列举、禁用 `git add -A` 与 `git add .`，分两批（同初始化分主题）：第一批 = `CLAUDE.md` + 命令 ×7 + `sdd/CONSTITUTION.md` + `sdd/.version`，消息固定 `chore: 升级 SDD 治理体系（机械资产对账 + CLAUDE.md 活文档仲裁）`；第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×7，消息固定 `chore: 升级 OpenCode 适配资产`。某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）。
+- 提交按实际变更文件显式列举、禁用 `git add -A` 与 `git add .`，分两批（同初始化分主题）：第一批 = `CLAUDE.md` + 命令 ×7 + `sdd/CONSTITUTION.md` + `sdd/VERSION`，消息固定 `chore: 升级 SDD 治理体系（机械资产对账 + CLAUDE.md 活文档仲裁）`；第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×7，消息固定 `chore: 升级 OpenCode 适配资产`。某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）。
 - 回报项：模式与版本去向（`X → Y`，或「旧版安装 → Y」）+ 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（无差异则注明）+ 跳过批次 + commit hash + mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式）+ pre-commit hook 重装结论。
 
 ### 骨架差异比对与报告
@@ -479,7 +479,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 ### 边界处置
 
 - **部分安装**：照旧冲突停止并列缺失项，禁止补齐后覆盖。
-- **`sdd/.version` 缺失或损坏**（内容不匹配 `^[0-9]+\.[0-9]+\.[0-9]+$`）：照常升级（对账不依赖版本值），回报注明「旧版安装」或「版本标记异常，疑似损坏 / 篡改」。
+- **`sdd/VERSION` 缺失或损坏**（内容不匹配 `^[0-9]+\.[0-9]+\.[0-9]+$`）：照常升级（对账不依赖版本值），回报注明「旧版安装」或「版本标记异常，疑似损坏 / 篡改」。
 - **opencode 未安装**：验证对应项跳过并在回报注明（同初始化条款，禁止自动安装）。
 - **worktree 在途**：升级只写主干路径，与 worktree 内代码零交集；回报列 `ls .worktree/` 在途提案作提示；hook 重装落 `.git/hooks/`（共享 git dir），对全部 worktree 即时生效属预期。
 - **并发改写**：不对 CLAUDE.md 加锁；提交前全量验证 + 幂等重跑兜底。
