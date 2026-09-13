@@ -1,0 +1,8 @@
+{
+  "name": "sdd",
+  "version": "0.1.0",
+  "author": {
+    "name": "hikari"
+  },
+  "description": "SDD 需求治理体系：/sdd:sdd-init 在目标项目生成治理体系并适配 OpenCode，并安装 pre-commit 提交兜底 hook；重跑即升级既有安装"
+}
