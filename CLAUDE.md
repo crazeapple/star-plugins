@@ -23,6 +23,7 @@ sh plugins/sdd/skills/sdd-init/scripts/mdlint.sh <文件或目录>
 - 端到端试装：`/plugin marketplace add <本仓路径>` → `/plugin install sdd@star-plugins` → 在临时目标项目根运行 `/sdd:sdd-init` 验证生成流程。
 - 端到端试升级：同上装好插件后，在已初始化的临时项目重跑 `/sdd:sdd-init` 验证升级模式（机械资产更新、运行态未动、`sdd/.version` 更新）；细则见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
 - 试 pre-commit：临时仓库置 `sdd/tools/mdlint.sh` 并装入 `.git/hooks/pre-commit`（源 `plugins/sdd/skills/sdd-init/scripts/`），过 constitution-design「校验」节的自测向量。
+- **打 tag**：tag = 仓库整体版本，message 列当次包含的插件版本（如 tag `1.0.0` → `sdd v0.1.0 初始发布`）；仓库版本随 marketplace 结构 / 元文档 / 插件集合递增，插件版本独立演进，两个数字勿混用。
 
 ## 编辑纪律
 
