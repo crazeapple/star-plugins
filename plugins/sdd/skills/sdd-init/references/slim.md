@@ -48,7 +48,10 @@
 ## 状态机（禁止跳跃）
 
 - Proposal：`exploring → implementing → accepted`；旁路 `on-hold`（任意态可入可回，排队/搁置两用）、`rejected`（终态，INDEX 备注列写原因）。
+- **exploring 态职责**：探索、讨论与规格填实——过程直写 journal 对应 P 节，结论回填 spec（AC 写实、范围内外划清）与 design「设计要点」（方案与关键选型落定）；受理对话若已聊透，此态可为零时长。
+- **implementing 进入门槛（/sdd-start 软门）**：AC 全部可核对、范围内外明确、方案要点与关键选型已定、任务表已拆且任务均为具体实现单元——任一不满足则拒绝开工，回报继续探索建议，状态不动。
 - Task：`todo / doing / blocked / done / dropped`（转换 `todo → doing → blocked → todo / done`；done、dropped 为终态；doing 即唯一在途，同一时刻仅一个 Task 进行中）。design：`draft → finalized`。
+- **Task 质量要求**：Task 必须是具体、可直接执行的实现单元；探索、调研、决策类事项记录于 journal 与关键决策表，禁止立为 Task。
 - **代码与 Task 绑定**：项目功能实现代码必须挂在 design 任务清单的具体 Task 上；Task 未拆分（exploring）禁止写实现代码，仅产出规格与探索记录；代码随 Task 执行写入，验收未过回对应 Task 修正，禁止绕过 Task 直接改码。
 
 ## 受理与分流
@@ -65,7 +68,7 @@
 | intake 受理为 P →exploring | 建 `specs/P-XXX/`（spec.md 与 design.md 骨架）+ journal 开节 + INDEX 加行 |
 | 念头登记 | INDEX「意向」小节加行（非状态转换，不占号） |
 | 意向成熟受理为 P | 发 P 号建档，原意向行移除 |
-| exploring→implementing（/sdd-start） | 任务表拆分（任务表非空方可写实现代码）+ INDEX 更新 |
+| exploring→implementing（/sdd-start） | 定稿软门自查（AC 填实、方案已定——不通过则拒绝开工并回报继续探索建议）→ 任务表拆分（任务须具体可执行，禁探索性任务）+ INDEX 更新 |
 | 任一 Task 状态变化 | 仅更新 design 任务表 + 任务详情小节回填 |
 | 全任务 done | INDEX 更新 + 显式建议 /sdd-accept |
 | implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对 + design 置 finalized + journal 节冻结 + INDEX 更新 |
@@ -155,8 +158,8 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
-  | sdd-intake | Capture a new requirement as a proposal, or park a vague idea in the INDEX intention list | 新念头与需求受理（含插单） | 可选：需求 / 念头描述 | 一问分类：维护直接做并结束；能写验收标准 → 受理为 P；尚模糊 → 意向小节加行 |
-  | sdd-start | Split the proposal into tasks and start implementing | 探索就绪、开工实现 | 必填：P-XXX | exploring→implementing 行（任务表拆分为前置门槛） |
+  | sdd-intake | Capture a new requirement as a proposal, or park a vague idea in the INDEX intention list | 新念头与需求受理（含插单） | 可选：需求 / 念头描述 | 一问分类：维护直接做并结束；能写验收标准 → 受理为 P；尚模糊 → 意向小节加行；完成回报按就绪度建议——已聊透 → /sdd-start，未透 → 继续探索讨论填实 spec |
+  | sdd-start | Split the proposal into tasks and start implementing | 探索就绪、开工实现 | 必填：P-XXX | exploring→implementing 行（定稿软门自查通过后拆任务，任务须具体可执行） |
   | sdd-board | Show proposal status overview | 查看状态（只读） | 可选：P-XXX | 无矩阵行：读 INDEX 输出摘要（首行自报 edition 与版本），不改任何文档 |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收 | 必填：P-XXX | implementing→accepted 行；完成回报建议受理下一个需求 |
 
