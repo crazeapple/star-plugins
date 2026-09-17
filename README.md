@@ -6,7 +6,7 @@ Claude Code 插件 monorepo：一个 marketplace（`star-plugins`），多个插
 
 | 插件 | 状态 | 说明 |
 |---|---|---|
-| `sdd` | 可用 | SDD 需求治理体系：在任意目标项目一键生成治理体系（slim / full 双 edition，slim 精简真子集、单向可升）并适配 OpenCode |
+| `sdd` | 可用 | SDD 需求治理体系：在任意目标项目一键生成治理体系（slim / full 双 edition，slim 精简真子集、单向可升；选型判据仅供参考）并适配 OpenCode |
 | `src-reading` | 规划中 | 尚未开工 |
 | `ctx-alarm` | 规划中 | 尚未开工 |
 

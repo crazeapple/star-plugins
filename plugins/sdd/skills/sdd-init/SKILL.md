@@ -44,7 +44,7 @@ description: Initialize the SDD requirements governance system in the slim or fu
 
    | 项 | 默认值 / 说明 |
    |---|---|
-   | edition | 默认 full；判据多维（需求明确性 / 探索与验证节奏 / 规模 × 时间），slim = 需求明确 ∧ 规模可控 ∧ 快速验证，任一维度重 → full；详见 `DESIGN-SDD.md` §十七 |
+   | edition | 默认 full；参考判据（**建议性，非强制**，最终由用户决定，任何项目均可选任一 edition）：需求明确性 / 探索与验证节奏 / 规模 × 时间——三维皆轻一般宜 slim，维度偏重更宜 full；详见 `DESIGN-SDD.md` §十七 |
    | 项目名 | 默认 = 当前目录名；用于 CLAUDE.md 与 AGENTS.md 标题 |
    | 项目定位一句话 | CLAUDE.md 首行：依项目名 / 目录名与现场线索（README、package.json 等）生成 1-3 条候选并标注默认；未答取默认 |
 
