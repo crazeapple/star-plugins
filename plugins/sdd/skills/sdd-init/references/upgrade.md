@@ -14,7 +14,9 @@
 - `CLAUDE.md`、`.claude/commands/` 下 7 命令全在
 - `AGENTS.md`、`.opencode/opencode.json`、`.opencode/commands/` 下 7 存根全在
 
-`.gitignore` 与 `.git/hooks/pre-commit` 不入签名集（补装语义：缺失即补，存在即覆盖 / 补行）。典型场景为环境重建：项目于新主机 clone 后 `.git/hooks/pre-commit` 必然缺失，全套签名文件在库即命中本模式，重装即补。命中后向用户明示「检测到既有安装（版本见 `sdd/VERSION`），转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止，请用户先处理（防混入升级提交）。
+`.gitignore` 与 `.git/hooks/pre-commit` 不入签名集（补装语义：缺失即补，存在即覆盖 / 补行）。典型场景为环境重建：项目于新主机 clone 后 `.git/hooks/pre-commit` 必然缺失，全套签名文件在库即命中本模式，重装即补。命中后向用户明示「检测到既有安装（版本与 edition 见 `sdd/VERSION`），转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止，请用户先处理（防混入升级提交）。
+
+**edition 路由**：命中签名集后读 `sdd/VERSION` 判 edition（取 `+` 后段；裸版本为 edition 后缀引入前的旧版，视为 full）——**full 命中**按本文件以下各节对账；**slim 命中**单问题「升级到 full 版？」：回车默认 slim 原地对账（走 `references/slim.md` §八），显式确认 → 按该文件 §九升 full 版（前置闸门：INDEX 存在非终态 P 则拒绝切换）。slim 签名集 = `sdd/CONSTITUTION.md`、`sdd/INDEX.md`、`sdd/templates/` 下 spec / design ×2、`sdd/tools/mdlint.sh`、`CLAUDE.md`、`.claude/commands/` 下 4 命令、`AGENTS.md`、`.opencode/opencode.json`、`.opencode/commands/` 下 4 存根。
 
 ## 二、对账分类（三档）
 
@@ -46,7 +48,7 @@
 ## 五、提交与回报
 
 - 提交按实际变更文件显式列举、禁用 `git add -A` 与 `git add .`，分两批（同初始化分主题）：第一批 = `CLAUDE.md` + 命令 ×7 + `sdd/CONSTITUTION.md` + `sdd/VERSION`，消息固定 `chore: 升级 SDD 治理体系（机械资产对账 + CLAUDE.md 活文档仲裁）`；第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×7，消息固定 `chore: 升级 OpenCode 适配资产`。某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）。
-- 回报项：模式与版本去向（`X → Y`，或「旧版安装 → Y」）+ 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（§八，无差异则注明）+ 跳过批次 + commit hash + mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式）+ pre-commit hook 重装结论。
+- 回报项：模式与版本去向（含 edition 段，如 `0.1.0+full → 0.2.0+full`；「旧版安装 → Y」）+ 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（§八，无差异则注明）+ 跳过批次 + commit hash + mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式）+ pre-commit hook 重装结论。
 
 ## 六、CLAUDE.md 重写与回读规则
 
@@ -69,7 +71,7 @@
 ## 九、边界处置
 
 - **部分安装**：照旧冲突停止并列缺失项（§一），禁止补齐后覆盖。
-- **`sdd/VERSION` 缺失或损坏**（内容不匹配 `^[0-9]+\.[0-9]+\.[0-9]+$`）：照常升级（对账不依赖版本值），回报注明「旧版安装」或「版本标记异常，疑似损坏 / 篡改」。
+- **`sdd/VERSION` 缺失或损坏**（内容不匹配 `^[0-9]+\.[0-9]+\.[0-9]+\+(slim|full)$`；裸版本为 edition 后缀引入前的旧版，视为 full）：照常升级（对账不依赖版本值），回报注明「旧版安装」或「版本标记异常，疑似损坏 / 篡改」。
 - **opencode 未安装**：验证对应项跳过并在回报注明（同初始化条款，禁止自动安装）。
 - **worktree 在途**：升级只写主干路径，与 worktree 内代码零交集；回报列 `ls .worktree/` 在途提案作提示；hook 重装落 `.git/hooks/`（共享 git dir），对全部 worktree 即时生效属预期。
 - **并发改写**：不对 CLAUDE.md 加锁；提交前全量验证 + 幂等重跑兜底。

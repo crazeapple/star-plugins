@@ -169,7 +169,7 @@ sdd/
 ## 十五、落地阶段
 
 1. **设计**：本文件即设计总纲，交仓库所有者审阅。
-2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现——SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh——后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。
+2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现——SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh——后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。edition 体系（§十七）落笔时增补：references 增 `slim.md`（slim 生成 / 对账 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。
 
 ## 十六、插件生命周期：升级与卸载
 
@@ -177,7 +177,19 @@ sdd/
 - **升级 = sdd-init 升级模式（一个入口两种模式）**：前置检查检测到全套签名文件齐全 → 转「就地合并」而非冲突停止；任一缺失 → 照旧冲突停止并列缺失项，部分存在不触发升级。签名清单、对账细则、验证与回报规格落于 `references/upgrade.md`。
 - **环境重建**：项目在新主机 clone（或 `.git/` 重建）后，客户端 hook 不随 git 目录迁移，`.git/hooks/pre-commit` 必然缺失——运行态齐全，重跑 sdd-init 即命中升级模式并补装 hook（pre-commit 不入签名集，缺失不碍触发）；此属预期动作，非体系损坏。
 - **对账三档**：机械资产静默覆盖（mdlint.sh、pre-commit hook 重装、模板 ×4、命令 ×7、OpenCode 配置与存根）；保护性写入（`.gitignore` 逐行补缺、`AGENTS.md` 与 CONSTITUTION 规格重生成 + 项目名回填、CONSTITUTION 生效日期保留原值）；活文档仲裁（CLAUDE.md 骨架节按规格重写，被改写处以规格为准并在回报逐项列出；项目填写三字段回读保留，自有增补节原样保留）；运行态禁触（INDEX、INITIATIVE、amendments/amend.md 内容与 specs/、exploring/、journal、archive/ 全部——骨架仅锚点只读比对，差异报告提示人工迁移，禁自动改）。
-- **版本标记 `sdd/VERSION`**：纯文本单行，内容 = 初始化时插件清单 `plugin.json` 的 `version` 原样；非 `.md`，mdLint 不涉、hook 辖区不拦；入生成清单（28 → 29）与第一次提交（18 → 19）。用途仅为回报与快速判断；**升级行为永不依版本值分支**——缺失或损坏按旧版安装处理，照常全量对账并回报注明。
+- **版本标记 `sdd/VERSION`**：纯文本单行，内容 = 初始化时插件清单 `plugin.json` 的 `version` + `+edition`（如 `0.2.0+full`，edition 取值见 §十七）；非 `.md`，mdLint 不涉、hook 辖区不拦；入生成清单与第一次提交。用途仅为回报与快速判断；**升级行为永不依版本值分支**——缺失或损坏按旧版安装处理，照常全量对账并回报注明。
 - **幂等**：对账按「现行规格 vs 磁盘现状」状态化执行，不询问必填项（从既有文件回读，回读失败为唯一询问点）；升级可安全重跑，中断恢复 = 直接重跑。
 - **执行策略**：两路并行——组 U① 治理组（CONSTITUTION 重生成 + INDEX / INITIATIVE / amend.md 骨架锚点只读比对），组 U② 机械资产组（命令 ×7、模板 ×4、mdlint.sh、hook、OpenCode 适配 ×10）；CLAUDE.md 仲裁、全量验证、提交与回报由主会话操盘，CLAUDE.md 最后写（同 init 串行屏障）；不支持 subagents 时按 U① → U② → 主会话串行。
 - **收尾**：复用 init 全量验证（零 error + 交叉一致），提交按实际变更分两批、零变更批次跳过；前置校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止；回报含版本去向、仲裁记录、骨架差异报告与升级耗时。
+
+## 十七、edition 体系（slim / full）
+
+- **定位与判据**：sdd 提供两个 edition——**full（完整版）**与 **slim（精简版，full 的真子集）**。选用判据多维：**需求明确性**（需求是否具体明确）、**探索与验证节奏**（是否需要探索与方案对比，还是快速验证迭代——探索越重越偏 full）、**规模 × 时间**（开发周期越长，文档治理必然要求越严格规范以防随开发腐化——规模越大越偏 full）。slim = 需求明确 ∧ 规模可控 ∧ 快速验证；任一维度重 → full。
+- **术语**：概念英文名 edition（单用不译）；取值 `slim` / `full`；中文行文组合译「版」——slim 版 / full 版。
+- **单插件选 edition**：不做独立插件；sdd-init 初始化时选 edition（**默认 full**），全部询问项默认兜底、无硬阻塞停止点（项目定位以候选制提供，标注默认，未答取默认）。slim 命令与 full 同名且为子集（intake / start / board / accept）；slim 规格独立成篇 `references/slim.md`（无条件分支、standalone），**edition 分叉只发生在 SKILL.md dispatch 层**——按 edition 决定读哪套规格，full 侧 references 一字不改。
+- **不变量与裁剪准则**：状态单一权威源（INDEX）、mdLint + pre-commit 机械兜底、需求 / 维护分类、验收标准 + 变更留痕——任何 edition 不可裁；裁剪准则 = 裁结构与仪式，不裁纪律与权威。
+- **状态值子集**：slim 状态值 ⊆ full 状态值，不新造状态词（P：`exploring → implementing → accepted`，旁路 `on-hold` / `rejected`；`specified` / `verifying` 不用于 slim）；值不合适时改 full 对齐，运行态永无跨 edition 未知状态。
+- **单向可升**：slim → full 单向升级，无降档（文档不涉及降档）；切换频率极低，价值主体 = 初始选 edition + slim 常驻。
+- **升级闸门**：升 full 版要求周期空闲——INDEX 存在非终态 P（`exploring` / `implementing` / `on-hold`）时拒绝切换并回报「请完成当前需求周期后再升级」，**无 override**；同 edition 对账（含环境重建）不设周期闸门（幂等 + 运行态禁触 + 索引干净预检已覆盖）。
+- **识别与可见面**：权威源 = `sdd/VERSION` 单行 `version+edition`（如 `0.2.0+slim`，格式 `^[0-9]+\.[0-9]+\.[0-9]+\+(slim|full)$`，识别取 `+` 后段，full 不省略后缀）；显示层为派生写入——CLAUDE.md 头部 edition 行（含缺席命令解释）、CONSTITUTION 头部「edition：slim」、命令输出自报 edition。版本值永不参与分支；**升 edition 判据不由数据自动触发**（被否决：INDEX 规模列自动升档建议）。
+- **升级入口**：不新增 upgrade 命令——§十六「一个入口两种模式」扩展为前置检查四出口 dispatch（全新 / slim 命中 / full 命中 / 冲突即停）；slim 命中走单问题默认兜底（回车 = slim 原地对账，显式确认 = 升 full 版）；slim 对账与升 full 版规格落 `references/slim.md`，upgrade.md 承载 edition 路由。
