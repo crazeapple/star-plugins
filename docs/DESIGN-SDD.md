@@ -165,13 +165,13 @@ sdd/
 
 ## 十四、Git 工作流（分支开发，主干发布）
 
-- **粒度与时机**：分支以 P-XXX 为单位；`/sdd-split` 创建（specified→implementing，可写码起点），`/sdd-accept` 合并——分支生命周期 = 可写码状态区间。两级并行：分支 = P（提案间），分支内派发-回收子 Agent = T（提案内）。
-- **载体统一 worktree**：`git worktree add .worktree/P-XXX -b dev/<标题英文 slug>` 创建（分支 + 工作区一步）；`.worktree/` 入 `.gitignore`；主工作区常驻主干；单/多 Agent 同一机制，无例外。
-- **治理文档主干单线**：sdd/ 全部治理文档只在主干由主会话写；分支只承载实现代码。git 拓扑映射治理架构——代码层并行（分支），治理层串行（主干）。会话工作目录不设限，以路径锁定「什么写在哪」：治理文档写主工作区，代码写 worktree。
-- **提交**：治理文档由状态转换命令收尾自动提交主干（信息现场自拟，遵循脱敏约束）；分支代码提交以 Task 为界——单个提交不混多 Task 改动，Task 完成即提交、一 Task 可多提交；accept 记录合并后的交付 hash 入 design.md；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
-- **tag**：accept 收尾（治理提交之后）打 annotated tag——版本格式于首次 tag 时询问用户定型：CalVer（`YYYY.M.D` 验收日，同日多验收追加当日序号）或 SemVer（`vX.Y.Z`，按变化递增）；信息 = 相对上一版本的功能变化一句话（遵循脱敏约束）。
-- **脱敏**：分支名、commit message、tag message 不含治理 ID 与治理文件名；分支名 = `dev/<标题英文 slug>`，记一行入 design.md；治理层实现记录可引用 commit hash（中性回链）。
-- **终局**：accept 主工作区合并后清理 worktree 与分支；rejected 同删（留痕在治理层）；on-hold 挂起保留。主干只接受验收通过的合并、随时可发布，发布动作不入 SDD 流程；长寿命分支定期同步主干。
+- **粒度与时机**：分支以 P-XXX 为单位、双分支制——`dev/<标题英文 slug>`（开发）与 `test/<标题英文 slug>`（验收）。`/sdd-split` 创建（specified→implementing，可写码起点）：从 main 切出 `dev/<slug>` 并建 worktree（检出 dev）；全任务 done（verifying）：从 main 切出 `test/<slug>`、合并 `dev/<slug>` 入 test、删除 worktree 与 dev 分支——代码进入验收，worktree 使命终结。两级并行：分支 = P（提案间），分支内派发-回收子 Agent = T（提案内）。
+- **载体统一 worktree**：`git worktree add .worktree/P-XXX -b dev/<标题英文 slug>` 创建（分支 + 工作区一步）；`.worktree/` 入 `.gitignore`；主工作区常驻主干；验收测试在主工作区检出 `test/<slug>` 进行（主工作区即用户可运行环境）；单/多 Agent 同一机制，无例外。
+- **治理文档主干单线**：sdd/ 全部治理文档只在主干由主会话写；分支只承载实现代码。git 拓扑映射治理架构——代码层并行（分支），治理层串行（主干）。会话工作目录不设限，以路径锁定「什么写在哪」：治理文档写主工作区，代码写 worktree；test / dev 检出中的 sdd/ 一律只读，治理写入回主工作区 main。
+- **提交**：治理文档由状态转换命令收尾自动提交主干（信息现场自拟，遵循脱敏约束）；dev 分支代码提交以 Task 为界——单个提交不混多 Task 改动，Task 完成即提交、一 Task 可多提交；test 分支的修复提交随验收产生；代码合入主干发生在全任务 done 的 verifying 转换（合并 dev → test，accept 发布 test → main），accept 不再合并代码；交付 hash（dev → test 合并）记入 design.md；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
+- **tag**：accept 收尾（治理提交之后）打 annotated tag——版本格式于首次 tag 时询问用户定型：CalVer（`YYYY.M.D` 验收日，同日多验收追加当日序号）或 SemVer（`vX.Y.Z`，按变化递增）；信息 = 相对上一版本的功能变化一句话（遵循脱敏约束）。tag = 发布门槛：主干可短暂承载 verifying 代码，打 tag 才是发布标记。
+- **脱敏**：分支名、commit message、tag message 不含治理 ID 与治理文件名；分支名 = `dev/<标题英文 slug>` 与 `test/<标题英文 slug>`，记一行入 design.md；治理层实现记录可引用 commit hash（中性回链）。
+- **终局**：accept 后删除 `test/<slug>`；rejected 分环节清理——exploring / specified：底稿 / 规格入档（标注 rejected）后删除（分支未建）；implementing：删 worktree 与 `dev/<slug>`；verifying：删 `test/<slug>`——main 零沾染（test → main 合并只发生在 accept 内）；on-hold 挂起保留（worktree 与分支挂起）。主干承载 verifying 代码，发布门槛 = tag（发布动作不入 SDD 流程）；长寿命分支定期同步主干。
 
 ## 十五、落地阶段
 
@@ -194,7 +194,8 @@ sdd/
 - **定位与判据**：sdd 提供两个 edition——**full（完整版）**与 **slim（精简版，full 的真子集）**。edition 选择由用户决定，任何项目均可选任一 edition；以下判据仅为**建议性参考**，辅助自评——**需求明确性**（需求是否具体明确）、**探索与验证节奏**（是否需要探索与方案对比，还是快速验证迭代——探索越重越适合 full）、**规模 × 时间**（开发周期越长，文档治理往往要求越严格规范以防随开发腐化——规模越大越适合 full）。一般而言 slim 适合需求明确、规模可控、追求快速验证的项目；维度偏重时更推荐 full。
 - **术语**：概念英文名 edition（单用不译）；取值 `slim` / `full`；中文行文组合译「版」——slim 版 / full 版。
 - **单插件选 edition**：不做独立插件；sdd-init 初始化时选 edition（**默认 slim**——slim 可升 full 而反向无通道，默认取可逆方向），全部询问项默认兜底、无硬阻塞停止点（项目定位以候选制提供，标注默认，未答取默认）。slim 命令与 full 同名且为子集（intake / start / board / accept）；slim 规格独立成篇 `references/slim.md`（无条件分支、standalone），**edition 分叉只发生在 SKILL.md dispatch 层**——按 edition 决定读哪套规格，full 侧 references 一字不改。
-- **不变量与裁剪准则**：状态单一权威源（INDEX）、mdLint + pre-commit 机械兜底、需求 / 维护分类、验收标准 + 变更留痕——任何 edition 不可裁；裁剪准则 = 裁结构与仪式，不裁纪律与权威。
+- **不变量与裁剪准则**：状态单一权威源（INDEX）、mdLint + pre-commit 机械兜底、需求 / 维护分类、验收标准 + 变更留痕——任何 edition 不可裁；裁剪准则 = 裁仪式，不裁纪律、权威与能力。
+- **git 拓扑按 edition**：分支拓扑（`dev/<slug>` 开发 + `test/<slug>` 验收 + worktree + 合并链）为 full 载体；slim 无分支、主工作区直写（主工作区即测试环境），rejected 代码由 git 历史兜底。通用的是验收语义链与纪律，不是拓扑；分支治理需求出现时升级 full 版。
 - **状态值子集**：slim 状态值 ⊆ full 状态值，不新造状态词（P：`exploring → implementing → accepted`，旁路 `on-hold` / `rejected`；`specified` / `verifying` 不用于 slim）；值不合适时改 full 对齐，运行态永无跨 edition 未知状态。
 - **单向可升**：slim → full 单向升级，无降档（文档不涉及降档）；切换频率极低，价值主体 = 初始选 edition + slim 常驻。
 - **升级闸门**：升 full 版要求周期空闲——INDEX 存在非终态 P（`exploring` / `implementing` / `on-hold`）时拒绝切换并回报「请完成当前需求周期后再升级」，**无 override**；同 edition 对账（含环境重建）不设周期闸门（幂等 + 运行态禁触 + 索引干净预检已覆盖）。

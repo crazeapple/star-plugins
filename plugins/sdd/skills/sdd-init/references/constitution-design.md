@@ -44,10 +44,10 @@
 | exploring→specified（/sdd-finalize） | 建规格（被否备选录入否决记录）+ 底稿保留至验收 + INDEX 更新 |
 | specified→implementing（/sdd-split） | 建 design 骨架 + 任务入清单 + 切 `.worktree/P-XXX` worktree（分支 `dev/<标题 slug>`） + INDEX 更新 |
 | 任一 Task 状态变化 | 仅更新 design 任务表 + 任务详情小节回填 |
-| 全任务 done →verifying | INDEX 置 verifying + 列出全部验收项（AC 清单）+ 显式建议 /sdd-accept |
-| verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + 底稿正文追加 journal 后删除 P-XXX.md + 主工作区合并 `dev/<标题 slug>` 并清理 worktree 与分支 + 交付 hash 记入 design + INDEX 更新 + 治理提交后打 tag + 完成回报固定建议「回看需求组拆下一个」 |
+| 全任务 done →verifying | 从 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（删除 worktree 与 dev 分支）+ 交付 hash 记入 design + INDEX 置 verifying + 列出全部验收项（AC 清单）+ 显式建议 /sdd-accept（主工作区检出 test 人工测试） |
+| verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + 底稿正文追加 journal 后删除 P-XXX.md + 主工作区合并 `test/<标题 slug>` → main（发布）+ INDEX 更新 + 治理提交后打 tag + 删除 test 分支 + 完成回报固定建议「回看需求组拆下一个」 |
 | I 完结 | 组内全部 P accepted → I 条目标完结（归档时并入 requirements.md 后移除） |
-| →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 删 worktree 与分支，on-hold 分支挂起保留 |
+| →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支——未建分支（exploring / specified）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删 `test/<标题 slug>`（main 零沾染）；on-hold worktree 与分支挂起保留 |
 | 定稿后需求变更 | 规格正文 + changelog + version 递增（v1.0 → v1.1）+ 受影响 Task 评估，禁静默覆盖 |
 | 归档（/sdd-archive） | INDEX 置「已归档 + 日期」+ 四产物 + 完结 I 条目并入 requirements.md + sdd 全区只读 |
 
@@ -62,7 +62,7 @@
 - **R7** 关键节点（拆任务/定稿/验收/归档）显式建议对应命令保人工确认；accept 完成回报固定建议回看需求组
 - **R8** 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；归档后只读；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）
 - **R9** 跨周期修正禁只改代码，走 amendments/
-- **R10** 分支开发主干发布：split 切 `.worktree/P-XXX` worktree（分支 `dev/<标题 slug>`，名不含治理 ID 与治理文件名），代码在分支、治理文档只在主干由主会话写；治理文档由状态转换命令收尾自动提交主干；分支提交以 Task 为界、Task 完成即提交；accept 合并主干并记交付 hash 入 design 后清理 worktree 与分支；rejected 删分支（留痕治理层），on-hold 挂起保留；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；accept 治理提交后打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话）；push 永远手动。
+- **R10** 分支开发主干发布：split 从 main 切 `dev/<标题 slug>` 并建 worktree 开发（分支名不含治理 ID 与治理文件名），代码在分支、治理文档只在主干由主会话写，test / dev 检出中 sdd/ 只读；分支提交以 Task 为界、Task 完成即提交；全任务 done 从 main 切 `test/<标题 slug>` 合并 dev 代码，删除 worktree 与 dev 分支，列 AC 清单交用户在主工作区检出 test 人工测试；accept：AC 核对确认（未全过回 Task 修正）→ 合并 test → main 发布 → 治理提交 → 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话）→ 删 test 分支；rejected 分环节清理（未建分支删文档 / implementing 删 dev 与 worktree / verifying 删 test），main 零沾染，on-hold 挂起保留；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
 
 ## 自治边界（判断自动，动作守门；写入宪法）
 
