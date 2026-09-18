@@ -50,7 +50,7 @@
 - Proposal：`exploring → implementing → accepted`；旁路 `on-hold`（任意态可入可回，排队/搁置两用）、`rejected`（终态，INDEX 备注列写原因）。
 - **exploring 态职责**：探索、讨论与规格填实——过程直写 journal 对应 P 节，结论回填 spec（AC 写实、范围内外划清）与 design「设计要点」（方案与关键选型落定）；受理对话若已聊透，此态可为零时长。`/sdd-intake` 可重入：对在途 P 继续探索澄清，直至无疑虑。
 - **implementing 进入门槛（/sdd-intake 拆分前软门）**：AC 全部可核对、范围内外明确、方案要点与关键选型已定、无疑虑——任一不满足则继续探索对话，不拆分、状态不动。
-- Task：`todo / doing / blocked / done / dropped`（转换 `todo → doing → blocked → todo / done`；done、dropped 为终态；doing 即唯一在途，同一时刻仅一个 Task 进行中）。design：`draft → finalized`。
+- Task：`todo / doing / blocked / done / dropped`（转换 `todo → doing → blocked → todo / done`；done、dropped 为终态；doing 即锁定，禁重复派发）。design：`draft → finalized`。
 - **Task 质量要求**：Task 必须是具体、可直接执行的实现单元；探索、调研、决策类事项记录于 journal 与关键决策表，禁止立为 Task。
 - **代码与 Task 绑定**：项目功能实现代码必须挂在 design 任务清单的具体 Task 上；Task 未拆分（exploring）禁止写实现代码，仅产出规格与探索记录；代码随 Task 执行写入，验收未过回对应 Task 修正，禁止绕过 Task 直接改码。
 
@@ -93,6 +93,10 @@ R1 冷启动读 CONSTITUTION → INDEX，输出状态摘要（含意向条目数
 - 念头唯一记录；条目无编号，单行 `- <一句话>（YYYY-MM-DD 登记）`，随时可删除。
 - 流转：成熟受理为 P（原行移除）；升级到 full 版时整节迁入 `sdd/INITIATIVE.md`，逐条获发 I 号。
 - 插单：新念头落行不打断当前工作；不立刻做的 P 置 on-hold 排队。
+
+## 并行开发（可选节）
+
+`/sdd-start` 默认单智能体顺序推进（按任务表取 T）；仅用户明确要求时切「派发-回收」两段式：主会话组装自包含任务简报（任务 + 验收标准 + 规格 / 设计节选）派发，回收逐条核验、统一更新任务表。约束：`sdd/` 文档只允许主会话写入，子智能体只读文档、写代码、对话回报（做了什么 / 验收逐条结论 / 规格偏差走 R5 上报）；doing 即锁定，禁重复派发。
 
 ## Markdown 书写规范（宪法此节以本节为唯一规格源；mdlint.sh 按此实现）
 
@@ -160,7 +164,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
   | sdd-intake | Capture a new requirement, or continue planning an in-flight proposal, until it is split into concrete tasks; vague ideas park in the INDEX intention list | 新念头与需求受理（含插单）、在途 P 继续规划 | 可选：需求 / 念头描述 / P-XXX（在途 P 重入） | 一问分类：维护直接做并结束；受理或重入 → 探索澄清 + 定稿软门 + 拆 T（exploring→implementing 行）；尚模糊 → 意向小节加行 |
-  | sdd-start | Implement tasks from the design task list | 实现推进（Task 状态推进） | 可选：P-XXX / T-XXX | 任一 Task 状态变化行；全 done 建议 /sdd-accept |
+  | sdd-start | Implement tasks from the design task list | 实现推进（默认顺序循环至全 done；可派发并行） | 可选：P-XXX / T-XXX（P-XXX 多 P 在途时消歧；T-XXX 指定先做某个 Task） | 推进模式：按任务表顺序取下一个 todo T（doing → 实现 → 回填实现记录 → done）循环至全 done，建议 /sdd-accept；T-XXX 指定则优先该 Task；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
   | sdd-board | Show proposal status overview | 查看状态（只读） | 可选：P-XXX | 无矩阵行：读 INDEX 输出摘要（首行自报 edition 与版本），不改任何文档 |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收 | 必填：P-XXX | implementing→accepted 行；完成回报建议受理下一个需求 |
 
