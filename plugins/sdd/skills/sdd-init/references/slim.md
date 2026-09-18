@@ -71,14 +71,14 @@
 | 意向成熟受理为 P | 发 P 号建档，原意向行移除 |
 | exploring→implementing（/sdd-intake 拆分完成时） | 定稿软门自查（对话内：AC 填实、方案已定、无疑虑）→ 任务表拆分（任务须具体可执行，禁探索性任务）+ INDEX 更新 |
 | 任一 Task 状态变化（/sdd-start） | 仅更新 design 任务表 + 任务详情小节回填 |
-| 全任务 done | INDEX 更新 + 显式建议 /sdd-accept |
-| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对 + design 置 finalized + journal 节冻结 + INDEX 更新 |
+| 全任务 done | INDEX 更新 + 列出全部验收项（AC 清单）+ 显式建议 /sdd-accept |
+| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + journal 节冻结 + INDEX 更新 |
 | →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注 |
 | 定稿后需求变更 | spec 正文 + changelog + version 递增 + 受影响 Task 评估，禁静默覆盖 |
 
 ## 会话微流程 R1-R7（写入宪法）
 
-R1 冷启动读 CONSTITUTION → INDEX，输出状态摘要（含意向条目数与在途提案）｜R2 新想法当场一问分类：维护直接做并回报；需求一律经 /sdd-intake 受理为 P，模糊念头落意向小节；当前工作永不因新想法自动中断｜R3 探索与讨论实时直写 exploring/journal.md 对应 P 节（只追加、不重写历史），结论演进走 spec changelog｜R4 被否备选禁删，记入 design 关键决策表，留「方案 + 一句话原因」｜R5 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定｜R6 更新任务表 + 回填 design，全 done 建议 /sdd-accept｜R7 验收节点显式建议 /sdd-accept 保人工确认；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。
+R1 冷启动读 CONSTITUTION → INDEX，输出状态摘要（含意向条目数与在途提案）｜R2 新想法当场一问分类：维护直接做并回报；需求一律经 /sdd-intake 受理为 P，模糊念头落意向小节；当前工作永不因新想法自动中断｜R3 探索与讨论实时直写 exploring/journal.md 对应 P 节（只追加、不重写历史），结论演进走 spec changelog｜R4 被否备选禁删，记入 design 关键决策表，留「方案 + 一句话原因」｜R5 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定｜R6 更新任务表 + 回填 design；全任务 done 列出全部验收项（AC 清单）并建议 /sdd-accept｜R7 验收节点显式建议 /sdd-accept 保人工确认；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。
 
 ## 自治边界（判断自动，动作守门；写入宪法）
 

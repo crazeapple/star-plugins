@@ -116,8 +116,8 @@
 | exploring→specified（/sdd-finalize） | 建规格（被否备选录入否决记录）+ 底稿保留至验收 + INDEX 更新 |
 | specified→implementing（/sdd-split） | 建 design 骨架 + 任务入清单 + 切 `.worktree/P-XXX` worktree（分支 `dev/<标题 slug>`） + INDEX 更新 |
 | 任一 Task 状态变化 | 仅更新 design 任务表 + 任务详情小节回填 |
-| 全任务 done →verifying | INDEX 置 verifying + 显式建议 /sdd-accept |
-| verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对 + design 置 finalized + 底稿正文追加 journal 后删除 P-XXX.md + 主工作区合并 `dev/<标题 slug>` 并清理 worktree 与分支 + 交付 hash 记入 design + INDEX 更新 + 治理提交后打 tag + 完成回报固定建议「回看需求组拆下一个」 |
+| 全任务 done →verifying | INDEX 置 verifying + 列出全部验收项（AC 清单）+ 显式建议 /sdd-accept |
+| verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + 底稿正文追加 journal 后删除 P-XXX.md + 主工作区合并 `dev/<标题 slug>` 并清理 worktree 与分支 + 交付 hash 记入 design + INDEX 更新 + 治理提交后打 tag + 完成回报固定建议「回看需求组拆下一个」 |
 | I 完结 | 组内全部 P accepted → I 条目标完结（归档时并入 requirements.md 后移除） |
 | →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 删 worktree 与分支，on-hold 分支挂起保留 |
 | 定稿后需求变更 | 规格正文 + changelog + version 递增（v1.0 → v1.1）+ 受影响 Task 评估，禁静默覆盖 |
@@ -125,7 +125,7 @@
 
 ### 会话微流程 R1-R10（写入宪法）
 
-R1 冷启动读 CONSTITUTION → INDEX → INITIATIVE，输出状态摘要（含意向池概览：活跃 I 数、待梳理条目、未立项里程碑）｜R2 新想法当场分类（维护/需求三问）：维护直接做并回报；需求一律经 /sdd-intake 受理——单交付物直接发号，多交付物先落意向池；当前工作永不因新想法自动中断｜R3 探索期自顶向下、先发散后收敛、逐层留痕（实时写入底稿，用户给出内容同样落盘；过程全程落盘底稿，结论演进走 spec changelog）｜R4 被否备选禁删，记入提案「否决记录」，留「方案 + 一句话原因」｜R5 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定｜R6 更新任务表 + 回填 design，全 done 建议 /sdd-accept｜R7 关键节点（拆任务/定稿/验收/归档）显式建议对应命令保人工确认；accept 完成回报固定建议回看需求组｜R8 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；归档后只读；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）｜R9 跨周期修正禁只改代码，走 amendments/｜R10 分支开发主干发布：split 切 `.worktree/P-XXX` worktree（分支 `dev/<标题 slug>`，名不含治理 ID 与治理文件名），代码在分支、治理文档只在主干由主会话写；治理文档由状态转换命令收尾自动提交主干；分支提交以 Task 为界、Task 完成即提交；accept 合并主干并记交付 hash 入 design 后清理 worktree 与分支；rejected 删分支（留痕治理层），on-hold 挂起保留；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；accept 治理提交后打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话）；push 永远手动。
+R1 冷启动读 CONSTITUTION → INDEX → INITIATIVE，输出状态摘要（含意向池概览：活跃 I 数、待梳理条目、未立项里程碑）｜R2 新想法当场分类（维护/需求三问）：维护直接做并回报；需求一律经 /sdd-intake 受理——单交付物直接发号，多交付物先落意向池；当前工作永不因新想法自动中断｜R3 探索期自顶向下、先发散后收敛、逐层留痕（实时写入底稿，用户给出内容同样落盘；过程全程落盘底稿，结论演进走 spec changelog）｜R4 被否备选禁删，记入提案「否决记录」，留「方案 + 一句话原因」｜R5 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定｜R6 更新任务表 + 回填 design；全任务 done 列出全部验收项（AC 清单）并建议 /sdd-accept｜R7 关键节点（拆任务/定稿/验收/归档）显式建议对应命令保人工确认；accept 完成回报固定建议回看需求组｜R8 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；归档后只读；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）｜R9 跨周期修正禁只改代码，走 amendments/｜R10 分支开发主干发布：split 切 `.worktree/P-XXX` worktree（分支 `dev/<标题 slug>`，名不含治理 ID 与治理文件名），代码在分支、治理文档只在主干由主会话写；治理文档由状态转换命令收尾自动提交主干；分支提交以 Task 为界、Task 完成即提交；accept 合并主干并记交付 hash 入 design 后清理 worktree 与分支；rejected 删分支（留痕治理层），on-hold 挂起保留；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；accept 治理提交后打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话）；push 永远手动。
 
 ### 自治边界（判断自动，动作守门；写入宪法）
 
@@ -278,14 +278,14 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   | --- | --- | --- | --- | --- |
   ## 任务详情
   ### T-XXX <标题>
-  （按需回填：说明 / 验收 / 实现记录）
+  （按需回填：说明 / 实现记录）
   ```
 
   **task.md**（Task 条目格式定义，非任务文件）
 
   - 表行字段顺序：`T-XXX | 标题 | 状态 | 分组 | 备注`
   - 状态合法转换：`todo → doing → blocked → todo / done`；`done`、`dropped` 为终态；doing 即锁定，禁重复派发
-  - 详情小节格式：说明（依据规格/设计节选）→ 验收（可核对表述）→ 实现记录（完成时回填：做法 + 证据）
+  - 详情小节格式：说明（依据规格/设计节选）→ 实现记录（完成时回填：做法 + 证据）；完成判据 = 对照 spec 相关 AC 条目，验收核对统一在 /sdd-accept 进行（验收项不属于 Task）
   - 子智能体回报格式：做了什么 / 验收逐条结论 / 问题与规格偏差（走 R5 上报主会话）
 
 - **INITIATIVE.md 生成骨架**（意向池，意向唯一记录）：
