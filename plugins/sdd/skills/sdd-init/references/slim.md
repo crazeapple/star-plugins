@@ -73,7 +73,7 @@
 | 任一 Task 状态变化（/sdd-start） | 仅更新 design 任务表 + 任务详情小节回填 |
 | 全任务 done | INDEX 更新 + 列出全部验收项（AC 清单）+ 显式建议 /sdd-accept |
 | implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + journal 节冻结 + INDEX 更新 |
-| →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注 |
+| →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注；实现代码留原地，由 git 历史兜底 |
 | 定稿后需求变更 | spec 正文 + changelog + version 递增 + 受影响 Task 评估，禁静默覆盖 |
 
 ## 会话微流程 R1-R7（写入宪法）
