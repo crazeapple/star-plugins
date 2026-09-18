@@ -186,10 +186,10 @@ sdd/
 
 - **定位与判据**：sdd 提供两个 edition——**full（完整版）**与 **slim（精简版，full 的真子集）**。edition 选择由用户决定，任何项目均可选任一 edition；以下判据仅为**建议性参考**，辅助自评——**需求明确性**（需求是否具体明确）、**探索与验证节奏**（是否需要探索与方案对比，还是快速验证迭代——探索越重越适合 full）、**规模 × 时间**（开发周期越长，文档治理往往要求越严格规范以防随开发腐化——规模越大越适合 full）。一般而言 slim 适合需求明确、规模可控、追求快速验证的项目；维度偏重时更推荐 full。
 - **术语**：概念英文名 edition（单用不译）；取值 `slim` / `full`；中文行文组合译「版」——slim 版 / full 版。
-- **单插件选 edition**：不做独立插件；sdd-init 初始化时选 edition（**默认 full**），全部询问项默认兜底、无硬阻塞停止点（项目定位以候选制提供，标注默认，未答取默认）。slim 命令与 full 同名且为子集（intake / start / board / accept）；slim 规格独立成篇 `references/slim.md`（无条件分支、standalone），**edition 分叉只发生在 SKILL.md dispatch 层**——按 edition 决定读哪套规格，full 侧 references 一字不改。
+- **单插件选 edition**：不做独立插件；sdd-init 初始化时选 edition（**默认 slim**——slim 可升 full 而反向无通道，默认取可逆方向），全部询问项默认兜底、无硬阻塞停止点（项目定位以候选制提供，标注默认，未答取默认）。slim 命令与 full 同名且为子集（intake / start / board / accept）；slim 规格独立成篇 `references/slim.md`（无条件分支、standalone），**edition 分叉只发生在 SKILL.md dispatch 层**——按 edition 决定读哪套规格，full 侧 references 一字不改。
 - **不变量与裁剪准则**：状态单一权威源（INDEX）、mdLint + pre-commit 机械兜底、需求 / 维护分类、验收标准 + 变更留痕——任何 edition 不可裁；裁剪准则 = 裁结构与仪式，不裁纪律与权威。
 - **状态值子集**：slim 状态值 ⊆ full 状态值，不新造状态词（P：`exploring → implementing → accepted`，旁路 `on-hold` / `rejected`；`specified` / `verifying` 不用于 slim）；值不合适时改 full 对齐，运行态永无跨 edition 未知状态。
 - **单向可升**：slim → full 单向升级，无降档（文档不涉及降档）；切换频率极低，价值主体 = 初始选 edition + slim 常驻。
 - **升级闸门**：升 full 版要求周期空闲——INDEX 存在非终态 P（`exploring` / `implementing` / `on-hold`）时拒绝切换并回报「请完成当前需求周期后再升级」，**无 override**；同 edition 对账（含环境重建）不设周期闸门（幂等 + 运行态禁触 + 索引干净预检已覆盖）。
-- **识别与可见面**：权威源 = `sdd/VERSION` 单行 `version+edition`（如 `0.2.0+slim`，格式 `^[0-9]+\.[0-9]+\.[0-9]+\+(slim|full)$`，识别取 `+` 后段，full 不省略后缀）；显示层为派生写入——CLAUDE.md 头部 edition 行（含缺席命令解释）、CONSTITUTION 头部「edition：slim」、命令输出自报 edition。版本值永不参与分支；**升 edition 判据不由数据自动触发**（被否决：INDEX 规模列自动升档建议）。
+- **识别与可见面**：权威源 = `sdd/VERSION` 单行 `version+edition`（如 `0.2.0+slim`，格式 `^[0-9]+\.[0-9]+\.[0-9]+\+(slim|full)$`，识别取 `+` 后段，full 不省略后缀）；显示层为派生写入——CLAUDE.md 头部溯源行（`sdd@star-plugins <版本> · edition：slim`，缺席命令解释置于命令一览节补充说明）、CONSTITUTION 头部溯源行（`sdd@star-plugins <版本> · edition：slim`）、命令输出自报 edition。版本值永不参与分支；**升 edition 判据不由数据自动触发**（否决 INDEX 规模列自动升档建议）。
 - **升级入口**：不新增 upgrade 命令——§十六「一个入口两种模式」扩展为前置检查四出口 dispatch（全新 / slim 命中 / full 命中 / 冲突即停）；slim 命中走单问题默认兜底（回车 = slim 原地对账，显式确认 = 升 full 版）；slim 对账与升 full 版规格落 `references/slim.md`，upgrade.md 承载 edition 路由。

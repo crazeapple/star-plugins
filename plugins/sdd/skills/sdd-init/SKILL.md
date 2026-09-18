@@ -7,7 +7,7 @@ description: Initialize the SDD requirements governance system in the slim or fu
 
 本技能为分发规格，设计决策以仓库 `docs/` 目录的 `DESIGN-SDD.md` 为准。**直接执行，禁止重新设计、增删决策。**
 
-> **TL;DR**：① 前置检查（dispatch：全新 / slim 命中 / full 命中 / 冲突即停）→ ② 询问（仅全新；全项默认兜底，含选 edition，默认 full）→ ③ 生成：full 按 references 逐字生成 29 文件，slim 按 `references/slim.md` 生成 18 文件；既有安装：slim 默认对账（显式确认则升 full 版）、full 按 `references/upgrade.md` 就地合并 → ④ 全量验证后提交（全新两次，对账按实际变更）。
+> **TL;DR**：① 前置检查（dispatch：全新 / slim 命中 / full 命中 / 冲突即停）→ ② 询问（仅全新；全项默认兜底，含选 edition，默认 slim——slim 可升 full 而反向无通道，默认取可逆方向）→ ③ 生成：full 按 references 逐字生成 29 文件，slim 按 `references/slim.md` 生成 18 文件；既有安装：slim 默认对账（显式确认则升 full 版）、full 按 `references/upgrade.md` 就地合并 → ④ 全量验证后提交（全新两次，对账按实际变更）。
 > **三条禁忌**：禁止擅自覆盖既有文件；禁止重新设计、增删决策；禁止跳过任何验证。
 
 ## 引用懒加载
@@ -44,7 +44,7 @@ description: Initialize the SDD requirements governance system in the slim or fu
 
    | 项 | 默认值 / 说明 |
    |---|---|
-   | edition | 默认 full；参考判据（**建议性，非强制**，最终由用户决定，任何项目均可选任一 edition）：需求明确性 / 探索与验证节奏 / 规模 × 时间——三维皆轻一般宜 slim，维度偏重更宜 full；详见 `DESIGN-SDD.md` §十七 |
+   | edition | 默认 slim（可升 full 版而反向无通道，默认取可逆方向）；参考判据（**建议性，非强制**，最终由用户决定，任何项目均可选任一 edition）：需求明确性 / 探索与验证节奏 / 规模 × 时间——三维皆轻一般宜 slim，维度偏重更宜 full；详见 `DESIGN-SDD.md` §十七 |
    | 项目名 | 默认 = 当前目录名；用于 CLAUDE.md 与 AGENTS.md 标题 |
    | 项目定位一句话 | CLAUDE.md 首行：依项目名 / 目录名与现场线索（README、package.json 等）生成 1-3 条候选并标注默认；未答取默认 |
 

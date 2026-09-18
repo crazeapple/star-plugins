@@ -30,7 +30,7 @@
 
 ## 二、CONSTITUTION.md 生成骨架（slim，逐字）
 
-宪法文件 = `# <项目名> SDD 治理宪法` + edition 行（`> edition：slim`）+ 本节以下各小节逐字 + 末尾生效日期（`date +%F`）。
+宪法文件 = `# <项目名> SDD 治理宪法` + 溯源行（`> sdd@star-plugins <版本> · edition：slim`，版本与全限定名取自安装时插件清单）+ 本节以下各小节逐字 + 末尾生效日期（`date +%F`）。
 
 ## 层级与分区
 
@@ -142,7 +142,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 
 ## 四、CLAUDE.md 生成骨架（slim，最后由主会话写）
 
-章节顺序固定：标题 `# <项目名>` + 项目定位一句话（首行）→ **edition 行**（`edition：slim` + 缺席命令解释：本 edition 无 finalize / split / archive——定稿并入 intake、拆任务随 design 任务表、不设归档）→ 需求层级（两层 Proposal / Task）→ 会话必读（CONSTITUTION → INDEX，冷启动摘要含意向条目数）→ 命令一览（表：命令 × 用途 ×4，表下注明调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、P / T 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则（7 条）：
+章节顺序固定：标题 `# <项目名>` + 项目定位一句话（首行）→ **edition 行**（`sdd@star-plugins <版本> · edition：slim`）→ 需求层级（两层 Proposal / Task）→ 会话必读（CONSTITUTION → INDEX，冷启动摘要含意向条目数）→ 命令一览（表：命令 × 用途 ×4，表下注明调用即文件名形式 `/sdd-intake` 等，并补充说明：slim 无 finalize / split / archive——定稿并入 intake、拆任务随 design 任务表、不设归档）→ 硬规则 → 路径、ID 与工程约定（分区路径、P / T 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则（7 条）：
 
 - ① INDEX 是状态唯一权威源（含「意向」小节），变更即时同步
 - ② 新想法先一问分类：维护直接做；需求一律经 `/sdd-intake` 受理为 P
