@@ -114,7 +114,7 @@
 | intake 判定多交付物 →意向池 | INITIATIVE.md 立 I 条目（原文保留 + 路线图） |
 | I 拆出发号 →exploring | 模板建 exploring/P-XXX.md（frontmatter `source: I-XXX`）+ INDEX 加行 |
 | exploring→specified（/sdd-finalize） | 建规格（被否备选录入否决记录）+ 底稿保留至验收 + INDEX 更新 |
-| specified→implementing（/sdd-split） | 建 design 骨架 + 任务入清单 + 切 `.worktree/P-XXX` worktree（分支 `dev/<标题 slug>`） + INDEX 更新 |
+| specified→implementing（/sdd-split） | 建 design 骨架 + 任务入清单 + 切 `.worktree/<标题 slug>` worktree（分支 `dev/<标题 slug>`） + INDEX 更新 |
 | 任一 Task 状态变化 | 仅更新 design 任务表 + 任务详情小节回填 |
 | 全任务 done →verifying | 从 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（删除 worktree 与 dev 分支）+ 交付 hash 记入 design + INDEX 置 verifying + 列出全部验收项（AC 清单）+ 显式建议 /sdd-accept（主工作区检出 test 人工测试） |
 | verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + 底稿正文追加 journal 后删除 P-XXX.md + 主工作区合并 `test/<标题 slug>` → main（发布）+ INDEX 更新 + 治理提交后打 tag + 删除 test 分支 + 完成回报固定建议「回看需求组拆下一个」 |
