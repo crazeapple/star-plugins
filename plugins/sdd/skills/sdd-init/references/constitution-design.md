@@ -44,7 +44,7 @@
 | exploring→specified（/sdd-finalize） | 建规格（被否备选录入否决记录）+ 底稿保留至验收 + INDEX 更新 |
 | specified→implementing（/sdd-split） | 建 design 骨架 + 任务入清单 + 切 `.worktree/<标题 slug>` worktree（分支 `dev/<标题 slug>`） + INDEX 更新 |
 | 任一 Task 状态变化 | 仅更新 design 任务表 + 任务详情小节回填 |
-| 全任务 done →verifying | 从 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（删除 worktree 与 dev 分支）+ 交付 hash 记入 design + INDEX 置 verifying + 列出全部验收项（AC 清单）+ 显式建议 /sdd-accept（主工作区检出 test 人工测试） |
+| 全任务 done →verifying | 从 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（删除 worktree 与 dev 分支）+ 交付 hash 记入 design + INDEX 置 verifying + 列出全部验收项（AC 清单）+ 提示人工测试（主工作区检出 test）；测试通过后 /sdd-accept |
 | verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + 底稿正文追加 journal 后删除 P-XXX.md + 主工作区合并 `test/<标题 slug>` → main（发布）+ INDEX 更新 + 治理提交后打 tag + 删除 test 分支 + 完成回报固定建议「回看需求组拆下一个」 |
 | I 完结 | 组内全部 P accepted → I 条目标完结（归档时并入 requirements.md 后移除） |
 | →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支——未建分支（exploring / specified）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删 `test/<标题 slug>`（main 零沾染）；on-hold worktree 与分支挂起保留 |
@@ -58,7 +58,7 @@
 - **R3** 探索期自顶向下、先发散后收敛、逐层留痕（实时写入底稿，用户给出内容同样落盘；过程全程落盘底稿，结论演进走 spec changelog）
 - **R4** 被否备选禁删，记入提案「否决记录」，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
-- **R6** 更新任务表 + 回填 design；全任务 done 列出全部验收项（AC 清单）并建议 /sdd-accept
+- **R6** 更新任务表 + 回填 design；全任务 done 列出全部验收项（AC 清单）并提示人工测试；测试通过后 /sdd-accept
 - **R7** 关键节点（拆任务/定稿/验收/归档）显式建议对应命令保人工确认；accept 完成回报固定建议回看需求组
 - **R8** 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；归档后只读；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）
 - **R9** 跨周期修正禁只改代码，走 amendments/

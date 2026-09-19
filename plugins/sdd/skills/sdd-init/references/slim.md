@@ -72,7 +72,7 @@
 | 意向成熟受理为 P | 发 P 号建档，原意向行移除 |
 | exploring→implementing（/sdd-intake 拆分完成时） | 定稿软门自查（对话内：AC 填实、方案已定、无疑虑）→ 任务表拆分（任务须具体可执行，禁探索性任务）+ INDEX 更新 |
 | 任一 Task 状态变化（/sdd-start） | 仅更新 design 任务表 + 任务详情小节回填 |
-| 全任务 done | INDEX 更新 + 列出全部验收项（AC 清单）+ 显式建议 /sdd-accept |
+| 全任务 done | INDEX 更新 + 列出全部验收项（AC 清单）+ 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept |
 | implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + journal 节冻结 + INDEX 更新 |
 | →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注；实现代码留原地，由 git 历史兜底 |
 | 定稿后需求变更 | spec 正文 + changelog + version 递增 + 受影响 Task 评估，禁静默覆盖 |
@@ -84,7 +84,7 @@
 - **R3** 探索与讨论实时直写 exploring/journal.md 对应 P 节（只追加、不重写历史），结论演进走 spec changelog
 - **R4** 被否备选禁删，记入 design 关键决策表，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
-- **R6** 更新任务表 + 回填 design；全任务 done 列出全部验收项（AC 清单）并建议 /sdd-accept
+- **R6** 更新任务表 + 回填 design；全任务 done 列出全部验收项（AC 清单）并提示人工测试；测试通过后 /sdd-accept
 - **R7** 验收节点显式建议 /sdd-accept 保人工确认；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。
 
 ## 自治边界（判断自动，动作守门；写入宪法）
@@ -171,7 +171,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
   | sdd-intake | Capture a new requirement, or continue planning an in-flight proposal, until it is split into concrete tasks; vague ideas park in the INDEX intention list | 新念头与需求受理（含插单）、在途 P 继续规划 | 可选：需求 / 念头描述 / P-XXX（在途 P 重入） | 一问分类：维护直接做并结束；受理或重入 → 探索澄清 + 定稿软门 + 拆 T（exploring→implementing 行）；尚模糊 → 意向小节加行 |
-  | sdd-start | Implement tasks from the design task list | 实现推进（默认顺序循环至全 done；可派发并行） | 可选：P-XXX / T-XXX（P-XXX 多 P 在途时消歧；T-XXX 指定先做某个 Task） | 推进模式：按任务表顺序取下一个 todo T（doing → 实现 → 回填实现记录 → done）循环至全 done，建议 /sdd-accept；T-XXX 指定则优先该 Task；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
+  | sdd-start | Implement tasks from the design task list | 实现推进（默认顺序循环至全 done；可派发并行） | 可选：P-XXX / T-XXX（P-XXX 多 P 在途时消歧；T-XXX 指定先做某个 Task） | 推进模式：按任务表顺序取下一个 todo T（doing → 实现 → 回填实现记录 → done）循环至全 done → INDEX 更新 + 列 AC 清单 + 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept；T-XXX 指定则优先该 Task；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
   | sdd-board | Show proposal status overview | 查看状态（只读） | 可选：P-XXX | 无矩阵行：读 INDEX 输出摘要（首行自报 edition 与版本），不改任何文档 |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收 | 必填：P-XXX | implementing→accepted 行；完成回报建议受理下一个需求 |
 
