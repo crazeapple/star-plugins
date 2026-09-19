@@ -6,7 +6,7 @@
 
 本提示词为可移植初始化器：任意项目会话中输入，即生成治理体系并交互完成初始化；自然包含 OpenCode 适配（规格见 §7），实现 Claude Code ⇄ OpenCode 无缝衔接开发。
 
-运行前提：POSIX 环境（macOS/Linux，sh/awk/perl 可用——mdlint.sh 零依赖即指此）；非 POSIX 平台须先自备等价工具，否则禁止开工。
+运行前提：POSIX 环境（macOS/Linux，sh/awk/perl 可用，mdlint.sh 零依赖即指此）；非 POSIX 平台须先自备等价工具，否则禁止开工。
 
 以下治理设计已全部确认，**直接执行，禁止重新设计、增删决策**。
 
@@ -19,7 +19,7 @@
 1. **前置检查**：
    - 记录起始时间戳（`date +%s`），收尾计算初始化耗时
    - 当前目录为项目根；非 git 仓库则自动执行 `git init`
-   - 冲突检测：已存在 `sdd/`、`CLAUDE.md`、`.claude/commands/sdd-*.md`、`AGENTS.md`、`.opencode/` 或 `.git/hooks/pre-commit` 任一 → **停止并报告冲突清单**，由用户决定，禁止覆盖（标准处置二选一：跳过冲突项继续，或用户明示删除后重建；其余处置须用户逐项明示）；命中项构成全套签名文件（判定清单见 §8）时经用户确认转**升级模式**（就地合并）——部分存在仍按本条停止，禁止补齐后覆盖
+   - 冲突检测：已存在 `sdd/`、`CLAUDE.md`、`.claude/commands/sdd-*.md`、`AGENTS.md`、`.opencode/` 或 `.git/hooks/pre-commit` 任一 → **停止并报告冲突清单**，由用户决定，禁止覆盖（标准处置二选一：跳过冲突项继续，或用户明示删除后重建；其余处置须用户逐项明示）；命中项构成全套签名文件（判定清单见 §8）时经用户确认转**升级模式**（就地合并），部分存在仍按本条停止，禁止补齐后覆盖
    - `opencode` 可用性：不可用则照常生成全部文件、最终回报中提示安装，禁止自动安装、不阻塞
 2. **询问必填项**（升级模式跳过本步，改按 §8 回读）：一次性向用户列出下表，等待回答；未回答项用默认值，必填项未获回答则再次询问、仍拒答则停止（启动日期不询问，`date +%F` 实取）：
 
@@ -28,7 +28,7 @@
    | 项目名 | 可默认 | 默认 = 当前目录名；用于 CLAUDE.md 与 AGENTS.md 标题 |
    | 项目定位一句话 | 必填 | CLAUDE.md 首行：一句话说明项目是什么、目的 |
 
-3. **生成（全新模式，默认四路并行）**：按回答生成填好的 17 治理文件、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = 本提示词顶部版本 + `+full`；经插件调用时取插件清单 `version` + `+full`），用 subagents 按文件组分派并行，各组自读本提示词对应章节——
+3. **生成（全新模式，默认四路并行）**：按回答生成填好的 17 治理文件、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = 本提示词顶部版本 + `+full`；经插件调用时取插件清单 `version` + `+full`），用 subagents 按文件组分派并行，各组自读本提示词对应章节。
 
    | 组 | 生成物 | 自读章节 |
    |---|---|---|
@@ -57,10 +57,10 @@
 │   ├── opencode.json              # OpenCode 共享配置（lsp: true）
 │   └── commands/                  # 7 命令存根（@ 引用 .claude/commands/ 同名文件）
 └── sdd/
-    ├── VERSION                    # 版本标记：本提示词 / 插件清单 version（升级对账的回报基线，非治理文档）
+    ├── VERSION                    # 版本标记：本提示词 / 插件清单 version（升级校准的回报基线，非治理文档）
     ├── CONSTITUTION.md            # SDD 治理宪法（根本法；不用 README.md，防执行者按默认习惯另建）
     ├── INDEX.md                   # 登记簿：Proposal 状态唯一权威 + P/T 发号计数器
-    ├── INITIATIVE.md              # 意向池：意向唯一记录 + I 发号计数器
+    ├── INITIATIVE.md              # 构想池：构想唯一记录 + I 发号计数器
     ├── amendments/amend.md        # 修正登记簿 + A 发号计数器（决策反转追加式录入）
     ├── templates/  proposal.md  spec.md  design.md  task.md
     ├── tools/
@@ -74,20 +74,20 @@
 
 ## 四、治理体系核心设计（生成 CONSTITUTION.md，写入宪法，禁止改动）
 
-宪法文件 = `# <项目名> SDD 治理宪法` + 本节全部小节逐字（受理与分流、意向池、自治边界为正文节；并行开发为可选节）+ 末尾生效日期（`date +%F`）。
+宪法文件 = `# <项目名> SDD 治理宪法` + 本节全部小节逐字（受理与分流、构想池、自治边界为正文节；并行开发为可选节）+ 末尾生效日期（`date +%F`）。
 
 ### 层级与分区
 
-- 三层实体：**Initiative（I-XXX，总纲）**——模糊需求的产品层澄清与路线图，不进状态机；**Proposal（P-XXX）**——可独立验收的开发单元（基础件或功能块），真正的开发循环从这里开始；**Task（T-XXX，可数十个、可分组）**——design 任务清单内，禁止单独建文件。
-- Proposal 粒度：必须是一个可独立验收的开发单元，禁止以产品版本形态立项（如「XX 第一版/首版」标题）；产品级、多交付物或模糊需求先入意向池拆解为总纲，再拆出 Proposal；两级拆分（I 拆 P、P 拆 T）不跨层。
+- 三层实体：**Initiative（I-XXX，总纲）**，模糊需求的产品层澄清与路线图，不进状态机；**Proposal（P-XXX）**，可独立验收的开发单元（基础件或功能块），真正的开发循环从这里开始；**Task（T-XXX，可数十个、可分组）**，design 任务清单内，禁止单独建文件。
+- Proposal 粒度：必须是一个可独立验收的开发单元，禁止以产品版本形态立项（如「XX 第一版/首版」标题）；产品级、多交付物或模糊需求先入构想池拆解为总纲，再拆出 Proposal；两级拆分（I 拆 P、P 拆 T）不跨层。
 - 受理两路：单交付物需求由 `/sdd-intake` 直接发 P（无 source）；多交付物或模糊需求先入 `INITIATIVE.md` 立 I，拆解后发 P（frontmatter `source: I-XXX`）。
-- 分区治理：`sdd/exploring/`（探索区，格式宽松，含探索底稿 P-XXX.md 与 journal.md——底稿自提案创建起持续落盘探索与讨论过程，存活至验收通过或 rejected 终结，定稿不冻结）与 `sdd/specs/`（稳定区，格式严格、变更留痕，每提案一目录：spec.md 与 design.md）物理分离；修正隔离在 `amendments/` 与意向池；归档只从稳定区取材。
-- **探索档案 journal.md**：项目内永久档案（不入归档四产物），按提案分节追加——`## P-XXX <标题>` + 状态轨迹行 + 底稿除 frontmatter 外正文原样；只追加与原位标注、不重写历史。开发中新情况的探索讨论过程，属当前提案范围内且形成新 Task 的，按主题补录底稿相应小节（不必然追加于末尾）；结论写 spec（changelog + version），过程写底稿。验收通过或 rejected 终结时底稿整稿入档后删除，on-hold 底稿留原地。
+- 分区治理：`sdd/exploring/`（探索区，格式宽松，含探索底稿 P-XXX.md 与 journal.md：底稿自提案创建起持续落盘探索与讨论过程，存活至验收通过或 rejected 终结，定稿不冻结）与 `sdd/specs/`（稳定区，格式严格、变更留痕，每提案一目录：spec.md 与 design.md）物理分离；修正隔离在 `amendments/` 与构想池；归档只从稳定区取材。
+- **探索档案 journal.md**：项目内永久档案（不入归档四产物），按提案分节追加，即 `## P-XXX <标题>` + 状态轨迹行 + 底稿除 frontmatter 外正文原样；只追加与原位标注、不重写历史。开发中新情况的探索讨论过程，属当前提案范围内且形成新 Task 的，按主题补录底稿相应小节（不必然追加于末尾）；结论写 spec（changelog + version），过程写底稿。验收通过或 rejected 终结时底稿整稿入档后删除，on-hold 底稿留原地。
 - **不预建**运行态目录：exploring/、specs/、journal.md 均动态形成；INITIATIVE.md 与 amendments/amend.md 由初始化生成。
 
 ### 权威源、ID 与日期
 
-- INDEX 是 Proposal 状态**唯一权威源**，状态变更即时同步（操作即同步，不攒批）；INITIATIVE.md 是意向唯一记录；Task 状态唯一权威 = design 任务表；规格版本唯一维护处 = spec frontmatter `version`。
+- INDEX 是 Proposal 状态**唯一权威源**，状态变更即时同步（操作即同步，不攒批）；INITIATIVE.md 是构想唯一记录；Task 状态唯一权威 = design 任务表；规格版本唯一维护处 = spec frontmatter `version`。
 - I/P/T/A 四套编号各自全局递增，**永不复用、永不重排**（rejected 也占号）；P/T 发号统一在 INDEX 顶部计数器，I 号计数器位于 INITIATIVE.md 顶部，A 号计数器位于 amendments/amend.md 顶部；取号后立即递增写回。
 - **日期规则**：治理文档一切日期唯一源 = 执行写入的会话所在机器的系统日期（本地时区）；写入前必须以 `date +%F`（或等价）实取；禁止凭记忆或上下文推断；粒度 YYYY-MM-DD。
 
@@ -101,17 +101,17 @@
 
 - **维护/需求分类三问**：① 行为变化？（新能力/改变对外行为 = 需求；恢复既定或不改变 = 维护）② 方案空间？（存在真实选择 = 需求；路径唯一 = 维护）③ AC 自明性？（需协商定义 = 需求；自明 = 维护）。任一命中需求特征即立项；三问全维护 → 直接做，不立项。
 - 分类四保险：**默认偏维护**（判不准一律按维护）；**停损升级**（维护中冒出方案选择或范围膨胀 → 当场停、补立项）；**口令优先**（分类仅为建议，用户一句终局）；**amendments 旁路**（维护暴露决策/设计错误 → 走 A-XXX）。例子锚点：改按钮颜色、修 typo、升依赖 = 维护；国际化、暗色主题、OpenAPI 文档 = 需求（XS 级）。
-- **单/多交付物三问**：① AC 可写性——现在就能写出 1-3 条可核对的验收标准吗？② 边界可划性——范围内外现在就能划清吗？③ 交付物同质性——单一功能块，还是天然含多个异质交付物？≥2 问指向「要拆」→ 入意向池；否则直接发 P。
+- **单/多交付物三问**：① AC 可写性（现在就能写出 1-3 条可核对的验收标准吗？）② 边界可划性（范围内外现在就能划清吗？）③ 交付物同质性（单一功能块，还是天然含多个异质交付物？）≥2 问指向「要拆」→ 入构想池；否则直接发 P。
 - 同类重复不算异质（「给 10 个字段加校验」是一个 P 的 10 个 Task）；拿不准时兜底一问用户：「想一口气做完，还是先立框架分期做？」
-- **误入池出口**：池内拆解后发现实为单交付物 → 关闭 I 条目，直接发 P（无 source）；直接 P 发现要拆 → 探索产物回填意向池升格。判错可恢复，均非事故。
-- **判定示例**：用户登录功能——大功能但复杂性全在工程层（认证选型），产品结构上是一块，单交付物，直接发 P；完整账号体系（个人/企业、SSO、组织权限）——产品级意向需路线图，入池立 I 拆解。
+- **误入池出口**：池内拆解后发现实为单交付物 → 关闭 I 条目，直接发 P（无 source）；直接 P 发现要拆 → 探索产物回填构想池升格。判错可恢复，均非事故。
+- **判定示例**：用户登录功能，大功能但复杂性全在工程层（认证选型），产品结构上是一块，单交付物，直接发 P；完整账号体系（个人/企业、SSO、组织权限），产品级构想需路线图，入池立 I 拆解。
 
 ### 状态转换 × 文档同步矩阵
 
 | 转换 | 必做操作 |
 |---|---|
 | intake 判定单交付物 →exploring | 模板建 exploring/P-XXX.md + INDEX 加行 |
-| intake 判定多交付物 →意向池 | INITIATIVE.md 立 I 条目（原文保留 + 路线图） |
+| intake 判定多交付物 →构想池 | INITIATIVE.md 立 I 条目（原文保留 + 路线图） |
 | I 拆出发号 →exploring | 模板建 exploring/P-XXX.md（frontmatter `source: I-XXX`）+ INDEX 加行 |
 | exploring→specified（/sdd-finalize） | 建规格（被否备选录入否决记录）+ 底稿保留至验收 + INDEX 更新 |
 | specified→implementing（/sdd-split） | 建 design 骨架 + 任务入清单 + 切 `.worktree/<标题 slug>` worktree（分支 `dev/<标题 slug>`） + INDEX 更新 |
@@ -119,14 +119,14 @@
 | 全任务 done →verifying | 从 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（删除 worktree 与 dev 分支）+ 交付 hash 记入 design + INDEX 置 verifying + 列出全部验收项（AC 清单）+ 提示人工测试（主工作区检出 test）；测试通过后 /sdd-accept |
 | verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + 底稿正文追加 journal 后删除 P-XXX.md + 主工作区合并 `test/<标题 slug>` → main（发布）+ INDEX 更新 + 治理提交后打 tag + 删除 test 分支 + 完成回报固定建议「回看需求组拆下一个」 |
 | I 完结 | 组内全部 P accepted → I 条目标完结（归档时并入 requirements.md 后移除） |
-| →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支——未建分支（exploring / specified）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删 `test/<标题 slug>`（main 零沾染）；on-hold worktree 与分支挂起保留 |
+| →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支：未建分支（exploring / specified）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删 `test/<标题 slug>`（main 零沾染）；on-hold worktree 与分支挂起保留 |
 | 定稿后需求变更 | 规格正文 + changelog + version 递增（v1.0 → v1.1）+ 受影响 Task 评估，禁静默覆盖 |
 | 归档（/sdd-archive） | INDEX 置「已归档 + 日期」+ 四产物 + 完结 I 条目并入 requirements.md + sdd 全区只读 |
 
 ### 会话微流程 R1-R10（写入宪法）
 
-- **R1** 冷启动读 CONSTITUTION → INDEX → INITIATIVE，输出状态摘要（含意向池概览：活跃 I 数、待梳理条目、未立项里程碑）
-- **R2** 新想法当场分类（维护/需求三问）：维护直接做并回报；需求一律经 /sdd-intake 受理——单交付物直接发号，多交付物先落意向池；当前工作永不因新想法自动中断
+- **R1** 冷启动读 CONSTITUTION → INDEX → INITIATIVE，输出状态摘要（含构想池概览：活跃 I 数、待梳理条目、未立项里程碑）
+- **R2** 新想法当场分类（维护/需求三问）：维护直接做并回报；需求一律经 /sdd-intake 受理，单交付物直接发号，多交付物先落构想池；当前工作永不因新想法自动中断
 - **R3** 探索期自顶向下、先发散后收敛、逐层留痕（实时写入底稿，用户给出内容同样落盘；过程全程落盘底稿，结论演进走 spec changelog）
 - **R4** 被否备选禁删，记入提案「否决记录」，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
@@ -147,9 +147,9 @@
 ### Markdown 书写规范（宪法此节以本节为唯一规格源；mdlint.sh 按此实现）
 
 - **语法总则**：遵循 CommonMark/GFM 语法，结构符号一律半角（列表标记、链接括号、标题 `#`、表格 `|` 与 `-` 分隔行）；强调一律 `*` 禁 `_`；行内代码反引号与加粗 `**` 成对闭合；标识符与含 `*`、`_`、`<`、`&`、`~`、`|` 的片段入行内代码
-- **混排层**：中文正文标点全角（，。：；？！、（）「」——）且成对闭合；中文与英文/数字/半角符号之间加一个半角空格（× 表倍数时与数字紧贴，如「模板 ×4」），标点/代码边界处不加（按渲染后中英边界判断；强调与行内代码标记不构成边界）；中文正文引用标记只用「」或半角直引号 ""；半角引号等半角符号与中文相邻时，两侧须加空格；命令、路径、代码、ID（I-001/P-001/T-001/A-001）用行内代码包裹；破折号「——」、省略号「……」、空值占位单个 `—`（仅表格与字段）、范围号紧贴 `-`（`R1-R10`）、禁用 `–`；列表项短语结尾不加标点、整句加中文句号；表格单元格不加句号；专有名词保持原大小写（README、CLAUDE.md）；无序列表统一 `-`、有序列表统一 `1.`
+- **混排层**：中文正文标点全角（，。：；？！、（）「」）且成对闭合；中文与英文/数字/半角符号之间加一个半角空格（× 表倍数时与数字紧贴，如「模板 ×4」），标点/代码边界处不加（按渲染后中英边界判断；强调与行内代码标记不构成边界）；中文正文引用标记只用「」或半角直引号 ""；半角引号等半角符号与中文相邻时，两侧须加空格；命令、路径、代码、ID（I-001/P-001/T-001/A-001）用行内代码包裹；破折号「——」避免使用，解释性插入宁用「：」「，」「（）」或语言描述；同一句子内、同一层级不重复使用冒号（半角 `:` 与全角 `：` 同计，行首标签与 `type:` 前缀计入，括注内与表格字段除外）；commit message 与 tag message 同此规则；省略号「……」、空值占位单个 `—`（仅表格与字段）、范围号紧贴 `-`（`R1-R10`）、禁用 `–`；列表项短语结尾不加标点、整句加中文句号；表格单元格不加句号；专有名词保持原大小写（README、CLAUDE.md）；无序列表统一 `-`、有序列表统一 `1.`
 - **语义层**：算式与维度一律紧凑（`1+2`、`3-2=1`、`4×5`、`4×4 矩阵`、`n×m`）；`+`、`-`、`=` 不机械检查（区间、复合词、散文等号合法）；× 连接中文两侧加空格（状态转换 × 文档同步）；倍数写「模板 ×4」；计数比一律 `/`（3/8），`×` 禁表计数比或分隔；流程用「→」；并列用「与/·」
-- **校验**：`sh sdd/tools/mdlint.sh <文件或目录>`（POSIX sh + awk + perl，macOS 自带零依赖）。检查集按 AI 作者错误分布校准。error：反引号或 `**` 行内不配对、全角圆括号/直角引号文件级不配对；warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致（GFM 会静默补空或丢弃）。检查豁免代码围栏与行内代码内容。零 error 方可回报，warning 逐条确认或忽略。提交兜底：sdd-init 安装 `.git/hooks/pre-commit`（三端通用——Claude Code、OpenCode 与人工提交同受约束），staged 文件落于辖区（`sdd/` 下、`CLAUDE.md`、`.claude/commands/`、`AGENTS.md`、`.opencode/commands/`）时整体跑本工具，有 error 非零退出阻止提交；warning 不拦，工具缺失静默放行。
+- **校验**：`sh sdd/tools/mdlint.sh <文件或目录>`（POSIX sh + awk + perl，macOS 自带零依赖）。检查集按 AI 作者错误分布校准。error：反引号或 `**` 行内不配对、全角圆括号/直角引号文件级不配对；warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致（GFM 会静默补空或丢弃）。检查豁免代码围栏与行内代码内容。零 error 方可回报，warning 逐条确认或忽略。提交兜底：sdd-init 安装 `.git/hooks/pre-commit`（三端通用：Claude Code、OpenCode 与人工提交同受约束），staged 文件落于辖区（`sdd/` 下、`CLAUDE.md`、`.claude/commands/`、`AGENTS.md`、`.opencode/commands/`）时整体跑本工具，有 error 非零退出阻止提交；warning 不拦，工具缺失静默放行。
 
 mdlint.sh 实现后必须以下列向量自测全过方可视为达标：
 
@@ -172,13 +172,13 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 
 ### 修正机制（amendments/，跨周期）
 
-- **登记簿**：`amendments/amend.md`（初始化生成），条目式追加——只录**已完结提案（accepted 及之后）**实现后被推翻或替换的决策反转；活跃提案内的否决与修正留在提案自身文件（否决记录、关键决策表 + changelog）。决策反转归用户守门，AI 仅可建议。
+- **登记簿**：`amendments/amend.md`（初始化生成），条目式追加，只录**已完结提案（accepted 及之后）**实现后被推翻或替换的决策反转；活跃提案内的否决与修正留在提案自身文件（否决记录、关键决策表 + changelog）。决策反转归用户守门，AI 仅可建议。
 - **条目格式**：`### A-XXX <标题>（YYYY-MM-DD）` 行 + `关联：P-XXX / T-XXX` 行（多关联「、」分隔，无关联省略该行）+ `状态：active | superseded by A-YYY` 行 + `**决策**`（一句话）、`**理由**`、`**影响范围**` 三个加粗标签段。被替换条目仅原位改状态行，其余内容不动；A 号永不复用。
 - 跨周期替换四步：① 新建条目说明替换方案与原因 ② 旧条目原位改状态 superseded by 新 A ③ 更新受影响规格（升版 + changelog）与 design 关键决策表 ④ 评估 INDEX 中依赖该决策的其他提案。
 
-### 意向池（INITIATIVE.md）
+### 构想池（INITIATIVE.md）
 
-- **地位**：意向唯一记录；顶层计数器 `next-I`；文件常态只保留活跃需求组。
+- **地位**：构想唯一记录；顶层计数器 `next-I`；文件常态只保留活跃需求组。
 - **I 条目格式**：
 
 ```
@@ -203,7 +203,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 
 ## 五、命令、模板与语言规范
 
-- 7 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/finalize/split/start/accept/archive）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本节命令规格表为唯一来源**——CLAUDE.md 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
+- 7 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/finalize/split/start/accept/archive）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本节命令规格表为唯一来源**，CLAUDE.md 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
 
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
@@ -297,15 +297,15 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   - 详情小节格式：说明（依据规格/设计节选）→ 实现记录（完成时回填：做法 + 证据）；完成判据 = 对照 spec 相关 AC 条目，验收核对统一在 /sdd-accept 进行（验收项不属于 Task）
   - 子智能体回报格式：做了什么 / 验收逐条结论 / 问题与规格偏差（走 R5 上报主会话）
 
-- **INITIATIVE.md 生成骨架**（意向池，意向唯一记录）：
+- **INITIATIVE.md 生成骨架**（构想池，构想唯一记录）：
 
   ```markdown
-  # 意向池
+  # 构想池
 
   > 计数器：next-I: 001
-  > 条目格式见 CONSTITUTION「意向池」节；raw 便签无号，梳理成熟原地升格为 I。
+  > 条目格式见 CONSTITUTION「构想池」节；raw 便签无号，梳理成熟原地升格为 I。
 
-  （暂无活跃意向）
+  （暂无活跃构想）
   ```
 
 - **amendments/amend.md 生成骨架**（修正登记簿 + A 计数器）：
@@ -319,8 +319,8 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   （暂无修正案）
   ```
 
-- **CLAUDE.md 骨架**（章节顺序固定，最后写）：标题 `# <项目名>` + 项目定位一句话（首行）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含意向池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则必须含（8 条）：
-  - ① INDEX 是状态唯一权威源、INITIATIVE 是意向唯一记录，变更即时同步
+- **CLAUDE.md 骨架**（章节顺序固定，最后写）：标题 `# <项目名>` + 项目定位一句话（首行）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则必须含（8 条）：
+  - ① INDEX 是状态唯一权威源、INITIATIVE 是构想唯一记录，变更即时同步
   - ② 新想法先分类：维护直接做；需求一律经 `/sdd-intake` 受理
   - ③ 定稿后需求变更留痕升版，禁静默覆盖
   - ④ 被否备选记入提案否决记录；已完结决策的推翻替换记入 `amendments/amend.md`，禁删漏记
@@ -351,7 +351,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 
 ### 核心原则
 
-- **唯一源——OpenCode 侧零内容创造**：规则唯一源 = `CLAUDE.md`，`AGENTS.md` 仅作引用壳；命令唯一源 = `.claude/commands/*.md`，存根仅作引用壳。禁止复制正文（双源漂移）、禁止软链（跨平台克隆失效）、禁止在 OpenCode 侧另建平行规则或命令内容
+- **唯一源（OpenCode 侧零内容创造）**：规则唯一源 = `CLAUDE.md`，`AGENTS.md` 仅作引用壳；命令唯一源 = `.claude/commands/*.md`，存根仅作引用壳。禁止复制正文（双源漂移）、禁止软链（跨平台克隆失效）、禁止在 OpenCode 侧另建平行规则或命令内容
 - **本地化约定**：仅 `*.local.*` 后缀文件为机器本地（被 .gitignore 忽略）；共享配置（`AGENTS.md` 与 `.opencode/` 生成物）一律入库
 - **零侵入**：治理文件（`CLAUDE.md`、`sdd/`、`.claude/commands/`）零改动
 
@@ -412,7 +412,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 用户参数：$ARGUMENTS
 ```
 
-要点：自带「用户参数：`$ARGUMENTS`」行——无论 OpenCode 内部替换与注入孰先孰后，参数必达；源文件 frontmatter 随 `@` 注入出现为文本属预期噪音；存根中的描述重复仅作 TUI 显示，漂移无功能影响。
+要点：自带「用户参数：`$ARGUMENTS`」行，无论 OpenCode 内部替换与注入孰先孰后，参数必达；源文件 frontmatter 随 `@` 注入出现为文本属预期噪音；存根中的描述重复仅作 TUI 显示，漂移无功能影响。
 
 ### 机制依据与禁改道清单
 
@@ -427,11 +427,11 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 ## 八、升级模式：既有安装的就地合并
 
-> 触发判定、对账分类、验证与回报以本节为唯一规格源；升级复用初始化的四步骨架与全量验证，不新增命令。
+> 触发判定、校准分类、验证与回报以本节为唯一规格源；升级复用初始化的四步骨架与全量验证，不新增命令。
 
 ### 触发判定
 
-前置检查的冲突检测命中项构成**全套签名文件**时，经用户确认转升级模式；任一缺失则照旧停止并报告冲突清单——**部分存在不触发升级**，禁止自行补齐缺失项后覆盖。签名集（以下存在性检查全部命中才转升级）：
+前置检查的冲突检测命中项构成**全套签名文件**时，经用户确认转升级模式；任一缺失则照旧停止并报告冲突清单：**部分存在不触发升级**，禁止自行补齐缺失项后覆盖。签名集（以下存在性检查全部命中才转升级）：
 
 - `sdd/CONSTITUTION.md`、`sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md`
 - `sdd/templates/` 下 proposal / spec / design / task ×4 全在
@@ -441,7 +441,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 `.gitignore` 与 `.git/hooks/pre-commit` 不入签名集（补装语义：缺失即补，存在即覆盖 / 补行）。典型场景为环境重建：项目于新主机 clone 后 `.git/hooks/pre-commit` 必然缺失，全套签名文件在库即命中本模式，重装即补。命中后向用户明示「检测到既有安装（版本见 `sdd/VERSION`），转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止，请用户先处理（防混入升级提交）。
 
-### 对账分类（三档）
+### 校准分类（三档）
 
 | 档 | 文件 | 处置 |
 |---|---|---|
@@ -450,7 +450,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 | 活文档仲裁 | `CLAUDE.md` | 骨架节重写 + 项目内容保留（见下） |
 | 禁触 | `sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md` 内容；`sdd/specs/`、`sdd/exploring/`、`sdd/journal.md`、`sdd/archive/` 全部 | 一律不改（骨架仅按本节「骨架差异比对」锚点只读比对） |
 
-保护性写入细则：`.gitignore` 三行逐行补缺——`# 本地文件不入库`、`*.local.*`、`.worktree/`，已有行不动、项目自有行禁删禁改、文件不存在才新建，严禁整文件重写；`AGENTS.md` 按 §7 逐字重生成 + 项目名回填；`sdd/CONSTITUTION.md` 按 §4 逐字重生成 + 项目名回填 + 末尾生效日期保留原文件原值（识别原文件末尾 `YYYY-MM-DD` 日期行；回读失败以当日 `date +%F` 重置并在回报注明）。
+保护性写入细则：`.gitignore` 三行逐行补缺，即 `# 本地文件不入库`、`*.local.*`、`.worktree/`，已有行不动、项目自有行禁删禁改、文件不存在才新建，严禁整文件重写；`AGENTS.md` 按 §7 逐字重生成 + 项目名回填；`sdd/CONSTITUTION.md` 按 §4 逐字重生成 + 项目名回填 + 末尾生效日期保留原文件原值（识别原文件末尾 `YYYY-MM-DD` 日期行；回读失败以当日 `date +%F` 重置并在回报注明）。
 
 ### 必填项回读（升级模式不询问）
 
@@ -459,10 +459,10 @@ description: Capture a new requirement and shape it into initiatives or proposal
 ### 执行顺序与幂等
 
 1. 起始时间戳（`date +%s`）→ 触发判定 → 必填项回读
-2. 两路并行对账（见下）→ 主会话最后重写 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/VERSION`（内容 = 本提示词顶部版本 + `+full`；经插件调用时取插件清单 `version` + `+full`）
+2. 两路并行校准（见下）→ 主会话最后重写 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/VERSION`（内容 = 本提示词顶部版本 + `+full`；经插件调用时取插件清单 `version` + `+full`）
 3. 全量验证（§6 全量项：mdLint 零 error + 交叉一致 + check-ignore + opencode debug config）→ 提交（见下）→ 回报（见下）
 
-**幂等**：对账按「现行规格 vs 磁盘现状」状态化执行，不依赖版本值分支；升级可安全重跑，中断恢复 = 直接重跑（中断不会造成签名集缺损，重跑仍命中升级模式）。
+**幂等**：校准按「现行规格 vs 磁盘现状」状态化执行，不依赖版本值分支；升级可安全重跑，中断恢复 = 直接重跑（中断不会造成签名集缺损，重跑仍命中升级模式）。
 
 ### CLAUDE.md 重写与回读规则
 
@@ -472,23 +472,23 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 ### 执行策略（两路并行）
 
-- 治理组：`CONSTITUTION.md` 重生成 + `INDEX.md` / `INITIATIVE.md` / `amendments/amend.md` 骨架锚点只读比对——自读本节 + §4 全文 + §5 生成骨架节。
-- 机械资产组：命令 ×7、模板 ×4、`mdlint.sh`、hook、OpenCode 适配 ×10 覆盖——自读本节 + §7 全文。
+- 治理组：`CONSTITUTION.md` 重生成 + `INDEX.md` / `INITIATIVE.md` / `amendments/amend.md` 骨架锚点只读比对，自读本节 + §4 全文 + §5 生成骨架节。
+- 机械资产组：命令 ×7、模板 ×4、`mdlint.sh`、hook、OpenCode 适配 ×10 覆盖，自读本节 + §7 全文。
 - 主会话自读本节全文（CLAUDE.md 仲裁、验证与提交操盘）；不支持 subagents 时按治理组 → 机械资产组 → 主会话串行，步骤不变。
 
 ### 提交与回报
 
-- 提交按实际变更文件显式列举、禁用 `git add -A` 与 `git add .`，分两批（同初始化分主题）：第一批 = `CLAUDE.md` + 命令 ×7 + `sdd/CONSTITUTION.md` + `sdd/VERSION`，消息固定 `chore: 升级 SDD 治理体系（机械资产对账 + CLAUDE.md 活文档仲裁）`；第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×7，消息固定 `chore: 升级 OpenCode 适配资产`。某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）。
+- 提交按实际变更文件显式列举、禁用 `git add -A` 与 `git add .`，分两批（同初始化分主题）：第一批 = `CLAUDE.md` + 命令 ×7 + `sdd/CONSTITUTION.md` + `sdd/VERSION`，消息固定 `chore: 升级 SDD 治理体系（机械资产校准 + CLAUDE.md 活文档仲裁）`；第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×7，消息固定 `chore: 升级 OpenCode 适配资产`。某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）。
 - 回报项：模式与版本去向（`X → Y`，或「旧版安装 → Y」）+ 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（无差异则注明）+ 跳过批次 + commit hash + mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式）+ pre-commit hook 重装结论。
 
 ### 骨架差异比对与报告
 
-只比锚点不比全文：INDEX——`next-P` / `next-T` 计数器标签在位 + 提案总览表表头列集合与现行规格一致；INITIATIVE——`next-I` 标签在位 + 条目格式引言行在位；`amendments/amend.md`——`next-A` 标签在位 + 条目格式指引行在位。计数器值、数据行、条目内容一律不参与比对（防活跃项目误报）。报告格式固定：每文件一段 = 文件名 + 差异锚点清单 + 「人工迁移建议：对照 §5 对应骨架节」+ 明示「未自动修改」。
+只比锚点不比全文。INDEX 比 `next-P` / `next-T` 计数器标签在位 + 提案总览表表头列集合与现行规格一致；INITIATIVE 比 `next-I` 标签在位 + 条目格式引言行在位；`amendments/amend.md` 比 `next-A` 标签在位 + 条目格式指引行在位。计数器值、数据行、条目内容一律不参与比对（防活跃项目误报）。报告格式固定：每文件一段 = 文件名 + 差异锚点清单 + 「人工迁移建议：对照 §5 对应骨架节」+ 明示「未自动修改」。
 
 ### 边界处置
 
 - **部分安装**：照旧冲突停止并列缺失项，禁止补齐后覆盖。
-- **`sdd/VERSION` 缺失或损坏**（内容不匹配 `^[0-9]+\.[0-9]+\.[0-9]+$`）：照常升级（对账不依赖版本值），回报注明「旧版安装」或「版本标记异常，疑似损坏 / 篡改」。
+- **`sdd/VERSION` 缺失或损坏**（内容不匹配 `^[0-9]+\.[0-9]+\.[0-9]+$`）：照常升级（校准不依赖版本值），回报注明「旧版安装」或「版本标记异常，疑似损坏 / 篡改」。
 - **opencode 未安装**：验证对应项跳过并在回报注明（同初始化条款，禁止自动安装）。
 - **worktree 在途**：升级只写主干路径，与 worktree 内代码零交集；回报列 `ls .worktree/` 在途提案作提示；hook 重装落 `.git/hooks/`（共享 git dir），对全部 worktree 即时生效属预期。
 - **并发改写**：不对 CLAUDE.md 加锁；提交前全量验证 + 幂等重跑兜底。

@@ -21,8 +21,8 @@ Claude Code 插件 monorepo：一个 marketplace（`star-plugins`），多个插
 
 ## sdd 插件
 
-- **skill `sdd-init`**：可移植初始化器——在任意目标项目生成整套 SDD 治理体系（治理文档 / mdLint 工具 / 命令 / CLAUDE.md；**slim / full 双 edition**：slim 精简真子集，需求明确、规模可控时选用，单向可升）、完成 OpenCode 适配并安装 `.git/hooks/pre-commit` 提交兜底
-- **hook（提交兜底，纪律机制化）**：sdd-init 装进目标项目 `.git/hooks/pre-commit`——提交时对 staged 辖区 `.md` 跑 mdLint，有 error 阻止提交（三端通用：Claude Code、OpenCode、人工提交）
+- **skill `sdd-init`**：可移植初始化器，在任意目标项目生成整套 SDD 治理体系（治理文档 / mdLint 工具 / 命令 / CLAUDE.md；**slim / full 双 edition**：slim 精简真子集，需求明确、规模可控时选用，单向可升）、完成 OpenCode 适配并安装 `.git/hooks/pre-commit` 提交兜底
+- **hook（提交兜底，纪律机制化）**：sdd-init 装进目标项目 `.git/hooks/pre-commit`，提交时对 staged 辖区 `.md` 跑 mdLint，有 error 阻止提交（三端通用：Claude Code、OpenCode、人工提交）
 - 插件**不含**工作流命令：命令由 sdd-init 生成于目标项目内（`.claude/commands/`），避免与项目内命令重复，且 OpenCode 存根依赖项目内文件
 
 ### 设计权威
@@ -35,15 +35,15 @@ Claude Code 插件 monorepo：一个 marketplace（`star-plugins`），多个插
 
 ### 生命周期
 
-- **升级**：目标项目内重跑 `/sdd:sdd-init`——检测到既有安装自动转升级模式（就地合并）：机械资产静默更新、活文档差异仲裁、运行态（INDEX / INITIATIVE / specs 等）永不触碰；版本基线记录于 `sdd/VERSION`。规格见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
-- **环境重建**：项目在新主机 clone 后本地 `.git/hooks/pre-commit` 必然缺失（客户端 hook 不随 git 目录迁移）——重跑 `/sdd:sdd-init`，运行态齐全即自动转升级模式并补装 hook。
-- **卸载**：插件卸载对已初始化项目零影响（零运行时耦合，复制交付即断奶），仅失去后续升级通道；不做项目级拆除功能——停用体系删文件即可，pre-commit hook 自防御（`sdd/tools/mdlint.sh` 缺失即静默放行），git 历史保全一切。裁决见 `DESIGN-SDD.md` §十六。
+- **升级**：目标项目内重跑 `/sdd:sdd-init`，检测到既有安装自动转升级模式（就地合并），机械资产静默更新、活文档差异仲裁、运行态（INDEX / INITIATIVE / specs 等）永不触碰；版本基线记录于 `sdd/VERSION`。规格见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
+- **环境重建**：项目在新主机 clone 后本地 `.git/hooks/pre-commit` 必然缺失（客户端 hook 不随 git 目录迁移）。重跑 `/sdd:sdd-init`，运行态齐全即自动转升级模式并补装 hook。
+- **卸载**：插件卸载对已初始化项目零影响（零运行时耦合，复制交付即断奶），仅失去后续升级通道；不做项目级拆除功能，停用体系删文件即可，pre-commit hook 自防御（`sdd/tools/mdlint.sh` 缺失即静默放行），git 历史保全一切。裁决见 `DESIGN-SDD.md` §十六。
 
 ### 分层读取设计
 
 sdd 生成的治理文档分两层控制上下文成本：
 
-- **`CLAUDE.md`（约 1k tokens）**：每个会话由 Claude Code 自动注入，是不论会话做什么都要付的固定开销，因此内容保持最小——硬规则摘要、命令一览与路径指路；自成一篇，即使 Agent 没读宪法，单独也能撑起最小心智。
+- **`CLAUDE.md`（约 1k tokens）**：每个会话由 Claude Code 自动注入，是不论会话做什么都要付的固定开销，因此内容保持最小，即硬规则摘要、命令一览与路径指路；自成一篇，即使 Agent 没读宪法，单独也能撑起最小心智。
 - **`CONSTITUTION` → `INDEX` → `INITIATIVE`（合计约 7-9k tokens）**：只在会话需要开展治理工作时读取一次，此后在该会话内持续可用、不再重复读取；不随新会话自动注入，纯写码会话零成本。
 
 `CLAUDE.md` 指向下层：Agent 顺着指路按当前任务需要继续读取。

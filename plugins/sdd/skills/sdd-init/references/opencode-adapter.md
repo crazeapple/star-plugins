@@ -4,7 +4,7 @@
 
 ## 核心原则
 
-- **唯一源——OpenCode 侧零内容创造**：规则唯一源 = `CLAUDE.md`，`AGENTS.md` 仅作引用壳；命令唯一源 = `.claude/commands/*.md`，存根仅作引用壳。禁止复制正文（双源漂移）、禁止软链（跨平台克隆失效）、禁止在 OpenCode 侧另建平行规则或命令内容
+- **唯一源（OpenCode 侧零内容创造）**：规则唯一源 = `CLAUDE.md`，`AGENTS.md` 仅作引用壳；命令唯一源 = `.claude/commands/*.md`，存根仅作引用壳。禁止复制正文（双源漂移）、禁止软链（跨平台克隆失效）、禁止在 OpenCode 侧另建平行规则或命令内容
 - **本地化约定**：仅 `*.local.*` 后缀文件为机器本地（被 .gitignore 忽略）；共享配置（`AGENTS.md` 与 `.opencode/` 生成物）一律入库
 - **零侵入**：治理文件（`CLAUDE.md`、`sdd/`、`.claude/commands/`）零改动
 
@@ -65,7 +65,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 用户参数：$ARGUMENTS
 ```
 
-要点：自带「用户参数：`$ARGUMENTS`」行——无论 OpenCode 内部替换与注入孰先孰后，参数必达；源文件 frontmatter 随 `@` 注入出现为文本属预期噪音；存根中的描述重复仅作 TUI 显示，漂移无功能影响。
+要点：自带「用户参数：`$ARGUMENTS`」行，无论 OpenCode 内部替换与注入孰先孰后，参数必达；源文件 frontmatter 随 `@` 注入出现为文本属预期噪音；存根中的描述重复仅作 TUI 显示，漂移无功能影响。
 
 ## 机制依据与禁改道清单
 
