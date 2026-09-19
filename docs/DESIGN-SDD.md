@@ -168,9 +168,9 @@ sdd/
 - **粒度与时机**：分支以 P-XXX 为单位、双分支制，`dev/<标题英文 slug>`（开发）与 `test/<标题英文 slug>`（验收）。`/sdd-split` 创建（specified→implementing，可写码起点），从 main 切出 `dev/<slug>` 并建 worktree（检出 dev）；全任务 done（verifying）：从 main 切出 `test/<slug>`、合并 `dev/<slug>` 入 test、删除 worktree 与 dev 分支，代码进入验收，worktree 使命终结。两级并行：分支 = P（提案间），分支内派发-回收子 Agent = T（提案内）。
 - **载体统一 worktree**：`git worktree add .worktree/<标题英文 slug> -b dev/<标题英文 slug>` 创建（分支 + 工作区一步，目录名与分支名同源）；`.worktree/` 入 `.gitignore`；主工作区常驻主干；验收测试在主工作区检出 `test/<slug>` 进行（主工作区即用户可运行环境）；单/多 Agent 同一机制，无例外。
 - **治理文档主干单线**：sdd/ 全部治理文档只在主干由主会话写；分支只承载实现代码。git 拓扑映射治理架构：代码层并行（分支），治理层串行（主干）。会话工作目录不设限，以路径锁定「什么写在哪」：治理文档写主工作区，代码写 worktree；test / dev 检出中的 sdd/ 一律只读，治理写入回主工作区 main。
-- **提交**：治理文档由状态转换命令收尾自动提交主干（信息现场自拟，遵循脱敏约束）；dev 分支代码提交以 Task 为界，单个提交不混多 Task 改动，Task 完成即提交、一 Task 可多提交；test 分支的修复提交随验收产生；代码合入主干发生在全任务 done 的 verifying 转换（合并 dev → test，accept 发布 test → main），accept 不再合并代码；交付 hash（dev → test 合并）记入 design.md；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
+- **提交**：治理文档由状态转换命令收尾自动提交主干（信息现场自拟，遵循脱敏与治理引用约定）；dev 分支代码提交以 Task 为界，单个提交不混多 Task 改动，Task 完成即提交、一 Task 可多提交；test 分支的修复提交随验收产生；代码合入主干发生在全任务 done 的 verifying 转换（合并 dev → test，accept 发布 test → main），accept 不再合并代码；交付 hash（dev → test 合并）记入 design.md；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
 - **tag**：accept 收尾（治理提交之后）打 annotated tag，版本格式于首次 tag 时询问用户定型，CalVer（`YYYY.M.D` 验收日，同日多验收追加当日序号）或 SemVer（`vX.Y.Z`，按变化递增）；信息 = 相对上一版本的功能变化一句话（遵循脱敏约束）。tag = 发布门槛：主干可短暂承载 verifying 代码，打 tag 才是发布标记。
-- **脱敏**：分支名、commit message、tag message 不含治理 ID 与治理文件名；分支名 = `dev/<标题英文 slug>` 与 `test/<标题英文 slug>`，记一行入 design.md；治理层实现记录可引用 commit hash（中性回链）。
+- **脱敏与治理引用**：分支名与 tag message 不含治理 ID 与治理文件名；commit message 的 title 与 body 不含治理 ID 与治理文件名；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记 `Fixes: T-XXX`（Task 完成提交）、`Closes: P-XXX`（P 验收提交）、`Refs: P-XXX`（其余），无引用则不写 footer；分支名 = `dev/<标题英文 slug>` 与 `test/<标题英文 slug>`，记一行入 design.md；治理层实现记录可引用 commit hash（中性回链）。
 - **终局**：accept 后删除 `test/<slug>`；rejected 分环节清理。exploring / specified 未建分支，底稿 / 规格入档（标注 rejected）后删除；implementing 删 worktree 与 `dev/<slug>`；verifying 删 `test/<slug>`，main 零沾染（test → main 合并只发生在 accept 内）；on-hold 挂起保留（worktree 与分支挂起）。主干承载 verifying 代码，发布门槛 = tag（发布动作不入 SDD 流程）；长寿命分支定期同步主干。
 
 ## 十五、落地阶段

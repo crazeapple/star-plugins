@@ -134,7 +134,7 @@
 - **R7** 关键节点（拆任务/定稿/验收/归档）显式建议对应命令保人工确认；accept 完成回报固定建议回看需求组
 - **R8** 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；归档后只读；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）
 - **R9** 跨周期修正禁只改代码，走 amendments/
-- **R10** 分支开发主干发布：split 从 main 切 `dev/<标题 slug>` 并建 worktree 开发（分支名不含治理 ID 与治理文件名），代码在分支、治理文档只在主干由主会话写，test / dev 检出中 sdd/ 只读；分支提交以 Task 为界、Task 完成即提交；全任务 done 从 main 切 `test/<标题 slug>` 合并 dev 代码，删除 worktree 与 dev 分支，列 AC 清单交用户在主工作区检出 test 人工测试；accept：AC 核对确认（未全过回 Task 修正）→ 合并 test → main 发布 → 治理提交 → 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话）→ 删 test 分支；rejected 分环节清理（未建分支删文档 / implementing 删 dev 与 worktree / verifying 删 test），main 零沾染，on-hold 挂起保留；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
+- **R10** 分支开发主干发布：split 从 main 切 `dev/<标题 slug>` 并建 worktree 开发（分支名不含治理 ID 与治理文件名），代码在分支、治理文档只在主干由主会话写，test / dev 检出中 sdd/ 只读；分支提交以 Task 为界、Task 完成即提交；全任务 done 从 main 切 `test/<标题 slug>` 合并 dev 代码，删除 worktree 与 dev 分支，列 AC 清单交用户在主工作区检出 test 人工测试；accept 时 AC 核对确认（未全过回 Task 修正）→ 合并 test → main 发布 → 治理提交 → 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话）→ 删 test 分支；rejected 分环节清理（未建分支删文档 / implementing 删 dev 与 worktree / verifying 删 test），main 零沾染，on-hold 挂起保留；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，如 `Fixes: T-XXX`（Task 完成提交）、`Closes: P-XXX`（P 验收提交）；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
 
 ### 自治边界（判断自动，动作守门；写入宪法）
 
@@ -327,7 +327,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   - ⑤ 写改 sdd 文档后运行 mdLint，零 error 方可回报
   - ⑥ 归档后 sdd 全区只读
   - ⑦ 命令文件（`.claude/commands/*.md`）新增或删除后必须同步增删 `.opencode/commands/` 同名存根，`description` 变更须同步存根描述行，正文永不复制
-  - ⑧ 治理文档只在主干演进：代码在 `dev/<标题 slug>` 分支开发、`test/<标题 slug>` 分支验收（split 切 dev、全任务 done 合并 test、accept 发布主干），治理文档只在主干由主会话写
+  - ⑧ 治理文档只在主干演进：代码在 `dev/<标题 slug>` 分支开发、`test/<标题 slug>` 分支验收（split 切 dev、全任务 done 合并 test、accept 发布主干），治理文档只在主干由主会话写；提交信息 title 与 body 不含治理 ID，需要引用时按 trailer 惯例置 footer（如 `Fixes: T-XXX`）
 
 - **INDEX 结构**：项目状态行 → 发号计数器（next-P/next-T）→ 提案总览单表（ID/标题/规模（S≤5 任务 / M 6-20 / L>20，未预判留空）/状态/任务进度 done/total（如 3/8）/规格版本/更新日期/备注；不设来源列，组归属由 frontmatter `source` 推导）。
 
