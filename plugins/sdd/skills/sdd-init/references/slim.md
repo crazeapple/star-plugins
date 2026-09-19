@@ -171,7 +171,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
   | sdd-intake | Capture a new requirement, or continue planning an in-flight proposal, until it is split into concrete tasks; vague ideas park in the INDEX intention list | 新念头与需求受理（含插单）、在途 P 继续规划 | 可选：需求 / 念头描述 / P-XXX（在途 P 重入） | 一问分类：维护直接做并结束；受理或重入 → 探索澄清 + 定稿软门 + 拆 T（exploring→implementing 行）；尚模糊 → 意向小节加行 |
-  | sdd-start | Implement tasks from the design task list | 实现推进（默认顺序循环至全 done；可派发并行） | 可选：P-XXX / T-XXX（P-XXX 多 P 在途时消歧；T-XXX 指定先做某个 Task） | 推进模式：按任务表顺序取下一个 todo T（doing → 实现 → 回填实现记录 → done）循环至全 done → INDEX 更新 + 列 AC 清单 + 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept；T-XXX 指定则优先该 Task；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
+  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX → 从首个未完成 T 起依次推进（doing → 实现 → 回填实现记录 → done）至全部完成；接 T-XXX → 仅该 Task；缺省 → 下一个 todo T；全任务 done → INDEX 更新 + 列 AC 清单 + 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
   | sdd-board | Show proposal status overview | 查看状态（只读） | 可选：P-XXX | 无矩阵行：读 INDEX 输出摘要（首行自报 edition 与版本），不改任何文档 |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收 | 必填：P-XXX | implementing→accepted 行；完成回报建议受理下一个需求 |
 
