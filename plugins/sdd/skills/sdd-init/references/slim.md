@@ -53,7 +53,7 @@
 - **implementing 进入门槛（/sdd-intake 拆分前软门）**：AC 全部可核对、范围内外明确、方案要点与关键选型已定、无疑虑；任一不满足则继续探索对话，不拆分、状态不动。
 - Task：`todo / doing / blocked / done / dropped`（转换 `todo → doing → blocked → todo / done`；done、dropped 为终态；doing 即锁定，禁重复派发）。design：`draft → finalized`。
 - **Task 质量要求**：Task 必须是具体、可直接执行的实现单元；探索、调研、决策类事项记录于 journal 与关键决策表，禁止立为 Task。
-- **代码与 Task 绑定**：项目功能实现代码必须挂在 design 任务清单的具体 Task 上；Task 未拆分（exploring）禁止写实现代码，仅产出规格与探索记录；代码随 Task 执行写入，验收未过回对应 Task 修正，禁止绕过 Task 直接改码。
+- **代码与 Task 绑定**：项目功能实现代码必须挂在 design 任务清单的具体 Task 上；Task 未拆分（exploring）禁止写实现代码，仅产出规格与探索记录；代码随 Task 执行写入；验收未过的缺陷修复提交按 footer 规则记 `Fixes: T-XXX` 回链 Task。
 
 ## 受理与分流
 
@@ -72,8 +72,8 @@
 | 构想成熟受理为 P | 发 P 号建档，原构想行移除 |
 | exploring→implementing（/sdd-intake 拆分完成时） | 定稿软门自查（对话内：AC 填实、方案已定、无疑虑）→ 任务表拆分（任务须具体可执行，禁探索性任务）+ INDEX 更新 |
 | 任一 Task 状态变化（/sdd-start） | 仅更新 design 任务表 + 任务详情小节回填 |
-| 全任务 done | INDEX 更新 + 列出全部验收项（AC 清单）+ 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept |
-| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对（未全过不置 accepted，回对应 Task 修正）+ design 置 finalized + journal 节冻结 + INDEX 更新 |
+| 全任务 done | INDEX 更新 + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 人工测试步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept |
+| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ design 置 finalized + 通过的验收清单表格追加 journal + journal 节冻结 + INDEX 更新 |
 | →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注；实现代码留原地，由 git 历史兜底 |
 | 定稿后需求变更 | spec 正文 + changelog + version 递增 + 受影响 Task 评估，禁静默覆盖 |
 
@@ -84,7 +84,7 @@
 - **R3** 探索与讨论实时直写 exploring/journal.md 对应 P 节（只追加、不重写历史），结论演进走 spec changelog
 - **R4** 被否备选禁删，记入 design 关键决策表，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
-- **R6** 更新任务表 + 回填 design；全任务 done 列出全部验收项（AC 清单）并提示人工测试；测试通过后 /sdd-accept
+- **R6** 更新任务表 + 回填 design；全任务 done 列出验收清单表格并提示人工测试；测试通过后 /sdd-accept
 - **R7** 验收节点显式建议 /sdd-accept 保人工确认；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，关键词随本提交对实体的作用而定，无引用则不写（Task 完成 → `Closes: T-XXX`，accept 验收提案 → `Closes: P-XXX`，验收阶段修复已完成 Task 的缺陷 → `Fixes: T-XXX`，一 Task 多提交时的非收尾提交等 → `Refs: T-XXX`）；开发过程中的自我修正不属修复语义，随所在 Task 完成提交记；footer 区可并存项目自有 trailer，也可有多个 trailer；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。
 
 ## 自治边界（判断自动，动作守门；写入宪法）
@@ -171,7 +171,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
   | sdd-intake | Capture a new requirement, or continue planning an in-flight proposal, until it is split into concrete tasks; vague ideas park in the INDEX initiative list | 新念头与需求受理（含插单）、在途 P 继续规划 | 可选：需求 / 念头描述 / P-XXX（在途 P 重入） | 一问分类：维护直接做并结束；受理或重入 → 探索澄清 + 定稿软门 + 拆 T（exploring→implementing 行）；尚模糊 → 构想小节加行 |
-  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX → 从首个未完成 T 起依次推进（doing → 实现 → 回填实现记录 → done）至全部完成；接 T-XXX → 仅该 Task；缺省 → 下一个 todo T；全任务 done → INDEX 更新 + 列 AC 清单 + 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
+  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX → 从首个未完成 T 起依次推进（doing → 实现 → 回填实现记录 → done）至全部完成；接 T-XXX → 仅该 Task；缺省 → 下一个 todo T；全任务 done → INDEX 更新 + 列验收清单表格 + 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
   | sdd-board | Show proposal status overview | 查看状态（只读） | 可选：P-XXX | 无矩阵行：读 INDEX 输出摘要（首行自报 edition 与版本），不改任何文档 |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收 | 必填：P-XXX | implementing→accepted 行；完成回报建议受理下一个需求 |
 
