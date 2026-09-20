@@ -126,7 +126,7 @@
   - ⑤ 写改 sdd 文档后运行 mdLint，零 error 方可回报
   - ⑥ 归档后 sdd 全区只读
   - ⑦ 命令文件（`.claude/commands/*.md`）新增或删除后必须同步增删 `.opencode/commands/` 同名存根，`description` 变更须同步存根描述行，正文永不复制
-  - ⑧ 治理文档只在主干演进：代码在 `dev/<标题 slug>` 分支开发、`test/<标题 slug>` 分支验收（split 切 dev、全任务 done 合并 test、accept 发布主干），治理文档只在主干由主会话写；提交信息 title 与 body 不含治理 ID，需要引用时按 trailer 惯例置 footer（如 `Fixes: T-XXX`）
+  - ⑧ 治理文档只在主干演进：代码在 `dev/<标题 slug>` 分支开发、`test/<标题 slug>` 分支验收（split 切 dev、全任务 done 合并 test、accept 发布主干），治理文档只在主干由主会话写；提交信息 title 与 body 不含治理 ID，需要引用时按 trailer 惯例置 footer（Task 完成 `Closes: T-XXX`、验收修复 `Fixes: T-XXX`、仅关联引用 `Refs: T-XXX`）；footer 区可并存项目自有 trailer，也可有多个 trailer
 
 - **INDEX 结构**：项目状态行 → 发号计数器（next-P/next-T）→ 提案总览单表（ID/标题/规模（S≤5 任务 / M 6-20 / L>20，未预判留空）/状态/任务进度 done/total（如 3/8）/规格版本/更新日期/备注；不设来源列，组归属由 frontmatter `source` 推导）。
 

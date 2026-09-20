@@ -85,7 +85,7 @@
 - **R4** 被否备选禁删，记入 design 关键决策表，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
 - **R6** 更新任务表 + 回填 design；全任务 done 列出全部验收项（AC 清单）并提示人工测试；测试通过后 /sdd-accept
-- **R7** 验收节点显式建议 /sdd-accept 保人工确认；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，如 `Fixes: T-XXX`（Task 完成提交）、`Closes: P-XXX`（P 验收提交）；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。
+- **R7** 验收节点显式建议 /sdd-accept 保人工确认；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，关键词随本提交对实体的作用而定，无引用则不写（Task 完成 → `Closes: T-XXX`，accept 验收提案 → `Closes: P-XXX`，验收阶段修复已完成 Task 的缺陷 → `Fixes: T-XXX`，一 Task 多提交时的非收尾提交等 → `Refs: T-XXX`）；开发过程中的自我修正不属修复语义，随所在 Task 完成提交记；footer 区可并存项目自有 trailer，也可有多个 trailer；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。
 
 ## 自治边界（判断自动，动作守门；写入宪法）
 
@@ -162,7 +162,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 - ④ 被否备选记入 design 关键决策表，禁删漏记
 - ⑤ 写改 sdd 文档后运行 mdLint，零 error 方可回报
 - ⑥ 命令文件（`.claude/commands/*.md`）新增或删除后必须同步增删 `.opencode/commands/` 同名存根，`description` 变更须同步存根描述行，正文永不复制
-- ⑦ 代码提交前通过项目提交前校验；提交信息 title 与 body 不含治理 ID，需要引用时按 trailer 惯例置 footer（如 `Fixes: T-XXX`）；push 永远手动
+- ⑦ 代码提交前通过项目提交前校验；提交信息 title 与 body 不含治理 ID，需要引用时按 trailer 惯例置 footer（Task 完成 `Closes: T-XXX`、验收修复 `Fixes: T-XXX`、仅关联引用 `Refs: T-XXX`）；footer 区可并存项目自有 trailer，也可有多个 trailer；push 永远手动
 
 ## 五、命令规格表（slim，4 命令；description 英文单源）
 
