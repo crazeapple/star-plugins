@@ -156,7 +156,7 @@ sdd/
   | ③ | 模板 ×4（纯复制）、tools/mdlint.sh（纯复制）、archive/README | 近乎零 |
   | ④ | OpenCode 适配 ×10 | opencode-adapter 全文 |
 
-- **串行屏障**：CLAUDE.md 最后由主会话写（引用全部生成物）；汇合后必须由主会话执行「验证与回报」全量校验（mdLint 全量重跑 + 交叉一致），通过后两次 git 提交。
+- **串行屏障**：`sdd/runtime/claude.md` 与 CLAUDE.md 最后由主会话写（引用全部生成物）；汇合后必须由主会话执行「验证与回报」全量校验（mdLint 全量重跑 + 交叉一致），通过后按治理形态提交（§十八）。
 - **计时回报**：起始时间戳（`date +%s`）记于前置检查起点，收尾取结束时间戳算差值；最终回报含「初始化耗时」，仅报总时长（人类可读格式），不分阶段。
 - **一致性来源**：并行不破坏逐字纪律，各组照抄单源规格，交叉一致由全量校验兜底。
 - **成本核算**：各组自读规格合计约 9-10k input tokens（串行生成约 6k），差额以美分计，换取生成时长约减半；主会话不读规格、不持有生成文件全文，上下文更省。
@@ -168,7 +168,7 @@ sdd/
 - **粒度与时机**：分支以 P-XXX 为单位、双分支制，`dev/<标题英文 slug>`（开发）与 `test/<标题英文 slug>`（验收）。`/sdd-split` 创建（specified→implementing，可写码起点），从 main 切出 `dev/<slug>` 并建 worktree（检出 dev）；全任务 done（verifying）：从 main 切出 `test/<slug>`、合并 `dev/<slug>` 入 test、删除 worktree 与 dev 分支，代码进入验收，worktree 使命终结。两级并行：分支 = P（提案间），分支内派发-回收子 Agent = T（提案内）。
 - **载体统一 worktree**：`git worktree add .worktree/<标题英文 slug> -b dev/<标题英文 slug>` 创建（分支 + 工作区一步，目录名与分支名同源）；`.worktree/` 入 `.gitignore`；主工作区常驻主干；验收测试在主工作区检出 `test/<slug>` 进行（主工作区即用户可运行环境）；单/多 Agent 同一机制，无例外。
 - **治理文档主干单线**：sdd/ 全部治理文档只在主干由主会话写；分支只承载实现代码。git 拓扑映射治理架构：代码层并行（分支），治理层串行（主干）。会话工作目录不设限，以路径锁定「什么写在哪」：治理文档写主工作区，代码写 worktree；test / dev 检出中的 sdd/ 一律只读，治理写入回主工作区 main。
-- **提交**：治理文档由状态转换命令收尾自动提交主干（信息现场自拟，遵循脱敏与治理引用约定）；dev 分支代码提交以 Task 为界，单个提交不混多 Task 改动，Task 完成即提交、一 Task 可多提交；test 分支的修复提交随验收产生；代码合入主干发生在全任务 done 的 verifying 转换（合并 dev → test，accept 发布 test → main），accept 不再合并代码；交付 hash（dev → test 合并）记入 design.md；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
+- **提交**：治理文档由状态转换命令收尾自动提交主干（信息现场自拟，遵循脱敏与治理引用约定；落仓按治理形态，见 §十八）；dev 分支代码提交以 Task 为界，单个提交不混多 Task 改动，Task 完成即提交、一 Task 可多提交；test 分支的修复提交随验收产生；代码合入主干发生在全任务 done 的 verifying 转换（合并 dev → test，accept 发布 test → main），accept 不再合并代码；交付 hash（dev → test 合并）记入 design.md；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；push 永远手动。
 - **tag**：accept 收尾（治理提交之后）打 annotated tag，版本格式于首次 tag 时询问用户定型，CalVer（`YYYY.M.D` 验收日，同日多验收追加当日序号）或 SemVer（`vX.Y.Z`，按变化递增）；信息 = 相对上一版本的功能变化一句话（遵循脱敏约束）。tag = 发布门槛：主干可短暂承载 verifying 代码，打 tag 才是发布标记。
 - **验收清单表格**：全任务 done 时主会话列出（五列：AC / 验收标准 / 证据 / 人工测试步骤 / 结论；验收标准与 spec 逐字一致），会话输出不落盘，供用户人工测试；accept 逐条以实际证据核对（结论通过置 ✅），通过后整表追加 journal 作为验收记录；未全过不置 accepted，Task 保持 done，缺陷修复提交以 footer 记 `Fixes: T-XXX` 回链 Task。
 - **脱敏与治理引用**：分支名与 tag message 不含治理 ID 与治理文件名；commit message 的 title 与 body 不含治理 ID 与治理文件名；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，关键词随本提交对实体的作用而定，无引用则不写（Task 完成 → `Closes: T-XXX`，accept 验收提案 → `Closes: P-XXX`，验收阶段修复已完成 Task 的缺陷 → `Fixes: T-XXX`，一 Task 多提交时的非收尾提交等 → `Refs: T-XXX`）；开发过程中的自我修正不属修复语义，随所在 Task 完成提交记；Task 完成只记代码侧提交，主干治理提交不重复记；footer 区可并存项目自有 trailer，也可有多个 trailer；分支名 = `dev/<标题英文 slug>` 与 `test/<标题英文 slug>`，记一行入 design.md；治理层实现记录可引用 commit hash（中性回链）。
@@ -177,28 +177,65 @@ sdd/
 ## 十五、落地阶段
 
 1. **设计**：本文件即设计总纲，交仓库所有者审阅。
-2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现，含 SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh，后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。edition 体系（§十七）落笔时增补：references 增 `slim.md`（slim 生成 / 校准 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。
+2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现，含 SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh，后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。edition 体系（§十七）落笔时增补：references 增 `slim.md`（slim 生成 / 校准 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。治理形态（§十八）落笔时增补（2.0.0）：统一结构重组（runtime ×2、CLAUDE.md / AGENTS.md 改项目骨架），references ×5 与 PROMPT-SDD 增形态分支，`scripts/` 增 `pre-commit-inner.sh`（内层 hook 变体），生成计数 inline full 31 / standalone 32、slim 20 / 21。
 
 ## 十六、插件生命周期：升级与卸载
 
-- **零运行时耦合与卸载裁决**：插件唯一内容是 sdd-init skill，初始化把治理体系复制进目标项目后即断奶，命令、工具、hook 全在项目侧，日常运转不回调插件。卸载插件对已初始化项目零影响，仅失去后续升级通道；**不做项目级拆除**（含清单文档），项目停用体系删除生成文件即可，`pre-commit.sh` 首行 `[ -f sdd/tools/mdlint.sh ] || exit 0` 自防御（删 `sdd/` 后 hook 自动静默放行，不断链），git 历史保全一切，CLAUDE.md 是项目活文档、插件规格不越权处置。
+- **零运行时耦合与卸载裁决**：插件唯一内容是 sdd-init skill，初始化把治理体系复制进目标项目后即断奶，命令、工具、hook 全在项目侧，日常运转不回调插件。卸载插件对已初始化项目零影响，仅失去后续升级通道；**不做项目级拆除**（含清单文档），项目停用体系删除生成文件即可，`pre-commit.sh` 首行 `[ -f sdd/tools/mdlint.sh ] || exit 0` 自防御（删 `sdd/` 后 hook 自动静默放行，不断链），git 历史保全一切，`sdd/runtime/claude.md` 是治理活文档、插件规格不越权处置。
 - **升级 = sdd-init 升级模式（一个入口两种模式）**：前置检查检测到全套签名文件齐全 → 转「就地合并」而非冲突停止；任一缺失 → 照旧冲突停止并列缺失项，部分存在不触发升级。签名清单、校准细则、验证与回报规格落于 `references/upgrade.md`。
 - **环境重建**：项目在新主机 clone（或 `.git/` 重建）后，客户端 hook 不随 git 目录迁移，`.git/hooks/pre-commit` 必然缺失，运行态齐全，重跑 sdd-init 即命中升级模式并补装 hook（pre-commit 不入签名集，缺失不碍触发）；此属预期动作，非体系损坏。
-- **校准三档**：机械资产静默覆盖（mdlint.sh、pre-commit hook 重装、模板 ×4、命令 ×7、OpenCode 配置与存根）；保护性写入（`.gitignore` 逐行补缺、`AGENTS.md` 与 CONSTITUTION 规格重生成 + 项目名回填、CONSTITUTION 生效日期保留原值）；活文档仲裁（CLAUDE.md 骨架节按规格重写，被改写处以规格为准并在回报逐项列出；项目填写三字段回读保留，自有增补节原样保留）；运行态禁触（INDEX、INITIATIVE、amendments/amend.md 内容与 specs/、exploring/、journal、archive/ 全部，骨架仅锚点只读比对，差异报告提示人工迁移，禁自动改）。
+- **校准三档**：机械资产静默覆盖（mdlint.sh、pre-commit hook 重装、standalone 内层 hook 重装、模板 ×4、命令 ×7、OpenCode 配置与存根）；保护性写入（`.gitignore` 逐行补缺或 standalone 排除清单维护、`AGENTS.md`、`sdd/runtime/claude.md` 与 CONSTITUTION 规格重生成 + 项目名回填、CONSTITUTION 生效日期保留原值）；活文档仲裁（`sdd/runtime/claude.md` 骨架节按规格重写，CLAUDE.md 公开骨架一并重写，被改写处以规格为准并在回报逐项列出；项目填写三字段回读保留，自有增补节原样保留）；运行态禁触（INDEX、INITIATIVE、amendments/amend.md 内容与 specs/、exploring/、journal、archive/ 全部，骨架仅锚点只读比对，差异报告提示人工迁移，禁自动改）。
 - **版本标记 `sdd/VERSION`**：纯文本单行，内容 = 初始化时插件清单 `plugin.json` 的 `version` + `+edition`（如 `0.2.0+full`，edition 取值见 §十七）；非 `.md`，mdLint 不涉、hook 辖区不拦；入生成清单与第一次提交。用途仅为回报与快速判断；**升级行为永不依版本值分支**：缺失或损坏按旧版安装处理，照常全量校准并回报注明。
 - **幂等**：校准按「现行规格 vs 磁盘现状」状态化执行，不询问必填项（从既有文件回读，回读失败为唯一询问点）；升级可安全重跑，中断恢复 = 直接重跑。
-- **执行策略**：两路并行，组 U① 治理组（CONSTITUTION 重生成 + INDEX / INITIATIVE / amend.md 骨架锚点只读比对），组 U② 机械资产组（命令 ×7、模板 ×4、mdlint.sh、hook、OpenCode 适配 ×10）；CLAUDE.md 仲裁、全量验证、提交与回报由主会话操盘，CLAUDE.md 最后写（同 init 串行屏障）；不支持 subagents 时按 U① → U② → 主会话串行。
+- **执行策略**：两路并行，组 U① 治理组（CONSTITUTION 重生成 + INDEX / INITIATIVE / amend.md 骨架锚点只读比对），组 U② 机械资产组（命令 ×7、模板 ×4、mdlint.sh、hook 含 standalone 内层变体、OpenCode 适配 ×11）；runtime/claude.md 仲裁、全量验证、提交与回报由主会话操盘，runtime/claude.md 与 CLAUDE.md 最后写（同 init 串行屏障）；不支持 subagents 时按 U① → U② → 主会话串行。
 - **收尾**：复用 init 全量验证（零 error + 交叉一致），提交按实际变更分两批、零变更批次跳过；前置校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止；回报含版本去向、仲裁记录、骨架差异报告与升级耗时。
 
 ## 十七、edition 体系（slim / full）
 
 - **定位与判据**：sdd 提供两个 edition，**full（完整版）**与 **slim（精简版，full 的真子集）**。edition 选择由用户决定，任何项目均可选任一 edition；以下判据仅为**建议性参考**，辅助自评，即 **需求明确性**（需求是否具体明确）、**探索与验证节奏**（是否需要探索与方案对比，还是快速验证迭代，探索越重越适合 full）、**规模 × 时间**（开发周期越长，文档治理往往要求越严格规范以防随开发腐化，规模越大越适合 full）。一般而言 slim 适合需求明确、规模可控、追求快速验证的项目；维度偏重时更推荐 full。
 - **术语**：概念英文名 edition（单用不译）；取值 `slim` / `full`；中文行文组合译「版」，即 slim 版 / full 版。
-- **单插件选 edition**：不做独立插件；sdd-init 初始化时选 edition（**默认 slim**：slim 可升 full 而反向无通道，默认取可逆方向），全部询问项默认兜底、无硬阻塞停止点（项目定位以候选制提供，标注默认，未答取默认）。slim 命令与 full 同名且为子集（intake / start / board / accept）；slim 规格独立成篇 `references/slim.md`（无条件分支、standalone），**edition 分叉只发生在 SKILL.md dispatch 层**，按 edition 决定读哪套规格，full 侧 references 一字不改。
+- **单插件选 edition**：不做独立插件；sdd-init 初始化时选 edition（**默认 slim**：slim 可升 full 而反向无通道，默认取可逆方向），全部询问项默认兜底、无硬阻塞停止点（项目定位以候选制提供，标注默认，未答取默认）。slim 命令与 full 同名且为子集（intake / start / board / accept）；slim 规格独立成篇 `references/slim.md`（无条件分支、自成一篇），**edition 分叉只发生在 SKILL.md dispatch 层**，按 edition 决定读哪套规格，full 侧 references 一字不改。
 - **不变量与裁剪准则**：状态单一权威源（INDEX）、mdLint + pre-commit 机械兜底、需求 / 维护分类、验收标准 + 变更留痕，任何 edition 不可裁；裁剪准则 = 裁仪式，不裁纪律、权威与能力。
 - **git 拓扑按 edition**：分支拓扑（`dev/<slug>` 开发 + `test/<slug>` 验收 + worktree + 合并链）为 full 载体；slim 无分支、主工作区直写（主工作区即测试环境），rejected 代码由 git 历史兜底。通用的是验收语义链与纪律，不是拓扑；分支治理需求出现时升级 full 版。
 - **状态值子集**：slim 状态值 ⊆ full 状态值，不新造状态词（P：`exploring → implementing → accepted`，旁路 `on-hold` / `rejected`；`specified` / `verifying` 不用于 slim）；值不合适时改 full 对齐，运行态永无跨 edition 未知状态。
 - **单向可升**：slim → full 单向升级，无降档（文档不涉及降档）；切换频率极低，价值主体 = 初始选 edition + slim 常驻。
 - **升级闸门**：升 full 版要求周期空闲，INDEX 存在非终态 P（`exploring` / `implementing` / `on-hold`）时拒绝切换并回报「请完成当前需求周期后再升级」，**无 override**；同 edition 校准（含环境重建）不设周期闸门（幂等 + 运行态禁触 + 索引干净预检已覆盖）。
-- **识别与可见面**：权威源 = `sdd/VERSION` 单行 `version+edition`（如 `0.2.0+slim`，格式 `^[0-9]+\.[0-9]+\.[0-9]+\+(slim|full)$`，识别取 `+` 后段，full 不省略后缀）；显示层为派生写入，CLAUDE.md 头部溯源行（`sdd@star-plugins <版本> · edition：slim`，缺席命令解释置于命令一览节补充说明）、CONSTITUTION 头部溯源行（`sdd@star-plugins <版本> · edition：slim`）、命令输出自报 edition。版本值永不参与分支；**升 edition 判据不由数据自动触发**（否决 INDEX 规模列自动升档建议）。
+- **识别与可见面**：权威源 = `sdd/VERSION` 单行 `version+edition`（如 `0.2.0+slim`，格式 `^[0-9]+\.[0-9]+\.[0-9]+\+(slim|full)$`，识别取 `+` 后段，full 不省略后缀）；显示层为派生写入，`sdd/runtime/claude.md` 头部溯源行（`sdd@star-plugins <版本> · edition：slim`，缺席命令解释置于命令一览节补充说明）、CONSTITUTION 头部溯源行（`sdd@star-plugins <版本> · edition：slim`）、命令输出自报 edition。版本值永不参与分支；**升 edition 判据不由数据自动触发**（否决 INDEX 规模列自动升档建议）。
 - **升级入口**：不新增 upgrade 命令，§十六「一个入口两种模式」扩展为前置检查四出口 dispatch（全新 / slim 命中 / full 命中 / 冲突即停）；slim 命中走单问题默认兜底（回车 = slim 原地校准，显式确认 = 升 full 版）；slim 校准与升 full 版规格落 `references/slim.md`，upgrade.md 承载 edition 路由。
+- **与治理形态正交**：edition 与治理形态（§十八）两轴独立，init 一并选定；slim → full 升级保形态不换仓。
+
+## 十八、治理形态（inline / standalone）
+
+- **定位与术语**：治理形态描述治理资产与项目仓的归置关系，与 edition 轴正交，init 一并选定。取值 **inline / standalone**，单用不译，中文组合「内联 / 独立」。init 选项行固定为 `治理形态：inline 仓（内联，随项目仓，默认）/ standalone 仓（独立，单独治理仓；init 后不可切换，项目需对外无痕或治理不入项目仓时选此）`。
+- **默认与不可切换**：默认 inline，多数项目的自然期望，且与既有安装行为一致。形态 init 后不可切换、无升降通道，升级模式永远维持当前形态；既有低版本安装一律视为 inline；standalone 仅新项目 init 可选；逃生口 = 重装（治理内容纯文本手工带走、重跑 init 选另一形态、原仓历史留档）。
+- **形态判定**：`sdd/` 为独立 git 仓即 standalone，否则 inline，结构自描述、无标记字段。治理资产的本地目录恒为 `sdd/`，与形态无关；远程仓名规格不作约定。
+- **统一结构（2.0.0 重组）**：两形态同一棵目录树，治理内容全部在 `sdd/`，内部按 edition 分叉、与形态无关。原 CLAUDE.md 骨架六节的 sdd 部分移入 `sdd/runtime/claude.md`（头部承载 edition 溯源行），原 AGENTS.md 适配内容移入 `sdd/runtime/opencode.md`；CLAUDE.md 与 AGENTS.md 改为项目骨架（项目名、定位一句话、智能体协作声明，公开内容零 sdd 痕迹），三字段回读两形态都从公开 CLAUDE.md 骨架读取；`opencode.json` 增 `instructions` 加载 runtime 两文件；standalone 增 `CLAUDE.local.md` 指针（`@sdd/runtime/claude.md`）与内层仓（`sdd/` 即内层仓根）。本文件此前各节的「CLAUDE.md 骨架 / CLAUDE.md 仲裁」表述自本节起由 `sdd/runtime/claude.md` 承接。
+- **差异清单（形态差异仅此 10 条）**：
+
+  1. `CLAUDE.local.md` 仅 standalone 生成（指针文件，内容 `@sdd/runtime/claude.md`）。
+  2. `CLAUDE.md` 差一行 `@sdd/runtime/claude.md`，inline 有、standalone 无（公开文件零 sdd 痕迹）。
+  3. `.gitignore`：inline 三行惯例照写，standalone 一字不动。
+  4. 提交去向：inline 一切随项目仓；standalone 治理提交 `git -C sdd` 落内层仓，代码、分支、worktree、tag 永远在外层项目仓。
+  5. standalone 排除清单写 `.git/info/exclude` 六行，自足、不依赖项目 `.gitignore`：`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`。
+  6. init 提交：inline 两笔（full 21+10、slim 13+7）；standalone 项目仓一笔中性 message（仅 CLAUDE.md + AGENTS.md，无 sdd 字样）+ 内仓一笔全量。
+  7. 内层 hook 仅 standalone：`sdd/.git/hooks/pre-commit` 按辖区变体生成（内层仓根即治理根，全部 `.md` 入检，首行自防御 `[ -f tools/mdlint.sh ] || exit 0`）。
+  8. 脱敏：inline 常规（title/body 无治理 ID、footer 治理引用照记）；standalone 项目仓无痕化（footer 治理引用一律不记、message 中性、分支名与 tag message 照常脱敏）；内层仓提交不设治理引用与脱敏条款（纯文档仓，代码与文档的关联不复存在）。
+  9. init 验证与回报带形态变体（文件数、笔数、exclude、内层 hook、CLAUDE.local.md）。
+  10. 升级按 `sdd/.git` 判形态；standalone 校准治理提交 `git -C sdd`、项目仓零治理提交（公开骨架变更例外，中性 message）、内层 hook 重装；inline 旧安装一次性迁移（规格见 upgrade.md）。
+
+- **生成计数**：inline full 31 / slim 20；standalone full 32 / slim 21（= 现基线 + runtime ×2，standalone 再 +CLAUDE.local.md，实现时逐文件核对）。
+- **八面表（init 判据素材）**：
+
+  | 受影响面 | inline | standalone |
+  |---|---|---|
+  | 治理仓与项目仓关系 | 同仓共存 | 另立两仓并存 |
+  | 项目仓可见性 | 治理文件入库可见 | 零痕迹 |
+  | 历史结构 | 治理与项目同线 | 两段独立历史 |
+  | 协作者视角 | clone 开箱可用 | 只见干净项目 |
+  | 脱敏强度 | 常规 | 无痕化 |
+  | 跨机恢复 | 一条 clone | 两条 clone + 重跑 init |
+  | 生命周期 | 与项目仓同生共死 | 治理仓独立存续 |
+  | 权限面 | 与项目协作者一致 | 可错开（治理仓私有、项目仓开源） |
+
+- **工作流不变式**：治理形态不改变 slim / full 的任何工作流语义，状态转换矩阵、会话微流程、Git 工作流各节仍为唯一描述源；形态仅改上列 4 / 8 两条。tag 永远打在外层项目仓（代码发布）；standalone 下 `sdd/` 不在任何分支里，「检出中 sdd/ 只读」自然成立。
+- **跨机恢复**：inline = clone 项目仓；standalone = clone 项目仓 + `git clone <治理仓> sdd/` + 重跑 init 补齐机械资产。

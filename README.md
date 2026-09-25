@@ -6,7 +6,7 @@ Claude Code 插件 monorepo：一个 marketplace（`star-plugins`），多个插
 
 | 插件 | 状态 | 说明 |
 |---|---|---|
-| `sdd` | 可用 | SDD 需求治理体系：在任意目标项目一键生成治理体系（slim / full 双 edition，slim 精简真子集、单向可升；选型判据仅供参考）并适配 OpenCode |
+| `sdd` | 可用 | SDD 需求治理体系：在任意目标项目一键生成治理体系（slim / full 双 edition，slim 精简真子集、单向可升；inline / standalone 双治理形态，standalone 治理另立仓、项目仓零痕迹）并适配 OpenCode |
 | `src-reading` | 规划中 | 尚未开工 |
 | `ctx-alarm` | 规划中 | 尚未开工 |
 
@@ -21,7 +21,7 @@ Claude Code 插件 monorepo：一个 marketplace（`star-plugins`），多个插
 
 ## sdd 插件
 
-- **skill `sdd-init`**：可移植初始化器，在任意目标项目生成整套 SDD 治理体系（治理文档 / mdLint 工具 / 命令 / CLAUDE.md；**slim / full 双 edition**：slim 精简真子集，需求明确、规模可控时选用，单向可升）、完成 OpenCode 适配并安装 `.git/hooks/pre-commit` 提交兜底
+- **skill `sdd-init`**：可移植初始化器，在任意目标项目生成整套 SDD 治理体系（`sdd/` 治理文档与 runtime / mdLint 工具 / 命令 / 项目骨架 CLAUDE.md 与 AGENTS.md；**slim / full 双 edition**：slim 精简真子集，需求明确、规模可控时选用，单向可升；**inline / standalone 双治理形态**：inline 治理随项目仓，standalone 治理另立 `sdd/` 内层仓、项目仓零痕迹，init 后不可切换）、完成 OpenCode 适配并安装 `.git/hooks/pre-commit` 提交兜底
 - **hook（提交兜底，纪律机制化）**：sdd-init 装进目标项目 `.git/hooks/pre-commit`，提交时对 staged 辖区 `.md` 跑 mdLint，有 error 阻止提交（三端通用：Claude Code、OpenCode、人工提交）
 - 插件**不含**工作流命令：命令由 sdd-init 生成于目标项目内（`.claude/commands/`），避免与项目内命令重复，且 OpenCode 存根依赖项目内文件
 
@@ -75,5 +75,5 @@ star-plugins/
 | 设计 | `DESIGN-SDD.md`（十六节总纲：命名体系 / Initiative-Proposal-Task 三层 / 两路流程 / 判据测试 / 自治阶梯 / 执行策略 / Git 工作流 / 生命周期） |
 | 可移植提示词 | `PROMPT-SDD.md`（单文件版，与 DESIGN-SDD 同源） |
 | marketplace | `.claude-plugin/marketplace.json`（`star-plugins`：当前仅收录 `sdd`） |
-| 插件 | `plugins/sdd/`：sdd-init（29 文件生成规格：constitution-design / command-specs / opencode-adapter / upgrade + 模板 ×4）+ pre-commit 提交兜底 |
+| 插件 | `plugins/sdd/`：sdd-init（生成规格 references ×5：constitution-design / command-specs / opencode-adapter / upgrade / slim + 模板 ×6 + hook 脚本 ×2）+ pre-commit 提交兜底 |
 | 仓库指引 | `CLAUDE.md` / `README.md` |
