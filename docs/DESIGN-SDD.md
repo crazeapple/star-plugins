@@ -177,7 +177,7 @@ sdd/
 ## 十五、落地阶段
 
 1. **设计**：本文件即设计总纲，交仓库所有者审阅。
-2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现，含 SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh，后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。edition 体系（§十七）落笔时增补：references 增 `slim.md`（slim 生成 / 校准 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。治理形态（§十八）落笔时增补（2.0.0）：统一结构重组（runtime ×2、CLAUDE.md / AGENTS.md 改项目骨架），references ×5 与 PROMPT-SDD 增形态分支，`scripts/` 增 `pre-commit-inner.sh`（内层 hook 变体），生成计数 inline full 31 / standalone 32、slim 20 / 21。
+2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现，含 SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh，后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。edition 体系（§十七）落笔时增补：references 增 `slim.md`（slim 生成 / 校准 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。治理形态（§十八）落笔时增补（2.0.0）：统一结构重组（runtime ×2、CLAUDE.md / AGENTS.md 改项目骨架），references ×5 与 PROMPT-SDD 增形态分支，`scripts/` 增 `pre-commit-inner.sh`（内层 hook 变体），生成计数 inline full 31 / standalone 32、slim 20 / 21。slim 发布标记增补（2.0.1）：accept 打 annotated tag，发布语义与 full 对齐（§十七）。
 
 ## 十六、插件生命周期：升级与卸载
 
@@ -196,7 +196,7 @@ sdd/
 - **术语**：概念英文名 edition（单用不译）；取值 `slim` / `full`；中文行文组合译「版」，即 slim 版 / full 版。
 - **单插件选 edition**：不做独立插件；sdd-init 初始化时选 edition（**默认 slim**：slim 可升 full 而反向无通道，默认取可逆方向），全部询问项默认兜底、无硬阻塞停止点（项目定位以候选制提供，标注默认，未答取默认）。slim 命令与 full 同名且为子集（intake / start / board / accept）；slim 规格独立成篇 `references/slim.md`（无条件分支、自成一篇），**edition 分叉只发生在 SKILL.md dispatch 层**，按 edition 决定读哪套规格，full 侧 references 一字不改。
 - **不变量与裁剪准则**：状态单一权威源（INDEX）、mdLint + pre-commit 机械兜底、需求 / 维护分类、验收标准 + 变更留痕，任何 edition 不可裁；裁剪准则 = 裁仪式，不裁纪律、权威与能力。
-- **git 拓扑按 edition**：分支拓扑（`dev/<slug>` 开发 + `test/<slug>` 验收 + worktree + 合并链）为 full 载体；slim 无分支、主工作区直写（主工作区即测试环境），rejected 代码由 git 历史兜底。通用的是验收语义链与纪律，不是拓扑；分支治理需求出现时升级 full 版。
+- **git 拓扑按 edition**：分支拓扑（`dev/<slug>` 开发 + `test/<slug>` 验收 + worktree + 合并链）为 full 载体；slim 无分支、主工作区直写（主工作区即测试环境），rejected 代码由 git 历史兜底。通用的是验收语义链与纪律，不是拓扑；分支治理需求出现时升级 full 版。发布语义两 edition 同构：accept 打 annotated tag（full 在 main，slim 在当前分支 HEAD），tag 不属拓扑差异。
 - **状态值子集**：slim 状态值 ⊆ full 状态值，不新造状态词（P：`exploring → implementing → accepted`，旁路 `on-hold` / `rejected`；`specified` / `verifying` 不用于 slim）；值不合适时改 full 对齐，运行态永无跨 edition 未知状态。
 - **单向可升**：slim → full 单向升级，无降档（文档不涉及降档）；切换频率极低，价值主体 = 初始选 edition + slim 常驻。
 - **升级闸门**：升 full 版要求周期空闲，INDEX 存在非终态 P（`exploring` / `implementing` / `on-hold`）时拒绝切换并回报「请完成当前需求周期后再升级」，**无 override**；同 edition 校准（含环境重建）不设周期闸门（幂等 + 运行态禁触 + 索引干净预检已覆盖）。

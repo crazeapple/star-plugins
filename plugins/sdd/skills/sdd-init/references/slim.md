@@ -43,6 +43,7 @@
 - 分区治理：`sdd/specs/`（稳定区，格式严格、变更留痕，每提案一目录：spec.md 与 design.md）与 `sdd/exploring/`（探索区，含 journal.md：探索与讨论过程实时直写对应 `## P-XXX` 节；提案存活期间该节为工作区，accepted / rejected 后冻结为永久档案，只追加不重写）物理分离。
 - **不预建**运行态目录：specs/ 与 exploring/ 随首个 P 动态形成。
 - **无分支流程**：代码直接提交进项目当前分支，主工作区即测试环境；rejected 的实现代码留原地由 git 历史兜底；分支治理需求出现时升级 full 版。
+- **发布标记**：accept 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话），打在当前分支 HEAD；standalone 形态恒在外层项目仓。tag 是 ref 不是分支，与无分支零冲突；slim → full 升级时 slim 时期 tag 原样保留续写。
 
 ## 权威源、ID 与日期
 
@@ -77,7 +78,7 @@
 | exploring→implementing（/sdd-intake 拆分完成时） | 定稿软门自查（对话内：AC 填实、方案已定、无疑虑）→ 任务表拆分（任务须具体可执行，禁探索性任务）+ INDEX 更新 |
 | 任一 Task 状态变化（/sdd-start） | 仅更新 design 任务表 + 任务详情小节回填 |
 | 全任务 done | INDEX 更新 + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 人工测试步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept |
-| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ design 置 finalized + 通过的验收清单表格追加 journal + journal 节冻结 + INDEX 更新 |
+| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ design 置 finalized + 通过的验收清单表格追加 journal + journal 节冻结 + INDEX 更新 + 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话，打在当前分支 HEAD；standalone 恒在外层项目仓） |
 | →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注；实现代码留原地，由 git 历史兜底 |
 | 定稿后需求变更 | spec 正文 + changelog + version 递增 + 受影响 Task 评估，禁静默覆盖 |
 
@@ -211,7 +212,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 
 - **前置闸门**：INDEX 存在非终态 P（`exploring` / `implementing` / `on-hold`）→ 拒绝并回报「当前有进行中的提案 P-XXX（状态），请完成当前需求周期后再升级」，流程终止，无 override。
 - **触发**：slim 命中且用户显式确认升级（单问题 opt-in）。
-- **保形态**：standalone 下升 full 版全程在内层仓与既有拓扑内完成，治理提交 `git -C sdd`，不换仓、不换形态；inline 同理不换仓。
+- **保形态**：standalone 下升 full 版全程在内层仓与既有拓扑内完成，治理提交 `git -C sdd`，不换仓、不换形态；inline 同理不换仓。slim 时期的 tag 原样保留，full 时期继续累积。
 - **新增生成**：`sdd/INITIATIVE.md`（骨架见 command-specs，`next-I: 001` 起）、`sdd/amendments/amend.md`、`sdd/templates/` 增 `proposal.md` + `task.md`（纯复制自 `templates/` 顶层）、`.claude/commands/` 增 `sdd-finalize.md` + `sdd-split.md` + `sdd-archive.md`（frontmatter 照抄 `references/command-specs.md` 命令规格表）、`.opencode/commands/` 同名存根 ×3、`sdd/archive/README.md`。
 - **重生成（覆盖 slim 版）**：`sdd/CONSTITUTION.md`（按 `references/constitution-design.md` full 骨架逐字，项目名回填、生效日期保留原值）、`sdd/runtime/claude.md`（full 骨架：命令一览 ×7、溯源行改 `edition：full`、移除缺席命令解释）；`CLAUDE.md` 公开骨架不变（形态接线不变）；`sdd/INDEX.md`（**构想小节整节迁出后**按 full 骨架重写）。
 - **数据迁移（唯一一次）**：构想行逐条迁入 `INITIATIVE.md` 获发 `I-XXX`（next-I 自 001 递增，原始念头文字保留），回报列迁移对照表（构想行 → I 号）。
