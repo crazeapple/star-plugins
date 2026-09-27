@@ -43,7 +43,8 @@
 - 分区治理：`sdd/specs/`（稳定区，格式严格、变更留痕，每提案一目录：spec.md 与 design.md）与 `sdd/exploring/`（探索区，含 journal.md：探索与讨论过程实时直写对应 `## P-XXX` 节；提案存活期间该节为工作区，accepted / rejected 后冻结为永久档案，只追加不重写）物理分离。
 - **不预建**运行态目录：specs/ 与 exploring/ 随首个 P 动态形成。
 - **无分支流程**：代码直接提交进项目当前分支，主工作区即测试环境；rejected 的实现代码留原地由 git 历史兜底；分支治理需求出现时升级 full 版。
-- **发布标记**：accept 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话），打在当前分支 HEAD；standalone 形态恒在外层项目仓。tag 是 ref 不是分支，与无分支零冲突；slim → full 升级时 slim 时期 tag 原样保留续写。
+- **发布标记**：accept 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息取本次 CHANGELOG 条目首行），打在当前分支 HEAD；standalone 形态恒在外层项目仓。tag 是 ref 不是分支，与无分支零冲突；slim → full 升级时 slim 时期 tag 与 CHANGELOG 原样保留续写。
+- **CHANGELOG**：accept 收尾、打 tag 之前增补 `CHANGELOG.md`（项目根公开文件；不存在则创建，含 Keep a Changelog 风格说明头，新版本在上）。条目范围 = 本次 tag 与上一 tag 之间；内容三源锚定（本次 accepted 提案 spec「范围内」、INDEX 提案行、区间 git log 提交主题，含直接落主干的维护修复），禁凭空杜撰；分类四类「新增 / 变更 / 修复 / 移除」；统一不含治理 ID 与治理词汇；生成后随 accept 完成回报展示，用户守门可改。落仓：inline 随当前分支提交，standalone 为外层公开文件随中性 message 提交；辖区入外层 hook。
 
 ## 权威源、ID 与日期
 
@@ -78,7 +79,7 @@
 | exploring→implementing（/sdd-intake 拆分完成时） | 定稿软门自查（对话内：AC 填实、方案已定、无疑虑）→ 任务表拆分（任务须具体可执行，禁探索性任务）+ INDEX 更新 |
 | 任一 Task 状态变化（/sdd-start） | 仅更新 design 任务表 + 任务详情小节回填 |
 | 全任务 done | INDEX 更新 + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 人工测试步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept |
-| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ design 置 finalized + 通过的验收清单表格追加 journal + journal 节冻结 + INDEX 更新 + 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息为相对上一版本的功能变化一句话，打在当前分支 HEAD；standalone 恒在外层项目仓） |
+| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ design 置 finalized + 通过的验收清单表格追加 journal + journal 节冻结 + INDEX 更新 + CHANGELOG 增补本版条目（三源锚定、四类、不含治理 ID；standalone 落外层中性 message）+ 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息取本次 CHANGELOG 条目首行，打在当前分支 HEAD；standalone 恒在外层项目仓） |
 | →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注；实现代码留原地，由 git 历史兜底 |
 | 定稿后需求变更 | spec 正文 + changelog + version 递增 + 受影响 Task 评估，禁静默覆盖 |
 
@@ -115,7 +116,7 @@
 - **语法总则**：遵循 CommonMark/GFM 语法，结构符号一律半角（列表标记、链接括号、标题 `#`、表格 `|` 与 `-` 分隔行）；强调一律 `*` 禁 `_`；行内代码反引号与加粗 `**` 成对闭合；标识符与含 `*`、`_`、`<`、`&`、`~`、`|` 的片段入行内代码
 - **混排层**：中文正文标点全角（，。：；？！、（）「」）且成对闭合；中文与英文/数字/半角符号之间加一个半角空格（× 表倍数时与数字紧贴，如「模板 ×4」），标点/代码边界处不加（按渲染后中英边界判断；强调与行内代码标记不构成边界）；中文正文引用标记只用「」或半角直引号 ""；半角引号等半角符号与中文相邻时，两侧须加空格；命令、路径、代码、ID（P-001/T-001）用行内代码包裹；破折号「——」避免使用，解释性插入宁用「：」「，」「（）」或语言描述；同一句子内、同一层级不重复使用冒号（半角 `:` 与全角 `：` 同计，行首标签与 `type:` 前缀计入，括注内与表格字段除外）；commit message 与 tag message 同此规则；省略号「……」、空值占位单个 `—`（仅表格与字段）、范围号紧贴 `-`（`R1-R7`）、禁用 `–`；列表项短语结尾不加标点、整句加中文句号；表格单元格不加句号；专有名词保持原大小写（README、CLAUDE.md）；无序列表统一 `-`、有序列表统一 `1.`
 - **语义层**：算式与维度一律紧凑（`1+2`、`3-2=1`、`4×5`、`4×4 矩阵`、`n×m`）；`+`、`-`、`=` 不机械检查（区间、复合词、散文等号合法）；× 连接中文两侧加空格（状态转换 × 文档同步）；倍数写「模板 ×4」；计数比一律 `/`（3/8），`×` 禁表计数比或分隔；流程用「→」；并列用「与/·」
-- **校验**：`sh sdd/tools/mdlint.sh <文件或目录>`（POSIX sh + awk + perl，macOS 自带零依赖）。检查集按 AI 作者错误分布校准。error：反引号或 `**` 行内不配对、全角圆括号/直角引号文件级不配对；warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致（GFM 会静默补空或丢弃）。检查豁免代码围栏与行内代码内容。零 error 方可回报，warning 逐条确认或忽略。提交兜底：sdd-init 安装 `.git/hooks/pre-commit`（三端通用：Claude Code、OpenCode 与人工提交同受约束），staged 文件落于辖区（`sdd/` 下、`CLAUDE.md`、`.claude/commands/`、`AGENTS.md`、`.opencode/commands/`）时整体跑本工具，有 error 非零退出阻止提交；warning 不拦，工具缺失静默放行。
+- **校验**：`sh sdd/tools/mdlint.sh <文件或目录>`（POSIX sh + awk + perl，macOS 自带零依赖）。检查集按 AI 作者错误分布校准。error：反引号或 `**` 行内不配对、全角圆括号/直角引号文件级不配对；warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致（GFM 会静默补空或丢弃）。检查豁免代码围栏与行内代码内容。零 error 方可回报，warning 逐条确认或忽略。提交兜底：sdd-init 安装 `.git/hooks/pre-commit`（三端通用：Claude Code、OpenCode 与人工提交同受约束），staged 文件落于辖区（`sdd/` 下、`CLAUDE.md`、`CHANGELOG.md`、`.claude/commands/`、`AGENTS.md`、`.opencode/commands/`）时整体跑本工具，有 error 非零退出阻止提交；warning 不拦，工具缺失静默放行。
 
 mdlint.sh 实现后必须以下列向量自测全过方可视为达标：
 
@@ -212,7 +213,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 
 - **前置闸门**：INDEX 存在非终态 P（`exploring` / `implementing` / `on-hold`）→ 拒绝并回报「当前有进行中的提案 P-XXX（状态），请完成当前需求周期后再升级」，流程终止，无 override。
 - **触发**：slim 命中且用户显式确认升级（单问题 opt-in）。
-- **保形态**：standalone 下升 full 版全程在内层仓与既有拓扑内完成，治理提交 `git -C sdd`，不换仓、不换形态；inline 同理不换仓。slim 时期的 tag 原样保留，full 时期继续累积。
+- **保形态**：standalone 下升 full 版全程在内层仓与既有拓扑内完成，治理提交 `git -C sdd`，不换仓、不换形态；inline 同理不换仓。slim 时期的 tag 与 CHANGELOG 原样保留，full 时期继续累积。
 - **新增生成**：`sdd/INITIATIVE.md`（骨架见 command-specs，`next-I: 001` 起）、`sdd/amendments/amend.md`、`sdd/templates/` 增 `proposal.md` + `task.md`（纯复制自 `templates/` 顶层）、`.claude/commands/` 增 `sdd-finalize.md` + `sdd-split.md` + `sdd-archive.md`（frontmatter 照抄 `references/command-specs.md` 命令规格表）、`.opencode/commands/` 同名存根 ×3、`sdd/archive/README.md`。
 - **重生成（覆盖 slim 版）**：`sdd/CONSTITUTION.md`（按 `references/constitution-design.md` full 骨架逐字，项目名回填、生效日期保留原值）、`sdd/runtime/claude.md`（full 骨架：命令一览 ×7、溯源行改 `edition：full`、移除缺席命令解释）；`CLAUDE.md` 公开骨架不变（形态接线不变）；`sdd/INDEX.md`（**构想小节整节迁出后**按 full 骨架重写）。
 - **数据迁移（唯一一次）**：构想行逐条迁入 `INITIATIVE.md` 获发 `I-XXX`（next-I 自 001 递增，原始念头文字保留），回报列迁移对照表（构想行 → I 号）。
