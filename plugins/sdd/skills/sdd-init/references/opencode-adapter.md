@@ -5,7 +5,7 @@
 ## 核心原则
 
 - **唯一源（OpenCode 侧零内容创造）**：治理规则唯一源 = `sdd/runtime/claude.md`（经 `opencode.json` 的 `instructions` 加载），OpenCode 侧新增内容仅 `sdd/runtime/opencode.md` 补充壳；命令唯一源 = `.claude/commands/*.md`，存根仅作引用壳。禁止复制正文（双源漂移）、禁止软链（跨平台克隆失效）、禁止在 OpenCode 侧另建平行规则或命令内容
-- **AGENTS.md 为项目骨架**：公开面文件（项目名、定位、智能体协作声明），零 sdd 痕迹，两形态同文；不再是治理入口（治理规则经 `instructions` 直达）
+- **AGENTS.md 为项目骨架**：公开面文件（项目名、定位），零 sdd 痕迹，两形态同文；不再是治理入口（治理规则经 `instructions` 直达）
 - **本地化约定**：仅 `*.local.*` 后缀文件为机器本地；忽略机制按治理形态，inline 经 `.gitignore`、standalone 经 `.git/info/exclude`（排除清单由主会话按 SKILL.md standalone 分支写入）
 - **零侵入**：治理文件（`sdd/`、`.claude/commands/`）零改动
 
@@ -27,8 +27,6 @@
 # <项目名> · OpenCode 入口
 
 <项目定位一句话>
-
-本项目由编程智能体（Claude Code / OpenCode）协助开发。
 ```
 
 `.opencode/opencode.json`（两形态同文）：

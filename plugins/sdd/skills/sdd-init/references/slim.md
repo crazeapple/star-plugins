@@ -160,7 +160,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 
 ## 四、CLAUDE.md 与 runtime/claude.md 生成骨架（slim，最后由主会话写）
 
-**CLAUDE.md 项目骨架**（公开面，内容固定）：`# <项目名>` + 项目定位一句话（首行）+ 智能体协作声明一行（`本项目由编程智能体（Claude Code / OpenCode）协助开发。`）；inline 形态在声明行下追加 `@sdd/runtime/claude.md`，standalone 无此行（公开文件零 sdd 痕迹）。
+**CLAUDE.md 项目骨架**（公开面，内容固定）：`# <项目名>` + 项目定位一句话（首行）；inline 形态末尾追加一行 `@sdd/runtime/claude.md`，standalone 无此行（公开文件零 sdd 痕迹）。
 
 **sdd/runtime/claude.md 骨架**（治理运行时唯一内容源，slim）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本> · edition：slim`）→ 需求层级（两层 Proposal / Task）→ 会话必读（CONSTITUTION → INDEX，冷启动摘要含构想条目数）→ 命令一览（表：命令 × 用途 ×4，表下注明调用即文件名形式 `/sdd-intake` 等，并补充说明：slim 无 finalize / split / archive，定稿并入 intake、拆任务随 design 任务表、不设归档）→ 硬规则 → 路径、ID 与工程约定（分区路径、P / T 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则（7 条）：
 

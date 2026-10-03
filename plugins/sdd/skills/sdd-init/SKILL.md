@@ -61,7 +61,7 @@ description: Initialize the SDD requirements governance system in the slim or fu
 
 ```
 <项目根>/
-├── CLAUDE.md                      # 项目骨架（公开面：项目名 + 定位 + 协作声明；inline 多一行 @sdd/runtime/claude.md）
+├── CLAUDE.md                      # 项目骨架（公开面：项目名 + 定位；inline 多一行 @sdd/runtime/claude.md）
 ├── CLAUDE.local.md                # ★ 仅 standalone：指针 @sdd/runtime/claude.md
 ├── AGENTS.md                      # 项目骨架（OpenCode 侧项目入口，两形态同文）
 ├── .gitignore                     # inline：本地文件不入库 *.local.*；standalone：不写此文件

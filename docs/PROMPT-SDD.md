@@ -50,7 +50,7 @@
 
 ```
 <项目根>/
-├── CLAUDE.md                      # 项目骨架（公开面：项目名 + 定位 + 协作声明；inline 多一行 @sdd/runtime/claude.md）
+├── CLAUDE.md                      # 项目骨架（公开面：项目名 + 定位；inline 多一行 @sdd/runtime/claude.md）
 ├── CLAUDE.local.md                # ★ 仅 standalone：指针 @sdd/runtime/claude.md
 ├── AGENTS.md                      # 项目骨架（OpenCode 侧项目入口，两形态同文）
 ├── .gitignore                     # inline：本地文件不入库 *.local.*；standalone：不写此文件
@@ -328,7 +328,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
   （暂无修正案）
   ```
 
-- **CLAUDE.md 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目定位一句话（首行）+ 智能体协作声明一行（`本项目由编程智能体（Claude Code / OpenCode）协助开发。`）。公开内容零 sdd 痕迹；形态差异仅一行，inline 在声明行下追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。三字段中的项目名与定位在此，提交前校验命令属 runtime 工程约定节。
+- **CLAUDE.md 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目定位一句话（首行）。公开内容零 sdd 痕迹；形态差异仅一行，inline 末尾追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。三字段中的项目名与定位在此，提交前校验命令属 runtime 工程约定节。
 - **sdd/runtime/claude.md 骨架**（治理运行时唯一内容源，章节顺序固定，与 CLAUDE.md 同批最后由主会话写）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本> · edition：full`）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则必须含（8 条）：
   - ① INDEX 是状态唯一权威源、INITIATIVE 是构想唯一记录，变更即时同步
   - ② 新想法先分类：维护直接做；需求一律经 `/sdd-intake` 受理
@@ -362,7 +362,7 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 ### 核心原则
 
 - **唯一源（OpenCode 侧零内容创造）**：治理规则唯一源 = `sdd/runtime/claude.md`（经 `opencode.json` 的 `instructions` 加载），OpenCode 侧新增内容仅 `sdd/runtime/opencode.md` 补充壳；命令唯一源 = `.claude/commands/*.md`，存根仅作引用壳。禁止复制正文（双源漂移）、禁止软链（跨平台克隆失效）、禁止在 OpenCode 侧另建平行规则或命令内容
-- **AGENTS.md 为项目骨架**：公开面文件（项目名、定位、智能体协作声明），零 sdd 痕迹，两形态同文；不再是治理入口（治理规则经 `instructions` 直达）
+- **AGENTS.md 为项目骨架**：公开面文件（项目名、定位），零 sdd 痕迹，两形态同文；不再是治理入口（治理规则经 `instructions` 直达）
 - **本地化约定**：仅 `*.local.*` 后缀文件为机器本地；忽略机制按治理形态，inline 经 `.gitignore`、standalone 经 `.git/info/exclude`（排除清单见 §2 第三步 standalone 分支）
 - **零侵入**：治理文件（`sdd/`、`.claude/commands/`）零改动
 
@@ -384,8 +384,6 @@ pre-commit.sh 实现后必须以下列向量自测全过方可视为达标（临
 # <项目名> · OpenCode 入口
 
 <项目定位一句话>
-
-本项目由编程智能体（Claude Code / OpenCode）协助开发。
 ```
 
 `.opencode/opencode.json`（两形态同文）：

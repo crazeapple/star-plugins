@@ -179,7 +179,7 @@ sdd/
 ## 十五、落地阶段
 
 1. **设计**：本文件即设计总纲，交仓库所有者审阅。
-2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现，含 SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh，后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。edition 体系（§十七）落笔时增补：references 增 `slim.md`（slim 生成 / 校准 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。治理形态（§十八）落笔时增补（2.0.0）：统一结构重组（runtime ×2、CLAUDE.md / AGENTS.md 改项目骨架），references ×5 与 PROMPT-SDD 增形态分支，`scripts/` 增 `pre-commit-inner.sh`（内层 hook 变体），生成计数 inline full 31 / standalone 32、slim 20 / 21。slim 发布标记增补（2.0.1）：accept 打 annotated tag，发布语义与 full 对齐（§十七）。CHANGELOG 增补（2.1.0）：accept 收尾、tag 之前增补项目根 `CHANGELOG.md`（§十四），两 edition 统一，tag 信息取条目首行。test 串行与主干冻结增补（2.1.1）：test 串行（验收位唯一）、冲突一律在 test 解决、验收期内 main 代码不前进（§十四）。
+2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现，含 SKILL.md、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 INITIATIVE.md 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（mdlint.sh、pre-commit.sh，后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。edition 体系（§十七）落笔时增补：references 增 `slim.md`（slim 生成 / 校准 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。治理形态（§十八）落笔时增补（2.0.0）：统一结构重组（runtime ×2、CLAUDE.md / AGENTS.md 改项目骨架），references ×5 与 PROMPT-SDD 增形态分支，`scripts/` 增 `pre-commit-inner.sh`（内层 hook 变体），生成计数 inline full 31 / standalone 32、slim 20 / 21。slim 发布标记增补（2.0.1）：accept 打 annotated tag，发布语义与 full 对齐（§十七）。CHANGELOG 增补（2.1.0）：accept 收尾、tag 之前增补项目根 `CHANGELOG.md`（§十四），两 edition 统一，tag 信息取条目首行。test 串行与主干冻结增补（2.1.1）：test 串行（验收位唯一）、冲突一律在 test 解决、验收期内 main 代码不前进（§十四）。公开骨架减负（2.1.2）：CLAUDE.md 与 AGENTS.md 项目骨架删去智能体协作声明行（入口自解释，最小公开面）（§十八）。
 
 ## 十六、插件生命周期：升级与卸载
 
@@ -211,7 +211,7 @@ sdd/
 - **定位与术语**：治理形态描述治理资产与项目仓的归置关系，与 edition 轴正交，init 一并选定。取值 **inline / standalone**，单用不译，中文组合「内联 / 独立」。init 选项行固定为 `治理形态：inline 仓（内联，随项目仓，默认）/ standalone 仓（独立，单独治理仓；init 后不可切换，项目需对外无痕或治理不入项目仓时选此）`。
 - **默认与不可切换**：默认 inline，多数项目的自然期望，且与既有安装行为一致。形态 init 后不可切换、无升降通道，升级模式永远维持当前形态；既有低版本安装一律视为 inline；standalone 仅新项目 init 可选；逃生口 = 重装（治理内容纯文本手工带走、重跑 init 选另一形态、原仓历史留档）。
 - **形态判定**：`sdd/` 为独立 git 仓即 standalone，否则 inline，结构自描述、无标记字段。治理资产的本地目录恒为 `sdd/`，与形态无关；远程仓名规格不作约定。
-- **统一结构（2.0.0 重组）**：两形态同一棵目录树，治理内容全部在 `sdd/`，内部按 edition 分叉、与形态无关。原 CLAUDE.md 骨架六节的 sdd 部分移入 `sdd/runtime/claude.md`（头部承载 edition 溯源行），原 AGENTS.md 适配内容移入 `sdd/runtime/opencode.md`；CLAUDE.md 与 AGENTS.md 改为项目骨架（项目名、定位一句话、智能体协作声明，公开内容零 sdd 痕迹），三字段回读两形态都从公开 CLAUDE.md 骨架读取；`opencode.json` 增 `instructions` 加载 runtime 两文件；standalone 增 `CLAUDE.local.md` 指针（`@sdd/runtime/claude.md`）与内层仓（`sdd/` 即内层仓根）。本文件此前各节的「CLAUDE.md 骨架 / CLAUDE.md 仲裁」表述自本节起由 `sdd/runtime/claude.md` 承接。
+- **统一结构（2.0.0 重组）**：两形态同一棵目录树，治理内容全部在 `sdd/`，内部按 edition 分叉、与形态无关。原 CLAUDE.md 骨架六节的 sdd 部分移入 `sdd/runtime/claude.md`（头部承载 edition 溯源行），原 AGENTS.md 适配内容移入 `sdd/runtime/opencode.md`；CLAUDE.md 与 AGENTS.md 改为项目骨架（项目名、定位一句话，公开内容零 sdd 痕迹），三字段回读两形态都从公开 CLAUDE.md 骨架读取；`opencode.json` 增 `instructions` 加载 runtime 两文件；standalone 增 `CLAUDE.local.md` 指针（`@sdd/runtime/claude.md`）与内层仓（`sdd/` 即内层仓根）。本文件此前各节的「CLAUDE.md 骨架 / CLAUDE.md 仲裁」表述自本节起由 `sdd/runtime/claude.md` 承接。
 - **差异清单（形态差异仅此 10 条）**：
 
   1. `CLAUDE.local.md` 仅 standalone 生成（指针文件，内容 `@sdd/runtime/claude.md`）。
