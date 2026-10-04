@@ -2,6 +2,14 @@
 
 本仓发布以 tag 为版本，每个版本列出当次包含的 sdd 插件版本节点。格式参照 Keep a Changelog，条目分「新增 / 变更 / 修复 / 移除」四类，新版本在上。
 
+## [Unreleased]
+
+### sdd v2.3.0
+
+#### 新增
+
+- 目标项目 CHANGELOG 规则重制为 Keep a Changelog 基准：常驻 `[Unreleased]` 节在实现期累积显著变化（随 Task 完成记入），accept 经三源核对后更名为版本节；分类扩为 Keep a Changelog 六类（新增 / 变更 / 弃用 / 移除 / 修复 / 安全）；尾部链接区按项目远程生成 diff 链接；full 与 slim 宪法规则一致
+
 ## [1.5.0] - 2026-10-04
 
 ### sdd v2.0.1

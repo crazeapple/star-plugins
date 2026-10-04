@@ -44,7 +44,7 @@
 - **不预建**运行态目录：specs/ 与 exploring/ 随首个 P 动态形成。
 - **无分支流程**：代码直接提交进项目当前分支，主工作区即测试环境；rejected 的实现代码留原地由 git 历史兜底；分支治理需求出现时升级 full 版。
 - **发布标记**：accept 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息取本次 CHANGELOG 条目首行），打在当前分支 HEAD；standalone 形态恒在外层项目仓。tag 是 ref 不是分支，与无分支零冲突；slim → full 升级时 slim 时期 tag 与 CHANGELOG 原样保留续写。
-- **CHANGELOG**：accept 收尾、打 tag 之前增补 `CHANGELOG.md`（项目根公开文件；不存在则创建，含 Keep a Changelog 风格说明头，新版本在上）。条目范围 = 本次 tag 与上一 tag 之间；内容三源锚定（本次 accepted 提案 spec「范围内」、INDEX 提案行、区间 git log 提交主题，含直接落主干的维护修复），禁凭空杜撰；分类四类「新增 / 变更 / 修复 / 移除」；统一不含治理 ID 与治理词汇；生成后随 accept 完成回报展示，用户守门可改。落仓：inline 随当前分支提交，standalone 为外层公开文件随中性 message 提交；辖区入外层 hook。
+- **CHANGELOG**：项目根 `CHANGELOG.md`（公开文件），格式以 Keep a Changelog 为基准。不存在则创建：H1 `# 更新日志`、中文导语（记录本项目所有显著变化，格式基于 Keep a Changelog）与常驻 `## [Unreleased]` 节。实现期的显著变化由主会话随 Task 完成记入 `[Unreleased]`（用户语言，一行一条）。accept 收尾、打 tag 之前：以三源（accepted 提案 spec「范围内」、INDEX 提案行、区间 git log 含直接落主干的维护修复）核对补全 `[Unreleased]`，禁凭空杜撰，随后将 `[Unreleased]` 更名为 `[版本] - 验收日`（版本取本次 tag，日期 ISO 8601），并在其上新建空 `[Unreleased]`。分类六类「新增 / 变更 / 弃用 / 移除 / 修复 / 安全」（对应 Keep a Changelog 六类），条目用 `-` 列表。统一不含治理 ID 与治理词汇，说用户语言。定稿随 accept 完成回报展示，用户守门可改。文件尾部设链接区：每版本一条 diff 对比链接，自项目远程推导，无远程则省略。落仓：inline 随当前分支提交，standalone 为外层公开文件随中性 message 提交；辖区入外层 hook。
 
 ## 权威源、ID 与日期
 
@@ -77,9 +77,9 @@
 | 念头登记 | INDEX「构想」小节加行（非状态转换，不占号） |
 | 构想成熟受理为 P | 发 P 号建档，原构想行移除 |
 | exploring→implementing（/sdd-intake 拆分完成时） | 定稿软门自查（对话内：AC 填实、方案已定、无疑虑）→ 任务表拆分（任务须具体可执行，禁探索性任务）+ INDEX 更新 |
-| 任一 Task 状态变化（/sdd-start） | 仅更新 design 任务表 + 任务详情小节回填 |
+| 任一 Task 状态变化（/sdd-start） | 更新 design 任务表 + 任务详情小节回填 + 显著变化记入 CHANGELOG `[Unreleased]` |
 | 全任务 done | INDEX 更新 + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 人工测试步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept |
-| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ design 置 finalized + 通过的验收清单表格追加 journal + journal 节冻结 + INDEX 更新 + CHANGELOG 增补本版条目（三源锚定、四类、不含治理 ID；standalone 落外层中性 message）+ 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息取本次 CHANGELOG 条目首行，打在当前分支 HEAD；standalone 恒在外层项目仓） |
+| implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ design 置 finalized + 通过的验收清单表格追加 journal + journal 节冻结 + INDEX 更新 + CHANGELOG 三源核对补全 `[Unreleased]` 并更名为 `[版本] - 验收日`，其上新建空 `[Unreleased]`（六类、不含治理 ID；standalone 落外层中性 message）+ 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息取本次 CHANGELOG 条目首行，打在当前分支 HEAD；standalone 恒在外层项目仓） |
 | →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注；实现代码留原地，由 git 历史兜底 |
 | 定稿后需求变更 | spec 正文 + changelog + version 递增 + 受影响 Task 评估，禁静默覆盖 |
 

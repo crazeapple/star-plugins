@@ -43,13 +43,15 @@
 | I 拆出发号 →exploring | 模板建 `exploring/P-XXX.md`（frontmatter `source: I-XXX`）+ INDEX 加行 |
 | exploring→specified（/sdd-finalize） | 建规格（被否备选录入否决记录）+ 底稿保留至验收 + INDEX 更新 |
 | specified→implementing（/sdd-split） | 建 design 骨架 + 任务入清单 + 切 `.worktree/<标题 slug>` worktree（分支 `dev/<标题 slug>`） + INDEX 更新 |
-| 任一 Task 状态变化 | 仅更新 design 任务表 + 任务详情小节回填 |
+| 任一 Task 状态变化 | 更新 design 任务表 + 任务详情小节回填 + 显著变化记入 CHANGELOG `[Unreleased]` |
 | 全任务 done →verifying | test 串行检查（他 P 持有 test 分支则本次转换挂起：P 留在 implementing，任务表保持全 done，worktree 与 dev 分支保留，待其 accept 后重走本行）+ 从当前 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（冲突一律在 test 解决；删除 worktree 与 dev 分支）+ 交付 hash 记入 design + INDEX 置 verifying + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 人工测试步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 提示人工测试（主工作区检出 test）；测试通过后 /sdd-accept |
-| verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ 全过后主工作区检出 main + 合并 `test/<标题 slug>` → main（发布）+ design 置 finalized + 底稿正文追加 journal 后删除 `P-XXX.md` + 通过的验收清单表格追加 journal + INDEX 更新 + CHANGELOG 增补本版条目（三源锚定、四类、不含治理 ID；standalone 落外层中性 message）+ 治理提交（standalone 经 `git -C sdd` 落内层仓）后打 tag（永远打在外层项目仓）+ 删除 test 分支 + 完成回报固定建议「回看需求组拆下一个」 |
+| verifying→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ 全过后主工作区检出 main + 合并 `test/<标题 slug>` → main（发布）+ design 置 finalized + 底稿正文追加 journal 后删除 `P-XXX.md` + 通过的验收清单表格追加 journal + INDEX 更新 + CHANGELOG 三源核对补全 `[Unreleased]` 并更名为 `[版本] - 验收日`，其上新建空 `[Unreleased]`（六类、不含治理 ID；standalone 落外层中性 message）+ 治理提交（standalone 经 `git -C sdd` 落内层仓）后打 tag（永远打在外层项目仓）+ 删除 test 分支 + 完成回报固定建议「回看需求组拆下一个」 |
 | I 完结 | 组内全部 P accepted → I 条目标完结（归档时并入 `requirements.md` 后移除） |
 | →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支：未建分支（exploring / specified）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删 `test/<标题 slug>`（main 零沾染）；on-hold worktree 与分支挂起保留 |
 | 定稿后需求变更 | 规格正文 + changelog + version 递增（v1.0 → v1.1）+ 受影响 Task 评估，禁静默覆盖 |
 | 归档（/sdd-archive） | INDEX 置「已归档 + 日期」+ 四产物 + 完结 I 条目并入 `requirements.md` + sdd 全区只读 |
+
+- **CHANGELOG**：项目根 `CHANGELOG.md`（公开文件），格式以 Keep a Changelog 为基准。不存在则创建：H1 `# 更新日志`、中文导语（记录本项目所有显著变化，格式基于 Keep a Changelog）与常驻 `## [Unreleased]` 节。实现期的显著变化由主会话随 Task 完成记入 `[Unreleased]`（用户语言，一行一条）。accept 收尾、打 tag 之前：以三源（accepted 提案 spec「范围内」、INDEX 提案行、区间 git log 含直接落主干的维护修复）核对补全 `[Unreleased]`，禁凭空杜撰，随后将 `[Unreleased]` 更名为 `[版本] - 验收日`（版本取本次 tag，日期 ISO 8601），并在其上新建空 `[Unreleased]`。分类六类「新增 / 变更 / 弃用 / 移除 / 修复 / 安全」（对应 Keep a Changelog 六类），条目用 `-` 列表。统一不含治理 ID 与治理词汇，说用户语言，edition 与形态无关。定稿随 accept 完成回报展示，用户守门可改。文件尾部设链接区：每版本一条 diff 对比链接，自项目远程推导，无远程则省略。落仓：inline 随治理提交，standalone 为外层公开文件随中性 message 提交；辖区入外层 hook。
 
 ## 会话微流程 R1-R10（写入宪法）
 
