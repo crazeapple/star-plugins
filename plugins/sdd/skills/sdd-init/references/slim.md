@@ -91,7 +91,7 @@
 - **R4** 被否备选禁删，记入 design 关键决策表，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
 - **R6** 更新任务表 + 回填 design；全任务 done 列出验收清单表格并提示人工测试；测试通过后 /sdd-accept
-- **R7** 验收节点显式建议 /sdd-accept 保人工确认；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，关键词随本提交对实体的作用而定，无引用则不写（Task 完成 → `Closes: T-XXX`，accept 验收提案 → `Closes: P-XXX`，验收阶段修复已完成 Task 的缺陷 → `Fixes: T-XXX`，一 Task 多提交时的非收尾提交等 → `Refs: T-XXX`）；开发过程中的自我修正不属修复语义，随所在 Task 完成提交记；footer 区可并存项目自有 trailer，也可有多个 trailer；standalone 形态项目仓提交不含治理 ID、治理引用与 sdd 字样（无痕化），内层治理仓提交不受此限；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。
+- **R7** 验收节点显式建议 /sdd-accept 保人工确认；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，关键词随本提交对实体的作用而定，无引用则不写（Task 完成 → `Closes: T-XXX`，accept 验收提案 → `Closes: P-XXX`，验收阶段修复已完成 Task 的缺陷 → `Fixes: T-XXX`，一 Task 多提交时的非收尾提交等 → `Refs: T-XXX`）；开发过程中的自我修正不属修复语义，随所在 Task 完成提交记；footer 区可并存项目自有 trailer，也可有多个 trailer；standalone 形态项目仓提交不含治理 ID、治理引用与 sdd 字样（无痕化），内层治理仓提交不受此限；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。本次提交涉及工具链工件（依赖清单、构建配置、迁移 SQL、语言脚本等）且该类未登记校验覆盖时，登记闸门启动：主会话给出候选工具建议，由用户选定并登记或扩展校验命令，执行通过后方可提交；凡入库的工具链，其 lint 与 format 必配，此为工程化要求，闸门无跳过，登记后随技术栈定型更新。
 
 ## 自治边界（判断自动，动作守门；写入宪法）
 
