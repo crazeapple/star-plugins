@@ -1,8 +1,8 @@
 # 命令、模板与语言规范
 
-> 生成 7 命令、模板、CLAUDE.md、INDEX、INITIATIVE 时以本文件为唯一规格源。
+> 生成 7 命令、模板、`CLAUDE.md`、INDEX、INITIATIVE 时以本文件为唯一规格源。
 
-- 7 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/finalize/split/start/accept/archive）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本文件命令规格表为唯一来源**，CLAUDE.md 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
+- 7 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/finalize/split/start/accept/archive）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本文件命令规格表为唯一来源**，`CLAUDE.md` 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
 
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
@@ -16,7 +16,7 @@
 
 - 模板四件套（sdd/templates/ 下固定文件，源 = 本技能 `templates/` 目录；P-XXX/T-XXX/I-XXX 为占位，建文件时替换为实际号；`source` 行仅提案源自 I-XXX 时生成，独立提案删除此行），**骨架即规格**，见下。**设计是实现的副产品，不是事前作文**：定稿后建骨架、每 Task 完成回填、verifying 时补全置 finalized。
 
-  **proposal.md**
+  **`proposal.md`**
 
   ```markdown
   ---
@@ -39,7 +39,7 @@
   | --- | --- |
   ```
 
-  **spec.md**
+  **`spec.md`**
 
   ```markdown
   ---
@@ -64,7 +64,7 @@
   | --- | --- | --- |
   ```
 
-  **design.md**（方案概述引 A-ID）
+  **`design.md`**（方案概述引 A-ID）
 
   ```markdown
   ---
@@ -89,14 +89,14 @@
   （按需回填：说明 / 实现记录）
   ```
 
-  **task.md**（Task 条目格式定义，非任务文件）
+  **`task.md`**（Task 条目格式定义，非任务文件）
 
   - 表行字段顺序：`T-XXX | 标题 | 状态 | 分组 | 备注`
   - 状态合法转换：`todo → doing → blocked → todo / done`；`done`、`dropped` 为终态；doing 即锁定，禁重复派发
   - 详情小节格式：说明（依据规格/设计节选）→ 实现记录（完成时回填：做法 + 证据）；完成判据 = 对照 spec 相关 AC 条目，验收核对统一在 /sdd-accept 进行（验收项不属于 Task）
   - 子智能体回报格式：做了什么 / 验收逐条结论 / 问题与规格偏差（走 R5 上报主会话）
 
-- **INITIATIVE.md 生成骨架**（构想池，构想唯一记录）：
+- **`INITIATIVE.md` 生成骨架**（构想池，构想唯一记录）：
 
   ```markdown
   # 构想池
@@ -107,7 +107,7 @@
   （暂无活跃构想）
   ```
 
-- **amendments/amend.md 生成骨架**（修正登记簿 + A 计数器）：
+- **`amendments/amend.md` 生成骨架**（修正登记簿 + A 计数器）：
 
   ```markdown
   # 修正案（Amendments）
@@ -118,8 +118,8 @@
   （暂无修正案）
   ```
 
-- **CLAUDE.md 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目定位一句话（首行）。公开内容零 sdd 痕迹；形态差异仅一行，inline 末尾追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。三字段中的项目名与定位在此，提交前校验命令属 runtime 工程约定节。
-- **sdd/runtime/claude.md 骨架**（治理运行时唯一内容源，章节顺序固定，与 CLAUDE.md 同批最后由主会话写）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本> · edition：full`）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则必须含（8 条）：
+- **`CLAUDE.md` 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目定位一句话（首行）。公开内容零 sdd 痕迹；形态差异仅一行，inline 末尾追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。三字段中的项目名与定位在此，提交前校验命令属 runtime 工程约定节。
+- **`sdd/runtime/claude.md` 骨架**（治理运行时唯一内容源，章节顺序固定，与 `CLAUDE.md` 同批最后由主会话写）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本> · edition：full`）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则必须含（8 条）：
   - ① INDEX 是状态唯一权威源、INITIATIVE 是构想唯一记录，变更即时同步
   - ② 新想法先分类：维护直接做；需求一律经 `/sdd-intake` 受理
   - ③ 定稿后需求变更留痕升版，禁静默覆盖

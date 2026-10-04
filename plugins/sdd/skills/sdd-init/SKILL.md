@@ -14,9 +14,9 @@ description: Initialize the SDD requirements governance system in the slim or fu
 
 正文只含主流程；规格位于 references，由生成阶段各组 subagent 自读、禁止预载全部：
 
-- 并行生成（第 2 节第 3 步）：① 组读 `references/constitution-design.md`（治理体系核心设计：生成 CONSTITUTION.md 的逐字规格源）全文与 `references/command-specs.md`（命令、模板与语言规范，含生成骨架）；② 组读 command-specs 命令规格表与 constitution-design「状态转换 × 文档同步矩阵」节（定点读取）；④ 组读 `references/opencode-adapter.md`（OpenCode 适配设计）；③ 组纯复制无需读。主会话无需预读任何规格。
-- 升级模式（第 2 节第 3 步升级分支）：组 U① / U② 与主会话均自读 `references/upgrade.md`（升级就地合并的逐字规格源），U① 另读 constitution-design 全文与 command-specs 生成骨架节，U② 另读 opencode-adapter 全文；升级模式主会话不免预读（需操盘 CLAUDE.md 仲裁与提交验证）。
-- slim 分支（生成或校准）：生成与校准组自读 `references/slim.md`（slim 生成 / 校准 / 升 full 版的逐字规格源）对应节；升 full 版分支另读 constitution-design 全文、command-specs 命令规格表与生成骨架节、opencode-adapter 全文；slim 生成与校准主会话不免预读（需操盘 CLAUDE.md 与提交验证）。
+- 并行生成（第 2 节第 3 步）：① 组读 `references/constitution-design.md`（治理体系核心设计：生成 `CONSTITUTION.md` 的逐字规格源）全文与 `references/command-specs.md`（命令、模板与语言规范，含生成骨架）；② 组读 command-specs 命令规格表与 constitution-design「状态转换 × 文档同步矩阵」节（定点读取）；④ 组读 `references/opencode-adapter.md`（OpenCode 适配设计）；③ 组纯复制无需读。主会话无需预读任何规格。
+- 升级模式（第 2 节第 3 步升级分支）：组 U① / U② 与主会话均自读 `references/upgrade.md`（升级就地合并的逐字规格源），U① 另读 constitution-design 全文与 command-specs 生成骨架节，U② 另读 opencode-adapter 全文；升级模式主会话不免预读（需操盘 `CLAUDE.md` 仲裁与提交验证）。
+- slim 分支（生成或校准）：生成与校准组自读 `references/slim.md`（slim 生成 / 校准 / 升 full 版的逐字规格源）对应节；升 full 版分支另读 constitution-design 全文、command-specs 命令规格表与生成骨架节、opencode-adapter 全文；slim 生成与校准主会话不免预读（需操盘 `CLAUDE.md` 与提交验证）。
 
 资产源（相对本技能目录，绝对路径前缀 `${CLAUDE_SKILL_DIR}/`）：
 
@@ -32,7 +32,7 @@ description: Initialize the SDD requirements governance system in the slim or fu
 
 本技能即可移植初始化器：任意项目会话中调用，即生成治理体系并交互完成初始化；自然包含 OpenCode 适配（逐字规格见 `references/opencode-adapter.md`），实现 Claude Code ⇄ OpenCode 无缝衔接开发。
 
-运行前提：POSIX 环境（macOS/Linux，sh/awk/perl 可用，mdlint.sh 零依赖即指此）；非 POSIX 平台须先自备等价工具，否则禁止开工。
+运行前提：POSIX 环境（macOS/Linux，sh/awk/perl 可用，`mdlint.sh` 零依赖即指此）；非 POSIX 平台须先自备等价工具，否则禁止开工。
 
 ## 二、初始化流程（四步，顺序固定）
 
@@ -47,17 +47,17 @@ description: Initialize the SDD requirements governance system in the slim or fu
    |---|---|
    | edition | 默认 slim（可升 full 版而反向无通道，默认取可逆方向）；参考判据（**建议性，非强制**，最终由用户决定，任何项目均可选任一 edition）：需求明确性 / 探索与验证节奏 / 规模 × 时间，三维皆轻一般宜 slim，维度偏重更宜 full；详见 `DESIGN-SDD.md` §十七 |
    | 治理形态 | 默认 inline。选项行固定：`inline 仓（内联，随项目仓，默认）/ standalone 仓（独立，单独治理仓；init 后不可切换，项目需对外无痕或治理不入项目仓时选此）`；参考判据见 `DESIGN-SDD.md` §十八八面表；形态 init 后不可切换 |
-   | 项目名 | 默认 = 当前目录名；用于 CLAUDE.md 与 AGENTS.md 标题 |
-   | 项目定位一句话 | CLAUDE.md 首行：依项目名 / 目录名与现场线索（README、package.json 等）生成 1-3 条候选并标注默认；未答取默认 |
+   | 项目名 | 默认 = 当前目录名；用于 `CLAUDE.md` 与 `AGENTS.md` 标题 |
+   | 项目定位一句话 | `CLAUDE.md` 首行：依项目名 / 目录名与现场线索（README、`package.json` 等）生成 1-3 条候选并标注默认；未答取默认 |
 
-3. **生成（全新模式，默认并行分派）**：**full 版**按回答生成填好的 19 治理文件（含 `sdd/runtime/` ×2）、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = `${CLAUDE_SKILL_DIR}/../../.claude-plugin/plugin.json` 的 `version` + `+full`），四路并行，各组自读所需规格，① CONSTITUTION + INDEX + INITIATIVE + amendments/amend.md（读 `references/constitution-design.md` 全文 + `references/command-specs.md` 生成骨架）② 命令 ×7（读 command-specs 命令规格表 + constitution-design「状态转换 × 文档同步矩阵」节，定点读取）③ 模板 ×4 与 `tools/mdlint.sh`、`sdd/VERSION`、`.git/hooks/pre-commit`（纯复制自 `templates/`、`scripts/`，版本标记取插件清单 version 写入，hook 另加可执行位）+ archive 说明 ④ OpenCode 适配 ×11（读 `references/opencode-adapter.md`，含 `sdd/runtime/opencode.md`）。**slim 版**生成 20 文件，流程、骨架、命令表、验证与提交文案一律按 `references/slim.md` 执行（组：① CONSTITUTION + INDEX ② 命令 ×4 ③ 模板 ×2 与工具、版本标记、hook ④ OpenCode 适配 ×8 含 `sdd/runtime/opencode.md`；VERSION 内容 = 插件清单 `version` + `+slim`）。两版 **`sdd/runtime/claude.md` 与 CLAUDE.md 均最后由主会话写**（引用全部生成物）。
+3. **生成（全新模式，默认并行分派）**：**full 版**按回答生成填好的 19 治理文件（含 `sdd/runtime/` ×2）、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = `${CLAUDE_SKILL_DIR}/../../.claude-plugin/plugin.json` 的 `version` + `+full`），四路并行，各组自读所需规格，① CONSTITUTION + INDEX + INITIATIVE + `amendments/amend.md`（读 `references/constitution-design.md` 全文 + `references/command-specs.md` 生成骨架）② 命令 ×7（读 command-specs 命令规格表 + constitution-design「状态转换 × 文档同步矩阵」节，定点读取）③ 模板 ×4 与 `tools/mdlint.sh`、`sdd/VERSION`、`.git/hooks/pre-commit`（纯复制自 `templates/`、`scripts/`，版本标记取插件清单 version 写入，hook 另加可执行位）+ archive 说明 ④ OpenCode 适配 ×11（读 `references/opencode-adapter.md`，含 `sdd/runtime/opencode.md`）。**slim 版**生成 20 文件，流程、骨架、命令表、验证与提交文案一律按 `references/slim.md` 执行（组：① CONSTITUTION + INDEX ② 命令 ×4 ③ 模板 ×2 与工具、版本标记、hook ④ OpenCode 适配 ×8 含 `sdd/runtime/opencode.md`；VERSION 内容 = 插件清单 `version` + `+slim`）。两版 **`sdd/runtime/claude.md` 与 `CLAUDE.md` 均最后由主会话写**（引用全部生成物）。
 
-   **治理形态分支（standalone 专属动作，在对应组生成后由主会话收尾执行）**：`.gitignore` 不写（inline 三行惯例照旧）；写 `.git/info/exclude` 六行排除清单（`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`）；生成 `CLAUDE.local.md`（内容 `@sdd/runtime/claude.md`）；内层仓 `git init sdd`（如 `sdd/.git` 已存在则跳过）；内层 hook `scripts/pre-commit-inner.sh` 装 `sdd/.git/hooks/pre-commit` 加可执行位。环境不支持 subagents 时按组序串行生成，步骤不变。既有安装不走本步生成流程，full 校准按 `references/upgrade.md` §四，slim 校准与升 full 版按 `references/slim.md` §八 / §九（runtime/claude.md 同样最后写）。
-4. **收尾**：对全部生成文件（含适配文件）按下方「四、验证与回报」完成 mdLint 与各项验证（零 error）、git 提交（inline 两笔 full 21+10 / slim 13+7；standalone 项目仓一笔中性 message 仅 CLAUDE.md + AGENTS.md + 内仓 `git -C sdd` 一笔全部治理资产）、计算初始化耗时与回报。既有安装收尾：full 校准按 `references/upgrade.md` §四-§五，slim 校准与升 full 版按 `references/slim.md` §七-§九（复用全量验证，提交按实际变更分批）。
+   **治理形态分支（standalone 专属动作，在对应组生成后由主会话收尾执行）**：`.gitignore` 不写（inline 三行惯例照旧）；写 `.git/info/exclude` 六行排除清单（`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`）；生成 `CLAUDE.local.md`（内容 `@sdd/runtime/claude.md`）；内层仓 `git init sdd`（如 `sdd/.git` 已存在则跳过）；内层 hook `scripts/pre-commit-inner.sh` 装 `sdd/.git/hooks/pre-commit` 加可执行位。环境不支持 subagents 时按组序串行生成，步骤不变。既有安装不走本步生成流程，full 校准按 `references/upgrade.md` §四，slim 校准与升 full 版按 `references/slim.md` §八 / §九（`runtime/claude.md` 同样最后写）。
+4. **收尾**：对全部生成文件（含适配文件）按下方「四、验证与回报」完成 mdLint 与各项验证（零 error）、git 提交（inline 两笔 full 21+10 / slim 13+7；standalone 项目仓一笔中性 message 仅 `CLAUDE.md` + `AGENTS.md` + 内仓 `git -C sdd` 一笔全部治理资产）、计算初始化耗时与回报。既有安装收尾：full 校准按 `references/upgrade.md` §四-§五，slim 校准与升 full 版按 `references/slim.md` §七-§九（复用全量验证，提交按实际变更分批）。
 
-> **中断恢复**：会话中断后续跑时，已生成文件若与「四、验证与回报」清单吻合即视为本初始化产物，跳过前置检查的冲突判定；对照其清单补齐缺失文件、已验证项不重跑、必填项从已生成文件回读（项目名/定位见 CLAUDE.md），回读不到才询问；若存在清单外文件，照常停止报告冲突。升级与校准中断 → 直接重跑（幂等）：full 见 `references/upgrade.md` §四，slim 见 `references/slim.md` §八 / §九，恢复条款以对应文件为准。
+> **中断恢复**：会话中断后续跑时，已生成文件若与「四、验证与回报」清单吻合即视为本初始化产物，跳过前置检查的冲突判定；对照其清单补齐缺失文件、已验证项不重跑、必填项从已生成文件回读（项目名/定位见 `CLAUDE.md`），回读不到才询问；若存在清单外文件，照常停止报告冲突。升级与校准中断 → 直接重跑（幂等）：full 见 `references/upgrade.md` §四，slim 见 `references/slim.md` §八 / §九，恢复条款以对应文件为准。
 
-## 三、文档结构（19 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件 = 31；standalone 再 +CLAUDE.local.md = 32）
+## 三、文档结构（19 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件 = 31；standalone 再 +`CLAUDE.local.md` = 32）
 
 ```
 <项目根>/
@@ -93,11 +93,11 @@ description: Initialize the SDD requirements governance system in the slim or fu
 ## 四、验证与回报
 
 1. **失败处置（总则）**：任何验证失败，修复后必须重跑对应**全量**验证（mdLint 失败即对全部生成文件重跑，非仅复验出错项），全部通过方可进入下一步；禁止跳过任何验证步骤（明示豁免者除外）、禁止带病提交、禁止以「已修过」为由免检。
-2. 文件齐全、结构正确、必填项已填（inline 31 文件：19 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件；standalone 32 = 再 +CLAUDE.local.md）；`sdd/VERSION` 与插件清单 version 一致；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 六行）；
+2. 文件齐全、结构正确、必填项已填（inline 31 文件：19 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件；standalone 32 = 再 +`CLAUDE.local.md`）；`sdd/VERSION` 与插件清单 version 一致；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 六行）；
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`（standalone 下追加 `CLAUDE.local.md`），零 error；
 4. ID/状态机/矩阵在 CONSTITUTION、INDEX、INITIATIVE、模板、7 命令间交叉一致；
 5. `git check-ignore -v .claude/settings.local.json .opencode/tmp.local.json`（后一文件名任取一个不存在的即可）→ 均命中；`git check-ignore .opencode/opencode.json` → inline 无输出（未被忽略）/ standalone 命中（排除清单生效）；
 6. `opencode debug config` → 7 个 sdd 命令全部被发现（description 与 `references/command-specs.md` 命令规格表逐字一致、模板正确）且含 `"lsp": true`（opencode 未安装时跳过本条并在回报注明；其运行副产物被 `.opencode/.gitignore` 自忽略，不影响提交）；
-7. git 提交均显式列举文件路径添加、禁用 `git add -A` 与 `git add .`：inline 两笔，第一笔仅 21 清单文件（19 治理 + 工具 + VERSION，含 runtime ×2），消息固定 `chore: 初始化 SDD 需求治理体系（19 治理文件 + mdlint 工具 + 版本标记）`；第二笔仅 10 适配文件（AGENTS.md + .gitignore + opencode.json + 存根 ×7），消息固定 `chore: 适配 OpenCode（命令存根 @ 引用 + .opencode 共享配置）`。standalone 两仓各一笔：项目仓仅 CLAUDE.md + AGENTS.md，message 固定 `docs: 项目协作入口`（中性，无 sdd 字样）；内仓 `git -C sdd` 提交 `sdd/` 全部，消息同 inline 第一笔。除清单文件与 hook 外禁止创建任何其他文件（评审/提示词等用户文档不入库）；
-8. 冒烟演练默认**不执行**，初始化完成后待命 `/sdd-intake` 接首个真实需求；后续冒烟（用户在 opencode TUI 手动）：输入 `/` 查看命令补全、执行任一只读命令（如 `/sdd-board`）、问「本项目会话必读是什么」应答 CONSTITUTION → INDEX → INITIATIVE（验证 runtime 注入链路：inline 为 CLAUDE.md @ 引用，standalone 为 CLAUDE.local.md）；
+7. git 提交均显式列举文件路径添加、禁用 `git add -A` 与 `git add .`：inline 两笔，第一笔仅 21 清单文件（19 治理 + 工具 + VERSION，含 runtime ×2），消息固定 `chore: 初始化 SDD 需求治理体系（19 治理文件 + mdlint 工具 + 版本标记）`；第二笔仅 10 适配文件（`AGENTS.md` + `.gitignore` + `opencode.json` + 存根 ×7），消息固定 `chore: 适配 OpenCode（命令存根 @ 引用 + .opencode 共享配置）`。standalone 两仓各一笔：项目仓仅 `CLAUDE.md` + `AGENTS.md`，message 固定 `docs: 项目协作入口`（中性，无 sdd 字样）；内仓 `git -C sdd` 提交 `sdd/` 全部，消息同 inline 第一笔。除清单文件与 hook 外禁止创建任何其他文件（评审/提示词等用户文档不入库）；
+8. 冒烟演练默认**不执行**，初始化完成后待命 `/sdd-intake` 接首个真实需求；后续冒烟（用户在 opencode TUI 手动）：输入 `/` 查看命令补全、执行任一只读命令（如 `/sdd-board`）、问「本项目会话必读是什么」应答 CONSTITUTION → INDEX → INITIATIVE（验证 runtime 注入链路：inline 为 `CLAUDE.md` @ 引用，standalone 为 `CLAUDE.local.md`）；
 9. 最终回报：文件清单 + commit hash（inline 两个 / standalone 两个仓各一）+ mdLint 结论 + 各项验证结论 + 初始化耗时（总时长，人类可读格式）+ hook 安装结论（含 standalone 内层 hook）+ 治理形态 + 模式（全新 / 升级）与版本去向（升级回报项见 `references/upgrade.md` §五）。
