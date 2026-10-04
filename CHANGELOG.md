@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### sdd v2.4.0
+
+#### 新增
+
+- 版本格式选型提前至 init：询问表新增版本格式（CalVer 验收日或 SemVer；交付型惯用 CalVer，库 / 产品惯用 SemVer，默认 SemVer），登记于 runtime「路径、ID 与工程约定」节；升级回读扩为四字段，版本格式回读不到时维持首个 tag 前询问的旧行为，accept 收尾不再插问
+
 ### sdd v2.3.0
 
 #### 新增

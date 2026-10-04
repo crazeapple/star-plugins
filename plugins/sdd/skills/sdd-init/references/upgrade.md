@@ -37,7 +37,7 @@
 
 ## 三、必填项回读（升级模式不询问）
 
-项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目定位一句话 ← `CLAUDE.md` 首段定位句；提交前校验命令 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节（2.0.0 前旧结构 ← 旧 `CLAUDE.md` 同名节）。三项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
+项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目定位一句话 ← `CLAUDE.md` 首段定位句；提交前校验命令 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节（2.0.0 前旧结构 ← 旧 `CLAUDE.md` 同名节）；版本格式 ← 同节（回读不到不询问，维持首个 tag 前询问并补记的旧行为，不阻塞升级）。前三项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
 
 ## 四、执行顺序与幂等
 
@@ -56,8 +56,8 @@
 
 - 按节标题锚点识别骨架（2.0.0 起骨架在 `sdd/runtime/claude.md`：需求层级 / 会话必读 / 命令一览 / 硬规则 / 路径、ID 与工程约定 + 溯源行；`CLAUDE.md` 为公开项目骨架），以 `references/command-specs.md` 对应骨架规格重写。
 - 命令一览表与硬规则属单源复制辖区：项目改写过也**以规格为准重写**，被覆盖改动逐项列入回报（用户可经 git 历史回退）。
-- 项目填写三字段（项目名 / 定位一句话 / 提交前校验命令）回读保留（§三）；识别不到骨架锚点的小节视为项目自有内容，**原样保留**并在回报列出。
-- **2.0.0 一次性迁移（inline 旧安装，仅此一次）**：识别旧结构（`CLAUDE.md` 含骨架六节、无 `sdd/runtime/`）→ 回读三字段与项目自有增补节 → 生成 `sdd/runtime/claude.md`（六节的 sdd 部分与溯源行迁入，措辞按现行规格）→ 重写 `CLAUDE.md` 为公开项目骨架（三字段回填、自有增补节原样保留、inline 加 `@sdd/runtime/claude.md` 行）→ `AGENTS.md` 改项目骨架、`opencode.json` 增 `instructions`、新增 `sdd/runtime/opencode.md`（均按 opencode-adapter 规格）→ 回报列迁移清单（何文件何节迁往何处）。迁移后走常规校准；standalone 安装天然为新结构，无迁移。
+- 项目填写四字段（项目名 / 定位一句话 / 提交前校验命令 / 版本格式）回读保留（§三）；识别不到骨架锚点的小节视为项目自有内容，**原样保留**并在回报列出。
+- **2.0.0 一次性迁移（inline 旧安装，仅此一次）**：识别旧结构（`CLAUDE.md` 含骨架六节、无 `sdd/runtime/`）→ 回读四字段与项目自有增补节 → 生成 `sdd/runtime/claude.md`（六节的 sdd 部分与溯源行迁入，措辞按现行规格）→ 重写 `CLAUDE.md` 为公开项目骨架（四字段回填、自有增补节原样保留、inline 加 `@sdd/runtime/claude.md` 行）→ `AGENTS.md` 改项目骨架、`opencode.json` 增 `instructions`、新增 `sdd/runtime/opencode.md`（均按 opencode-adapter 规格）→ 回报列迁移清单（何文件何节迁往何处）。迁移后走常规校准；standalone 安装天然为新结构，无迁移。
 
 ## 七、执行策略（两路并行）
 

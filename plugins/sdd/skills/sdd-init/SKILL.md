@@ -7,7 +7,7 @@ description: Initialize the SDD requirements governance system in the slim or fu
 
 本技能为分发规格，设计决策以仓库 `docs/` 目录的 `DESIGN-SDD.md` 为准。**直接执行，禁止重新设计、增删决策。**
 
-> **TL;DR**：① 前置检查（dispatch：全新 / slim 命中 / full 命中 / 冲突即停；形态按 `sdd/.git` 判定，既有低版本安装一律视为 inline）→ ② 询问（仅全新；全项默认兜底，含选 edition 默认 slim、治理形态默认 inline 且 init 后不可切换）→ ③ 生成，full 按 references 逐字生成 31 文件（standalone 32），slim 按 `references/slim.md` 生成 20 文件（standalone 21）；既有安装，slim 默认校准（显式确认则升 full 版）、full 按 `references/upgrade.md` 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；校准按实际变更）。
+> **TL;DR**：① 前置检查（dispatch：全新 / slim 命中 / full 命中 / 冲突即停；形态按 `sdd/.git` 判定，既有低版本安装一律视为 inline）→ ② 询问（仅全新；全项默认兜底，含选 edition 默认 slim、治理形态默认 inline 且 init 后不可切换、版本格式默认 SemVer）→ ③ 生成，full 按 references 逐字生成 31 文件（standalone 32），slim 按 `references/slim.md` 生成 20 文件（standalone 21）；既有安装，slim 默认校准（显式确认则升 full 版）、full 按 `references/upgrade.md` 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；校准按实际变更）。
 > **三条禁忌**：禁止擅自覆盖既有文件；禁止重新设计、增删决策；禁止跳过任何验证。
 
 ## 引用懒加载
@@ -49,6 +49,7 @@ description: Initialize the SDD requirements governance system in the slim or fu
    | 治理形态 | 默认 inline。选项行固定：`inline 仓（内联，随项目仓，默认）/ standalone 仓（独立，单独治理仓；init 后不可切换，项目需对外无痕或治理不入项目仓时选此）`；参考判据见 `DESIGN-SDD.md` §十八八面表；形态 init 后不可切换 |
    | 项目名 | 默认 = 当前目录名；用于 `CLAUDE.md` 与 `AGENTS.md` 标题 |
    | 项目定位一句话 | `CLAUDE.md` 首行：依项目名 / 目录名与现场线索（README、`package.json` 等）生成 1-3 条候选并标注默认；未答取默认 |
+   | 版本格式 | 默认 SemVer。CalVer（`YYYY.M.D` 验收日，同日多验收追加当日序号）或 SemVer（`vX.Y.Z`，按变化递增）；交付型惯用 CalVer，库 / 产品惯用 SemVer；登记于「路径、ID 与工程约定」节 |
 
 3. **生成（全新模式，默认并行分派）**：**full 版**按回答生成填好的 19 治理文件（含 `sdd/runtime/` ×2）、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = `${CLAUDE_SKILL_DIR}/../../.claude-plugin/plugin.json` 的 `version` + `+full`），四路并行，各组自读所需规格，① CONSTITUTION + INDEX + INITIATIVE + `amendments/amend.md`（读 `references/constitution-design.md` 全文 + `references/command-specs.md` 生成骨架）② 命令 ×7（读 command-specs 命令规格表 + constitution-design「状态转换 × 文档同步矩阵」节，定点读取）③ 模板 ×4 与 `tools/mdlint.sh`、`sdd/VERSION`、`.git/hooks/pre-commit`（纯复制自 `templates/`、`scripts/`，版本标记取插件清单 version 写入，hook 另加可执行位）+ archive 说明 ④ OpenCode 适配 ×11（读 `references/opencode-adapter.md`，含 `sdd/runtime/opencode.md`）。**slim 版**生成 20 文件，流程、骨架、命令表、验证与提交文案一律按 `references/slim.md` 执行（组：① CONSTITUTION + INDEX ② 命令 ×4 ③ 模板 ×2 与工具、版本标记、hook ④ OpenCode 适配 ×8 含 `sdd/runtime/opencode.md`；VERSION 内容 = 插件清单 `version` + `+slim`）。两版 **`sdd/runtime/claude.md` 与 `CLAUDE.md` 均最后由主会话写**（引用全部生成物）。
 

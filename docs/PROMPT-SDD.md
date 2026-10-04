@@ -28,6 +28,7 @@
    | 治理形态 | 可默认 | 默认 inline。选项行固定：`inline 仓（内联，随项目仓，默认）/ standalone 仓（独立，单独治理仓；init 后不可切换，项目需对外无痕或治理不入项目仓时选此）`；形态 init 后不可切换 |
    | 项目名 | 可默认 | 默认 = 当前目录名；用于 `CLAUDE.md` 与 `AGENTS.md` 标题 |
    | 项目定位一句话 | 必填 | `CLAUDE.md` 首行：一句话说明项目是什么、目的 |
+   | 版本格式 | 可默认 | 默认 SemVer。CalVer（`YYYY.M.D` 验收日，同日多验收追加当日序号）或 SemVer（`vX.Y.Z`，按变化递增）；交付型惯用 CalVer，库 / 产品惯用 SemVer；登记于「路径、ID 与工程约定」节 |
 
 3. **生成（全新模式，默认四路并行）**：按回答生成填好的 19 治理文件（含 `sdd/runtime/` ×2）、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = 本提示词顶部版本 + `+full`；经插件调用时取插件清单 `version` + `+full`），用 subagents 按文件组分派并行，各组自读本提示词对应章节。
 
@@ -143,7 +144,7 @@
 - **R7** 关键节点（拆任务/定稿/验收/归档）显式建议对应命令保人工确认；accept 完成回报固定建议回看需求组
 - **R8** 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；归档后只读；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）
 - **R9** 跨周期修正禁只改代码，走 amendments/
-- **R10** 分支开发主干发布：split 从 main 切 `dev/<标题 slug>` 并建 worktree 开发（分支名不含治理 ID 与治理文件名），代码在分支、治理文档只在主干由主会话写，test / dev 检出中 sdd/ 只读；分支提交以 Task 为界、Task 完成即提交；test 串行：全流程同时至多一个 P 持有 test 分支，全任务 done 而他 P 持有 test 时留在 implementing 等待（任务表保持全 done，worktree 与 dev 分支保留），待其 accept 后再行 verifying 转换；全任务 done 从当前 main 切 `test/<标题 slug>` 合并 dev 代码（冲突一律在 test 解决），删除 worktree 与 dev 分支，列验收清单表格交用户在主工作区检出 test 人工测试；主干冻结：验收期（test 切出至 accept）内 main 代码不前进（治理文档主干直写照旧），一切修复（无论缺陷源自哪个 P 的范围，含不进 Proposal 的维护性修复）都落在当前 `test/<标题 slug>`，随本 P accept 一并进 main，验收期外维护照旧直接落 main；accept 时 AC 逐条以实际证据核对填入验收清单表格（未全过不置 accepted，Task 保持 done）→ 主工作区检出 main → 合并 test → main 发布 → 治理提交 → 打 annotated tag（版本格式首次询问定型：CalVer 验收日或 SemVer，信息取本次 CHANGELOG 条目首行）→ 删 test 分支；rejected 分环节清理（未建分支删文档 / implementing 删 dev 与 worktree / verifying 删 test），main 零沾染，on-hold 挂起保留；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，关键词随本提交对实体的作用而定，无引用则不写（Task 完成 → `Closes: T-XXX`，accept 验收提案 → `Closes: P-XXX`，验收阶段修复已完成 Task 的缺陷 → `Fixes: T-XXX`，一 Task 多提交时的非收尾提交等 → `Refs: T-XXX`）；开发过程中的自我修正不属修复语义，随所在 Task 完成提交记；Task 完成只记代码侧提交，主干治理提交不重复记；footer 区可并存项目自有 trailer，也可有多个 trailer；standalone 形态本段整体替换为「项目仓提交不含治理 ID、治理引用与 sdd 字样（无痕化），内层治理仓提交不受此限」；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。本次提交涉及工具链工件（依赖清单、构建配置、迁移 SQL、语言脚本等）且该类未登记校验覆盖时，登记闸门启动：主会话给出候选工具建议，由用户选定并登记或扩展校验命令，执行通过后方可提交；凡入库的工具链，其 lint 与 format 必配，此为工程化要求，闸门无跳过，登记后随技术栈定型更新；push 永远手动。
+- **R10** 分支开发主干发布：split 从 main 切 `dev/<标题 slug>` 并建 worktree 开发（分支名不含治理 ID 与治理文件名），代码在分支、治理文档只在主干由主会话写，test / dev 检出中 sdd/ 只读；分支提交以 Task 为界、Task 完成即提交；test 串行：全流程同时至多一个 P 持有 test 分支，全任务 done 而他 P 持有 test 时留在 implementing 等待（任务表保持全 done，worktree 与 dev 分支保留），待其 accept 后再行 verifying 转换；全任务 done 从当前 main 切 `test/<标题 slug>` 合并 dev 代码（冲突一律在 test 解决），删除 worktree 与 dev 分支，列验收清单表格交用户在主工作区检出 test 人工测试；主干冻结：验收期（test 切出至 accept）内 main 代码不前进（治理文档主干直写照旧），一切修复（无论缺陷源自哪个 P 的范围，含不进 Proposal 的维护性修复）都落在当前 `test/<标题 slug>`，随本 P accept 一并进 main，验收期外维护照旧直接落 main；accept 时 AC 逐条以实际证据核对填入验收清单表格（未全过不置 accepted，Task 保持 done）→ 主工作区检出 main → 合并 test → main 发布 → 治理提交 → 打 annotated tag（版本格式取工程约定节登记，信息取本次 CHANGELOG 条目首行）→ 删 test 分支；rejected 分环节清理（未建分支删文档 / implementing 删 dev 与 worktree / verifying 删 test），main 零沾染，on-hold 挂起保留；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，关键词随本提交对实体的作用而定，无引用则不写（Task 完成 → `Closes: T-XXX`，accept 验收提案 → `Closes: P-XXX`，验收阶段修复已完成 Task 的缺陷 → `Fixes: T-XXX`，一 Task 多提交时的非收尾提交等 → `Refs: T-XXX`）；开发过程中的自我修正不属修复语义，随所在 Task 完成提交记；Task 完成只记代码侧提交，主干治理提交不重复记；footer 区可并存项目自有 trailer，也可有多个 trailer；standalone 形态本段整体替换为「项目仓提交不含治理 ID、治理引用与 sdd 字样（无痕化），内层治理仓提交不受此限」；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。本次提交涉及工具链工件（依赖清单、构建配置、迁移 SQL、语言脚本等）且该类未登记校验覆盖时，登记闸门启动：主会话给出候选工具建议，由用户选定并登记或扩展校验命令，执行通过后方可提交；凡入库的工具链，其 lint 与 format 必配，此为工程化要求，闸门无跳过，登记后随技术栈定型更新；push 永远手动。
 
 ### 自治边界（判断自动，动作守门；写入宪法）
 
@@ -330,8 +331,8 @@
   （暂无修正案）
   ```
 
-- **`CLAUDE.md` 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目定位一句话（首行）。公开内容零 sdd 痕迹；形态差异仅一行，inline 末尾追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。三字段中的项目名与定位在此，提交前校验命令属 runtime 工程约定节。
-- **`sdd/runtime/claude.md` 骨架**（治理运行时唯一内容源，章节顺序固定，与 `CLAUDE.md` 同批最后由主会话写）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本> · edition：full`）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」）。硬规则必须含（8 条）：
+- **`CLAUDE.md` 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目定位一句话（首行）。公开内容零 sdd 痕迹；形态差异仅一行，inline 末尾追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。四字段中的项目名与定位在此，提交前校验命令与版本格式属 runtime 工程约定节。
+- **`sdd/runtime/claude.md` 骨架**（治理运行时唯一内容源，章节顺序固定，与 `CLAUDE.md` 同批最后由主会话写）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本> · edition：full`）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」、版本格式（CalVer 验收日或 SemVer））。硬规则必须含（8 条）：
   - ① INDEX 是状态唯一权威源、INITIATIVE 是构想唯一记录，变更即时同步
   - ② 新想法先分类：维护直接做；需求一律经 `/sdd-intake` 受理
   - ③ 定稿后需求变更留痕升版，禁静默覆盖
@@ -482,8 +483,8 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 - 按节标题锚点识别骨架（2.0.0 起骨架在 `sdd/runtime/claude.md`：需求层级 / 会话必读 / 命令一览 / 硬规则 / 路径、ID 与工程约定 + 溯源行；`CLAUDE.md` 为公开项目骨架），以 §5 对应骨架规格重写。
 - 命令一览表与硬规则属单源复制辖区：项目改写过也**以规格为准重写**，被覆盖改动逐项列入回报（用户可经 git 历史回退）。
-- 项目填写三字段（项目名 / 定位一句话 / 提交前校验命令）回读保留；识别不到骨架锚点的小节视为项目自有内容，**原样保留**并在回报列出。
-- **2.0.0 一次性迁移（inline 旧安装，仅此一次）**：识别旧结构（`CLAUDE.md` 含骨架六节、无 `sdd/runtime/`）→ 回读三字段与项目自有增补节 → 生成 `sdd/runtime/claude.md`（六节的 sdd 部分与溯源行迁入，措辞按现行规格）→ 重写 `CLAUDE.md` 为公开项目骨架（三字段回填、自有增补节原样保留、加 `@sdd/runtime/claude.md` 行）→ `AGENTS.md` 改项目骨架、`opencode.json` 增 `instructions`、新增 `sdd/runtime/opencode.md`（均按 §7 规格）→ 回报列迁移清单（何文件何节迁往何处）。迁移后走常规校准；standalone 安装天然为新结构，无迁移。
+- 项目填写四字段（项目名 / 定位一句话 / 提交前校验命令 / 版本格式）回读保留；识别不到骨架锚点的小节视为项目自有内容，**原样保留**并在回报列出。
+- **2.0.0 一次性迁移（inline 旧安装，仅此一次）**：识别旧结构（`CLAUDE.md` 含骨架六节、无 `sdd/runtime/`）→ 回读四字段与项目自有增补节 → 生成 `sdd/runtime/claude.md`（六节的 sdd 部分与溯源行迁入，措辞按现行规格）→ 重写 `CLAUDE.md` 为公开项目骨架（四字段回填、自有增补节原样保留、加 `@sdd/runtime/claude.md` 行）→ `AGENTS.md` 改项目骨架、`opencode.json` 增 `instructions`、新增 `sdd/runtime/opencode.md`（均按 §7 规格）→ 回报列迁移清单（何文件何节迁往何处）。迁移后走常规校准；standalone 安装天然为新结构，无迁移。
 
 ### 执行策略（两路并行）
 
