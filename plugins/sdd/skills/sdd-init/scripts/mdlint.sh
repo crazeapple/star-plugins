@@ -3,8 +3,8 @@
 # 用法：sh sdd/tools/mdlint.sh <文件或目录>...
 # 规格源：sdd/CONSTITUTION.md「Markdown 书写规范」校验节
 #   error  ：行内反引号不配对、`**` 行内不配对、全角圆括号/直角引号文件级不配对
-#   warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致
-#   豁免   ：代码围栏与行内代码内容
+#   warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致、行内代码内出现治理 ID
+#   豁免   ：代码围栏；行内代码内容除治理 ID 检查外豁免（检查集限于书写形态，内容治理不入检查集）
 # 退出码：存在 error 为 1，否则 0
 
 lint_file() {
@@ -57,6 +57,14 @@ for my $i (0 .. $#body) {
   if ($s =~ /[\x{4e00}-\x{9fff}][A-Za-z0-9×]/ || $s =~ /[A-Za-z0-9×][\x{4e00}-\x{9fff}]/) {
     printf "warning: %s:%d: 中英文粘连\n", $file, $n;
     $warn++;
+  }
+  # warning：行内代码内出现治理 ID（执法 ID 禁包规则；裸写为合规态）
+  for my $span ($l =~ /`([^`]*)`/g) {
+    if ($span =~ /[IPTA]-[0-9]{3}/) {
+      printf "warning: %s:%d: 行内代码内出现治理 ID\n", $file, $n;
+      $warn++;
+      last;
+    }
   }
   # warning：无序列表标记非 -
   if ($l =~ /^\s*[*+]\s+/) {
