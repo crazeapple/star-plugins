@@ -11,7 +11,7 @@
 - `sdd/CONSTITUTION.md`、`sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md`
 - `sdd/templates/` 下 proposal / spec / design / task ×4 全在
 - `sdd/tools/mdlint.sh`、`sdd/archive/README.md`
-- `CLAUDE.md`、`.claude/commands/` 下 7 命令全在
+- `CLAUDE.md`、`.claude/commands/` 下 7 命令全在（签名基线计数，2.6.0 起现行生成 8，新增命令由校准补齐）
 - `AGENTS.md`、`.opencode/opencode.json`、`.opencode/commands/` 下 7 存根全在
 
 `.gitignore` 与 `.git/hooks/pre-commit` 不入签名集（补装语义：缺失即补，存在即覆盖 / 补行）。典型场景为环境重建：项目于新主机 clone 后 `.git/hooks/pre-commit` 必然缺失，全套签名文件在库即命中本模式，重装即补。命中后向用户明示「检测到既有安装（版本与 edition 见 `sdd/VERSION`），转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止，请用户先处理（防混入升级提交）。
@@ -24,7 +24,7 @@
 
 | 档 | 文件 | 处置 |
 |---|---|---|
-| 静默覆盖 | `sdd/tools/mdlint.sh`、`.git/hooks/pre-commit`（重装并加可执行位；standalone 另装内层 `sdd/.git/hooks/pre-commit` 变体）、`sdd/templates/` ×4、`.claude/commands/` ×7、`.opencode/opencode.json`、`.opencode/commands/` ×7 | 按规格纯复制覆盖 |
+| 静默覆盖 | `sdd/tools/mdlint.sh`、`.git/hooks/pre-commit`（重装并加可执行位；standalone 另装内层 `sdd/.git/hooks/pre-commit` 变体）、`sdd/templates/` ×4、`.claude/commands/` ×8、`.opencode/opencode.json`、`.opencode/commands/` ×8 | 按规格纯复制覆盖 |
 | 保护性写入 | `.gitignore`（inline）、`AGENTS.md`、`sdd/CONSTITUTION.md`、`sdd/runtime/claude.md` | 规格重生成 + 项目内容回读回填（见下） |
 | 活文档仲裁 | `sdd/runtime/claude.md`（`CLAUDE.md` 公开骨架一并按规格重写） | 骨架节重写 + 项目内容保留（§六） |
 | 禁触 | `sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md` 内容；`sdd/specs/`、`sdd/exploring/`、`sdd/journal.md`、`sdd/archive/` 全部 | 一律不改（骨架仅按 §八锚点只读比对） |
@@ -37,7 +37,7 @@
 
 ## 三、必填项回读（升级模式不询问）
 
-项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目定位一句话 ← `CLAUDE.md` 首段定位句；提交前校验命令 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节（2.0.0 前旧结构 ← 旧 `CLAUDE.md` 同名节）；版本格式 ← 同节（回读不到不询问，维持首个 tag 前询问并补记的旧行为，不阻塞升级）。前三项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
+项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目定位一句话 ← `CLAUDE.md` 首段定位句；提交前校验命令 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节（2.0.0 前旧结构 ← 旧 `CLAUDE.md` 同名节）；版本格式 ← 同节（回读不到不询问，维持首个 tag 前询问并补记的旧行为，不阻塞升级）；治理配置 ← 治理配置区（`Acceptance mode` 回读不到即 auto、`Verification retry limit` 缺省 3，不询问）；验证命令区重写插空后执行存量补记（扫描依赖清单、测试配置、CI 测试任务等验证类工具链，生成补记清单，交互同登记闸门：建议 / 选定 / 判「无」/ 试跑）。前三项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
 
 ## 四、执行顺序与幂等
 
@@ -49,7 +49,7 @@
 
 ## 五、提交与回报
 
-- 提交按实际变更文件显式列举、禁用 `git add -A` 与 `git add .`，分两批（同初始化分主题）：第一批 = `CLAUDE.md` + 命令 ×7 + `sdd/CONSTITUTION.md` + `sdd/VERSION`，消息固定 `chore: 升级 SDD 治理体系（机械资产校准 + 活文档仲裁）`；第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×7，消息固定 `chore: 升级 OpenCode 适配资产`。某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）。standalone 形态：治理资产变更 `git -C sdd` 提交（消息同第一批固定文案）；项目仓仅公开骨架（`CLAUDE.md` / `AGENTS.md`）有变更时一笔中性 message 固定 `docs: 更新项目协作入口`，无变更则项目仓零提交。
+- 提交按实际变更文件显式列举、禁用 `git add -A` 与 `git add .`，分两批（同初始化分主题）：第一批 = `CLAUDE.md` + 命令 ×8 + `sdd/CONSTITUTION.md` + `sdd/VERSION`，消息固定 `chore: 升级 SDD 治理体系（机械资产校准 + 活文档仲裁）`；第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×8，消息固定 `chore: 升级 OpenCode 适配资产`。某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）。standalone 形态：治理资产变更 `git -C sdd` 提交（消息同第一批固定文案）；项目仓仅公开骨架（`CLAUDE.md` / `AGENTS.md`）有变更时一笔中性 message 固定 `docs: 更新项目协作入口`，无变更则项目仓零提交。
 - 回报项：治理形态 + 模式与版本去向（含 edition 段，如 `0.1.0+full → 0.2.0+full`；「旧版安装 → Y」）+ 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（§八，无差异则注明）+ 迁移清单（2.0.0 一次性迁移）+ 跳过批次 + commit hash（standalone 为两仓各自）+ mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式）+ hook 重装结论（含 standalone 内层 hook）。
 
 ## 六、`CLAUDE.md` 重写与回读规则
@@ -62,7 +62,7 @@
 ## 七、执行策略（两路并行）
 
 - 组 U① 治理组：`CONSTITUTION.md` 重生成 + `INDEX.md` / `INITIATIVE.md` / `amendments/amend.md` 骨架锚点只读比对（§八），自读本文件全文 + `references/constitution-design.md` 全文 + `references/command-specs.md` 生成骨架节。
-- 组 U② 机械资产组：命令 ×7、模板 ×4、`mdlint.sh`、hook（含 standalone 内层变体）、OpenCode 适配 ×11 覆盖，自读本文件全文 + `references/opencode-adapter.md` 全文。
+- 组 U② 机械资产组：命令 ×8、模板 ×4、`mdlint.sh`、hook（含 standalone 内层变体）、OpenCode 适配 ×11 覆盖，自读本文件全文 + `references/opencode-adapter.md` 全文。
 - 主会话自读本文件全文（`runtime/claude.md` 仲裁、验证与提交操盘，升级模式不适用「主会话无需预读」豁免）；不支持 subagents 时按 U① → U② → 主会话串行，步骤不变。
 
 ## 八、骨架差异比对与报告

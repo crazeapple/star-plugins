@@ -51,7 +51,7 @@
 遇到 `@` 文件引用时，用读文件工具按需加载：按当前任务实际需要懒加载，禁止预先加载全部；加载后的内容视为强制指令，优先级高于默认行为；需要时递归跟随引用。
 ```
 
-`.opencode/commands/<名称>.md` 存根（与 `.claude/commands/*.md` 一一对应）：description 从对应源文件 frontmatter 原样复制（值以 `references/command-specs.md` 命令规格表为唯一来源），正文仅 `@` 引用与参数行，格式如下（其余 6 个同构）：
+`.opencode/commands/<名称>.md` 存根（与 `.claude/commands/*.md` 一一对应）：description 从对应源文件 frontmatter 原样复制（值以 `references/command-specs.md` 命令规格表为唯一来源），正文仅 `@` 引用与参数行，格式如下（其余 7 个同构）：
 
 ```markdown
 ---
