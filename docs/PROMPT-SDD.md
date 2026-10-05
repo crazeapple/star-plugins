@@ -221,7 +221,7 @@
 
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
-  | sdd-intake | Capture a new requirement and shape it into initiatives or proposals | 新需求受理（含插单与回看拆解） | 可选：需求描述 | 先跑维护/需求分类三问，判维护直接做并结束；再按单/多交付物分流：直接发 P 或立 I 拆解 |
+  | sdd-intake | Capture a new requirement or requirement documents and shape them into initiatives or proposals | 新需求受理（含插单与回看拆解）；文档材料受理（一至多份） | 可选：需求描述，或一至多份文档（路径 / 粘贴） | 先跑维护/需求分类三问，判维护直接做并结束；再按单/多交付物分流：直接发 P 或立 I 拆解；文档输入严格消费（拆解映射经用户确认，判据不能少、不能多；材料不收编；未覆盖落构想池） |
   | sdd-finalize | Finalize an exploring proposal into a spec | 探索定稿 | 可选：P-XXX | exploring→specified 行；执行前过软门自查（`Acceptance mode` = auto 增自查项，全部 AC 已绑定验证命令方许定稿） |
   | sdd-split | Split a finalized proposal into design tasks | 定稿后拆任务 | 必填：P-XXX | specified→implementing 行 |
   | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX：从首个未完成 T 起顺序推进（doing → 实现 → 回填 → done）至全 done；接 T-XXX：仅该 Task；缺省：下一个 todo T；任一 Task 状态变化行；全任务 done → 执行 verifying 转换（见矩阵：合并 dev → test、删 worktree 与 dev 分支、交付 hash、列验收清单表格）+ 进入验证（自动验证按 spec 验证方式分派，已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认，映射失败按验证失败处理；重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻并上报），主工作区检出 test；auto 模式全绿即自动走 verifying→accepted 行，manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |

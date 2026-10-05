@@ -6,7 +6,7 @@
 
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
-  | sdd-intake | Capture a new requirement and shape it into initiatives or proposals | 新需求受理（含插单与回看拆解） | 可选：需求描述 | 先跑维护/需求分类三问，判维护直接做并结束；再按单/多交付物分流：直接发 P 或立 I 拆解 |
+  | sdd-intake | Capture a new requirement or requirement documents and shape them into initiatives or proposals | 新需求受理（含插单与回看拆解）；文档材料受理（一至多份） | 可选：需求描述，或一至多份文档（路径 / 粘贴） | 先跑维护/需求分类三问，判维护直接做并结束；再按单/多交付物分流：直接发 P 或立 I 拆解；文档输入走「文档受理」条款 |
   | sdd-finalize | Finalize an exploring proposal into a spec | 探索定稿 | 可选：P-XXX | exploring→specified 行；执行前过软门自查（`Acceptance mode` = auto 增自查项，全部 AC 已绑定验证命令方许定稿） |
   | sdd-split | Split a finalized proposal into design tasks | 定稿后拆任务 | 必填：P-XXX | specified→implementing 行 |
   | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX：从首个未完成 T 起顺序推进（doing → 实现 → 回填 → done）至全 done；接 T-XXX：仅该 Task；缺省：下一个 todo T；任一 Task 状态变化行；全任务 done → 执行 verifying 转换（见矩阵：合并 dev → test、删 worktree 与 dev 分支、交付 hash、列验收清单表格）+ 进入验证（自动验证按 spec 验证方式分派，已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认，映射失败按验证失败处理；重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻并上报），主工作区检出 test；auto 模式全绿即自动走 verifying→accepted 行，manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
@@ -14,6 +14,11 @@
   | sdd-board | Show initiative and proposal status overview | 查看状态（只读） | 可选：I-XXX / P-XXX | 无矩阵行：读 INDEX + INITIATIVE + design 任务表输出摘要（含需求组聚合），不改任何文档 |
   | sdd-archive | Archive accepted proposals into the archive area | 归档 | 可选：P-XXX（缺省全部 accepted） | 归档行 |
   | sdd-config | Show and edit governance configuration | 查看或修改治理配置（`Acceptance mode` / `Verification retry limit` 等） | 可选：配置项与新值（缺省进入交互菜单，逐项现值呈现、循环切值） | 无矩阵行：读改 runtime「治理配置」区，写回后 mdLint 零 error 方回报 |
+
+- **文档受理（intake 文档输入条款）**：`$ARGUMENTS` 为一至多份文档（路径或粘贴；体裁不透明：需求文档、开发文档、可含测试套件；不建模材料来源）。流程：读材料（条目天然是需求，维护项仅在对账中现身）→ 拆解定界 → 拆解映射确认 → 落位，此后 intake 既有链接管
+- **拆解定界**：拆为提案粒度交付单元，立 I 锚定、拆多 P（`source: I-XXX`）；含言语行为分辨（建造目标与现状语境、外部约定区分，如「支付走微信支付」是约束非待建）；存量对账按需触发，仅当条目疑似与既有提案、活跃工作或存量代码重叠时查证记处置，取证治理账优先（INDEX 全状态提案、INITIATIVE），代码与 git 历史兜底，材料原项目不可见也不看；处置分类：治理账已覆盖不新立（部分覆盖则新 P 收窄为缺口）、代码已有账上无以现实为准（不立档，映射行记「已满足 + 证据」）或材料为准（立 P 改造）、偏差实现同前仲裁、未实现正常落位
+- **拆解映射确认**：材料每个部分显式去向（P、构想池、约束落 spec 背景、或「背景叙述不落档」一行带理由），判据不能少、不能多；确认后一切新增走变更留痕升版
+- **落位与材料处置**：批量建 P 全部以 exploring 为起点，含糊与清晰不设分流机制（exploring 自然吸收含糊），此后 intake 既有链接管；映射确认完毕材料即无用，不冻结、不收编、不入库，文件删留归用户；I 条目记一行产物统计（只记库内实体、禁指称材料内部结构，如「文档受理：立 P ×20（其中探索 ×5）、构想池 +3」）；未覆盖与暂缓条目默认落构想池；底稿原始叙述按「用户原话逐字保留」执行，文档输入时即该提案范围内的材料原文逐字收录，不依赖也不指称已弃置的材料；无独立仲裁档案与对账文档
 
 - 模板四件套（sdd/templates/ 下固定文件，源 = 本技能 `templates/` 目录；P-XXX/T-XXX/I-XXX 为占位，建文件时替换为实际号；`source` 行仅提案源自 I-XXX 时生成，独立提案删除此行），**骨架即规格**，见下。**设计是实现的副产品，不是事前作文**：定稿后建骨架、每 Task 完成回填、verifying 时补全置 finalized。
 
