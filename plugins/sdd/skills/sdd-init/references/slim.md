@@ -78,7 +78,7 @@
 | 构想成熟受理为 P | 发 P 号建档，原构想行移除 |
 | exploring→implementing（/sdd-intake 拆分完成时） | 定稿软门自查（对话内：AC 填实、方案已定、无疑虑）→ 任务表拆分（任务须具体可执行，禁探索性任务）+ INDEX 更新 |
 | 任一 Task 状态变化（/sdd-start） | 更新 design 任务表 + 任务详情小节回填 + 显著变化记入 CHANGELOG `[Unreleased]` |
-| 全任务 done | INDEX 更新 + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 人工测试步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept |
+| 全任务 done | INDEX 更新 + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 验证步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 提示验收（主工作区即验证环境；自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，UI 类用户人工操作）；全绿且无人工类 AC 提示用户可发起 /sdd-accept |
 | implementing→accepted（/sdd-accept） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ design 置 finalized + 通过的验收清单表格追加 journal + journal 节冻结 + INDEX 更新 + CHANGELOG 三源核对补全 `[Unreleased]` 并更名为 `[版本] - 验收日`，其上新建空 `[Unreleased]`（六类、不含治理 ID；standalone 落外层中性 message）+ 打 annotated tag（版本格式取工程约定节登记，信息取本次 CHANGELOG 条目首行，打在当前分支 HEAD；standalone 恒在外层项目仓） |
 | →on-hold / rejected | INDEX 改状态；rejected 须写原因，journal 节冻结并标注；实现代码留原地，由 git 历史兜底 |
 | 定稿后需求变更 | spec 正文 + changelog + version 递增 + 受影响 Task 评估，禁静默覆盖 |
@@ -90,7 +90,7 @@
 - **R3** 探索与讨论实时直写 `exploring/journal.md` 对应 P 节（只追加、不重写历史），结论演进走 spec changelog
 - **R4** 被否备选禁删，记入 design 关键决策表，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
-- **R6** 更新任务表 + 回填 design；全任务 done 列出验收清单表格并提示人工测试；测试通过后 /sdd-accept
+- **R6** 更新任务表 + 回填 design；全任务 done 列出验收清单表格（AC 标注验证方式）并提示验收；自动验证：简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报；简报为单个 Task（任务级并发）或不使用并行推进的，由主会话执行。失败自动修复重验，全绿且无人工类 AC 提示用户可验收
 - **R7** 验收节点显式建议 /sdd-accept 保人工确认；提交信息 title 与 body 不含治理 ID；需要引用治理实体时，在 footer 区（body 后空一行、逐行）按 trailer 惯例记，关键词随本提交对实体的作用而定，无引用则不写（Task 完成 → `Closes: T-XXX`，accept 验收提案 → `Closes: P-XXX`，验收阶段修复已完成 Task 的缺陷 → `Fixes: T-XXX`，一 Task 多提交时的非收尾提交等 → `Refs: T-XXX`）；开发过程中的自我修正不属修复语义，随所在 Task 完成提交记；footer 区可并存项目自有 trailer，也可有多个 trailer；standalone 形态项目仓提交不含治理 ID、治理引用与 sdd 字样（无痕化），内层治理仓提交不受此限；push 永远手动；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）。本次提交涉及工具链工件（依赖清单、构建配置、迁移 SQL、语言脚本等）且该类未登记校验覆盖时，登记闸门启动：主会话给出候选工具建议，由用户选定并登记或扩展校验命令，执行通过后方可提交；凡入库的工具链，其 lint 与 format 必配，此为工程化要求，闸门无跳过，登记后随技术栈定型更新。
 
 ## 自治边界（判断自动，动作守门；写入宪法）
@@ -109,7 +109,7 @@
 
 ## 并行开发（可选节）
 
-`/sdd-start` 默认单智能体顺序推进（按任务表取 T）；仅用户明确要求时切「派发-回收」两段式：主会话组装自包含任务简报（任务 + 验收标准 + 规格 / 设计节选）派发，回收逐条核验、统一更新任务表。约束：`sdd/` 文档只允许主会话写入，子智能体只读文档、写代码、对话回报（做了什么 / 验收逐条结论 / 规格偏差走 R5 上报）；doing 即锁定，禁重复派发。并行派发能力以实证判定：检索不到派发工具不构成环境不支持的证据（各环境派发机制不同，常驻工具未必进入检索索引），仅实际派发调用失败方可降级串行，并在回报注明失败事实与所测环境。已实证案例：Agent 工具是 Claude Code 核心工具，不进延迟工具索引，所以 ToolSearch 检索不到。
+`/sdd-start` 默认单智能体顺序推进（按任务表取 T）；仅用户明确要求时切「派发-回收」两段式：主会话组装自包含任务简报派发（简报范围按需组装：单个 Task 或提案全部任务清单，对应任务级与提案级并行；含验收标准与规格 / 设计节选），回收逐条核验、统一更新任务表。约束：`sdd/` 文档只允许主会话写入，子智能体只读文档、写代码、对话回报（做了什么 / 验收逐条结论 / 规格偏差走 R5 上报）；doing 即锁定，禁重复派发。并行派发能力以实证判定：检索不到派发工具不构成环境不支持的证据（各环境派发机制不同，常驻工具未必进入检索索引），仅实际派发调用失败方可降级串行，并在回报注明失败事实与所测环境。已实证案例：Agent 工具是 Claude Code 核心工具，不进延迟工具索引，所以 ToolSearch 检索不到。
 
 ## Markdown 书写规范（宪法此节以本节为唯一规格源；`mdlint.sh` 按此实现）
 
@@ -179,7 +179,7 @@
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
   | sdd-intake | Capture a new requirement, or continue planning an in-flight proposal, until it is split into concrete tasks; vague ideas park in the INDEX initiative list | 新念头与需求受理（含插单）、在途 P 继续规划 | 可选：需求 / 念头描述 / P-XXX（在途 P 重入） | 一问分类：维护直接做并结束；受理或重入 → 探索澄清 + 定稿软门 + 拆 T（exploring→implementing 行）；尚模糊 → 构想小节加行 |
-  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX → 从首个未完成 T 起依次推进（doing → 实现 → 回填实现记录 → done）至全部完成；接 T-XXX → 仅该 Task；缺省 → 下一个 todo T；全任务 done → INDEX 更新 + 列验收清单表格 + 提示人工测试（主工作区即测试环境）；测试通过后 /sdd-accept；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
+  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX → 从首个未完成 T 起依次推进（doing → 实现 → 回填实现记录 → done）至全部完成；接 T-XXX → 仅该 Task；缺省 → 下一个 todo T；全任务 done → INDEX 更新 + 列验收清单表格 + 提示验收（主工作区即验证环境；自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，UI 类用户人工操作）；全绿且无人工类 AC 提示用户可发起 /sdd-accept；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
   | sdd-board | Show proposal status overview | 查看状态（只读） | 可选：P-XXX | 无矩阵行：读 INDEX 输出摘要（首行自报 edition 与版本），不改任何文档 |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收 | 必填：P-XXX | implementing→accepted 行；完成回报建议受理下一个需求 |
 
