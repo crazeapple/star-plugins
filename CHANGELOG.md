@@ -2,6 +2,14 @@
 
 本仓发布以 tag 为版本，每个版本列出当次包含的 sdd 插件版本节点。格式参照 Keep a Changelog，条目分「新增 / 变更 / 修复 / 移除」四类，新版本在上。
 
+## [Unreleased]
+
+### sdd v2.6.0
+
+#### 新增
+
+- 自动化验证体系：AC 契约化（spec 验收标准表格化，验证方式绑定验证命令或人工，auto 模式全部 AC 绑定方许定稿）、runtime 验证命令区（名称 × 命令 × 类别 × 范围，登记闸门增测试框架与配置类目并加升级存量补记）与治理配置区（`Acceptance mode` 缺省 auto、`Verification retry limit` 缺省 3，经 `/sdd-config` 查看 / 切换）、证据制度（逐 AC 用例指认与摘要留档，映射失败按验证失败处理）、自动验收流水（auto 验证全绿自动走 accept 链无需发起，重试超限停驻上报，manual 模式经旁通阀 `/sdd-accept` 放行）、init 询问增验证模式（默认 auto）
+
 ## [1.6.0] - 2026-10-05
 
 ### sdd v2.5.0
