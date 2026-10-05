@@ -180,7 +180,22 @@ sdd/
 ## 十五、落地阶段
 
 1. **设计**：本文件即设计总纲，交仓库所有者审阅。
-2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现，含 `SKILL.md`、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 `INITIATIVE.md` 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（`mdlint.sh`、`pre-commit.sh`，后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。edition 体系（§十七）落笔时增补：references 增 `slim.md`（slim 生成 / 校准 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。治理形态（§十八）落笔时增补（2.0.0）：统一结构重组（runtime ×2、`CLAUDE.md` / `AGENTS.md` 改项目骨架），references ×5 与 PROMPT-SDD 增形态分支，`scripts/` 增 `pre-commit-inner.sh`（内层 hook 变体），生成计数 inline full 31 / standalone 32、slim 20 / 21。slim 发布标记增补（2.0.1）：accept 打 annotated tag，发布语义与 full 对齐（§十七）。CHANGELOG 增补（2.1.0）：accept 收尾、tag 之前增补项目根 `CHANGELOG.md`（§十四），两 edition 统一，tag 信息取条目首行。test 串行与主干冻结增补（2.1.1）：test 串行（验收位唯一）、冲突一律在 test 解决、验收期内 main 代码不前进（§十四）。公开骨架减负（2.1.2）：`CLAUDE.md` 与 `AGENTS.md` 项目骨架删去智能体协作声明行（入口自解释，最小公开面）（§十八）。书写判据加固（2.1.3）：治理 ID 一律裸写、禁入行内代码并入 mdLint 执法（行内代码内出现即 warning）；文件名与键名组合必包、链接地址裸写（CONSTITUTION「Markdown 书写规范」）。并行误报防护（2.1.4）：并行派发能力以实证判定，检索不到不构成不支持证据，降级须实际调用失败并回报注明所测环境（CONSTITUTION「并行开发」）。登记闸门（2.2.0）：提交首次涉及未覆盖的工具链工件类时闸门启动，由用户选定工具并登记或扩展校验命令、执行通过后方可提交，凡入库工具链 lint 与 format 必配（CONSTITUTION R10）。版本格式定型前置（2.4.0）：init 询问并登记于 runtime 工程约定节，升级回读扩为四字段，存量无记录维持首个 tag 前询问（CONSTITUTION R10 / upgrade）。验收环节条件化（2.5.0）：验收清单 AC 标注验证方式，自动验证（简报范围为提案全部任务清单的由承接 subagent 执行，单个 Task 或不使用并行推进由主会话执行），失败自动修复重验，UI 交互类人工操作，纯自动提案全绿直接提示验收，列「人工测试步骤」更名「验证步骤」（CONSTITUTION 矩阵 / R6 / R10）。自动化验证体系增补（2.6.0）：AC 契约化（spec 验收标准表格、验证方式绑定命令或人工、auto 模式全绑定方许定稿）、runtime 验证命令区与治理配置区、证据制度（逐 AC 用例指认与摘要留档）、自动验收流水（`Acceptance mode` 门控，auto 全绿自动走 accept 链，`Verification retry limit` 停驻，`/sdd-config` 配置命令与旁通阀）、登记闸门扩展与升级补记（CONSTITUTION R7 / 矩阵 / §十九）。文档受理增补（2.7.0）：`/sdd-intake` 输入扩展为一至多份文档（体裁不透明），拆解映射经确认后批量落位（判据不能少、不能多），材料严格消费不收编，I 条目记产物统计，未覆盖落构想池（§六 / 命令规格「文档受理」条款）。
+2. **规格实现**：已按本设计完成 `plugins/sdd/skills/sdd-init/` 的实现，历次增补按版本列下。
+
+   - **初始实现**：`SKILL.md`、references ×4（constitution-design / command-specs / opencode-adapter / upgrade）、templates ×4（proposal/spec frontmatter 含 `source` 行；INITIATIVE 条目结构入模板）；生成清单 29 文件（含 `INITIATIVE.md` 与版本标记 `sdd/VERSION`），两次提交 19+10；工具 `scripts/` ×2（`mdlint.sh`、`pre-commit.sh`，后者安装为目标项目 `.git/hooks/pre-commit`，提交兜底、不入库，唯一机械强制 hook）；命令规格表与 OpenCode 存根同步。
+   - **edition 体系落笔增补**（§十七）：references 增 `slim.md`（slim 生成 / 校准 / 升 full 版逐字规格），`templates/slim/` 增 spec / design ×2，slim 生成清单 18 文件、两次提交 11+7。
+   - **治理形态落笔增补（2.0.0）**（§十八）：统一结构重组（runtime ×2、`CLAUDE.md` / `AGENTS.md` 改项目骨架），references ×5 与 PROMPT-SDD 增形态分支，`scripts/` 增 `pre-commit-inner.sh`（内层 hook 变体），生成计数 inline full 31 / standalone 32、slim 20 / 21。
+   - **slim 发布标记增补（2.0.1）**：accept 打 annotated tag，发布语义与 full 对齐（§十七）。
+   - **CHANGELOG 增补（2.1.0）**：accept 收尾、tag 之前增补项目根 `CHANGELOG.md`（§十四），两 edition 统一，tag 信息取条目首行。
+   - **test 串行与主干冻结增补（2.1.1）**：test 串行（验收位唯一）、冲突一律在 test 解决、验收期内 main 代码不前进（§十四）。
+   - **公开骨架减负（2.1.2）**：`CLAUDE.md` 与 `AGENTS.md` 项目骨架删去智能体协作声明行（入口自解释，最小公开面）（§十八）。
+   - **书写判据加固（2.1.3）**：治理 ID 一律裸写、禁入行内代码并入 mdLint 执法（行内代码内出现即 warning）；文件名与键名组合必包、链接地址裸写（CONSTITUTION「Markdown 书写规范」）。
+   - **并行误报防护（2.1.4）**：并行派发能力以实证判定，检索不到不构成不支持证据，降级须实际调用失败并回报注明所测环境（CONSTITUTION「并行开发」）。
+   - **登记闸门（2.2.0）**：提交首次涉及未覆盖的工具链工件类时闸门启动，由用户选定工具并登记或扩展校验命令、执行通过后方可提交，凡入库工具链 lint 与 format 必配（CONSTITUTION R10）。
+   - **版本格式定型前置（2.4.0）**：init 询问并登记于 runtime 工程约定节，升级回读扩为四字段，存量无记录维持首个 tag 前询问（CONSTITUTION R10 / upgrade）。
+   - **验收环节条件化（2.5.0）**：验收清单 AC 标注验证方式，自动验证（简报范围为提案全部任务清单的由承接 subagent 执行，单个 Task 或不使用并行推进由主会话执行），失败自动修复重验，UI 交互类人工操作，纯自动提案全绿直接提示验收，列「人工测试步骤」更名「验证步骤」（CONSTITUTION 矩阵 / R6 / R10）。
+   - **自动化验证体系增补（2.6.0）**：AC 契约化（spec 验收标准表格、验证方式绑定命令或人工、auto 模式全绑定方许定稿）、runtime 验证命令区与治理配置区、证据制度（逐 AC 用例指认与摘要留档）、自动验收流水（`Acceptance mode` 门控，auto 全绿自动走 accept 链，`Verification retry limit` 停驻，`/sdd-config` 配置命令与旁通阀）、登记闸门扩展与升级补记（CONSTITUTION R7 / 矩阵 / §十九）。
+   - **文档受理增补（2.7.0）**：`/sdd-intake` 输入扩展为一至多份文档（体裁不透明），拆解映射经确认后批量落位（判据不能少、不能多），材料严格消费不收编，I 条目记产物统计，未覆盖落构想池（§六 / 命令规格「文档受理」条款）。
 
 ## 十六、插件生命周期：升级与卸载
 
