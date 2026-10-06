@@ -40,7 +40,7 @@
    | ③ | 模板 ×4（按 §5 骨架生成）、`tools/mdlint.sh`（按 §4「校验」节实现并过自测向量）、`sdd/VERSION`（写版本值 `X.Y.Z+full`）、`.git/hooks/pre-commit`（按 §4「校验」节提交兜底生成并加可执行位）、archive/README（按 §4「归档」节生成） | §4「归档」+「校验」 |
    | ④ | OpenCode 适配 ×11（含 `sdd/runtime/opencode.md`） | §7 全文 |
 
-   **`sdd/runtime/claude.md` 与 `CLAUDE.md` 最后由主会话写**（引用全部生成物）；环境不支持 subagents 时按组序串行，步骤不变。写 `sdd/` 下文档的组完成时各自先跑 mdLint 自查。升级模式不走本步生成流程，改按 §8 就地合并（两路并行，`runtime/claude.md` 同样最后写）。
+   **`sdd/runtime/claude.md` 与 `CLAUDE.md` 最后由主会话写**（引用全部生成物）；组 subagent 回报工具缺失时按 §4「工具可用性实证」节处置（调用实证复核、重派一次）；环境不支持 subagents 或重派仍败时按组序串行，步骤不变。写 `sdd/` 下文档的组完成时各自先跑 mdLint 自查。升级模式不走本步生成流程，改按 §8 就地合并（两路并行，`runtime/claude.md` 同样最后写）。
 
    **standalone 形态专属动作**（治理形态选 standalone 时，主会话在生成组收尾执行）：`.gitignore` 不写（inline 三行惯例照旧）；写 `.git/info/exclude` 六行排除清单（`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`）；生成 `CLAUDE.local.md`（内容 `@sdd/runtime/claude.md`）；`git init sdd` 内层仓；内层 hook 按 §4「校验」节内层变体生成，装 `sdd/.git/hooks/pre-commit` 加可执行位。
 
@@ -207,9 +207,18 @@
 - **滚动立项**：accept 后回看需求组拆下一个；组内全部 P accepted → I 标完结。
 - **插单**：新想法落池不打断当前工作；不立刻做的 P 置 on-hold 排队。
 
+### 工具可用性实证
+
+- 一切工具可用性判定以实际调用为唯一判据，禁止以检索结论替代实证；检索不到（任何索引穷举）不构成工具不可用证据，单实例失败或单实例工具面缺失不构成环境不支持的证据
+- subagent 自报工具缺失前，必须以一次实际调用为证（检索穷举不构成回报依据）
+- 主会话收到工具缺失回报时，以调用实证复核为裁判；复核失败重派一次（简报要求新实例先以实际调用自检并回报调用结果），仍败方走既定回退并回报注明失败事实与所测环境；新案例经回报用户带回插件源登记本节反例清单，禁就地追加
+- 反例清单（实证案例，标注实证环境）：
+  - Claude Code：Agent 工具为核心工具，不进延迟工具索引，ToolSearch 检索不到，实际可用
+  - Claude Code：使用 Subagent 写文件时，发现无文件系统工具，而实际上基础工具（Read/Write/Edit/Grep 等）原生可用，不进 ToolSearch 延迟索引，直接调用即可
+
 ### 并行开发（可选节）
 
-/sdd-start 默认单智能体一步到位；仅用户明确要求时切「派发-回收」两段式：主会话组装自包含任务简报派发（简报范围按需组装：单个 Task 或提案全部任务清单，对应任务级与提案级并行；均含验收标准与规格/设计节选）；回收逐条核验、统一更新。约束：sdd/ 文档只允许主会话写入，子智能体只读文档、写代码、对话回报，发现规格问题回报主会话走 R5。并行派发能力以实证判定：检索不到派发工具不构成环境不支持的证据（各环境派发机制不同，常驻工具未必进入检索索引），仅实际派发调用失败方可降级串行，并在回报注明失败事实与所测环境。已实证案例：Agent 工具是 Claude Code 核心工具，不进延迟工具索引，所以 ToolSearch 检索不到。
+/sdd-start 默认单智能体一步到位；仅用户明确要求时切「派发-回收」两段式：主会话组装自包含任务简报派发（简报范围按需组装：单个 Task 或提案全部任务清单，对应任务级与提案级并行；均含验收标准与规格/设计节选）；回收逐条核验、统一更新。约束：sdd/ 文档只允许主会话写入，子智能体只读文档、写代码、对话回报，发现规格问题回报主会话走 R5。并行派发与相关工具的可用性判定遵「工具可用性实证」节。
 
 ### 归档（/sdd-archive）
 
@@ -495,7 +504,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 - 治理组：`CONSTITUTION.md` 重生成 + `sdd/runtime/claude.md` 回读材料整理 + `INDEX.md` / `INITIATIVE.md` / `amendments/amend.md` 骨架锚点只读比对，自读本节 + §4 全文 + §5 生成骨架节。
 - 机械资产组：命令 ×8、模板 ×4、`mdlint.sh`、hook（含 standalone 内层变体）、OpenCode 适配 ×11 覆盖，自读本节 + §7 全文。
-- 主会话自读本节全文（`runtime/claude.md` 仲裁、验证与提交操盘）；不支持 subagents 时按治理组 → 机械资产组 → 主会话串行，步骤不变。
+- 主会话自读本节全文（`runtime/claude.md` 仲裁、验证与提交操盘）；组 subagent 回报工具缺失时按 §4「工具可用性实证」节处置（调用实证复核、重派一次）；不支持 subagents 或重派仍败时按治理组 → 机械资产组 → 主会话串行，步骤不变。
 
 ### 提交与回报
 

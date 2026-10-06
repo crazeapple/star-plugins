@@ -63,7 +63,7 @@
 
 - 组 U① 治理组：`CONSTITUTION.md` 重生成 + `INDEX.md` / `INITIATIVE.md` / `amendments/amend.md` 骨架锚点只读比对（§八），自读本文件全文 + `references/constitution-design.md` 全文 + `references/command-specs.md` 生成骨架节。
 - 组 U② 机械资产组：命令 ×8、模板 ×4、`mdlint.sh`、hook（含 standalone 内层变体）、OpenCode 适配 ×11 覆盖，自读本文件全文 + `references/opencode-adapter.md` 全文。
-- 主会话自读本文件全文（`runtime/claude.md` 仲裁、验证与提交操盘，升级模式不适用「主会话无需预读」豁免）；不支持 subagents 时按 U① → U② → 主会话串行，步骤不变。
+- 主会话自读本文件全文（`runtime/claude.md` 仲裁、验证与提交操盘，升级模式不适用「主会话无需预读」豁免）；组 subagent 回报工具缺失时按 `references/constitution-design.md`「工具可用性实证」节处置（调用实证复核、重派一次）；环境不支持 subagents 或重派仍败时按 U① → U② → 主会话串行，步骤不变。
 
 ## 八、骨架差异比对与报告
 
