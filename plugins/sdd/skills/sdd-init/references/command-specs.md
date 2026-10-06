@@ -13,7 +13,7 @@
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收（`Acceptance mode` = manual 时的发起接口；auto 模式自动走链，一般无需调用） | 必填：P-XXX | verifying→accepted 行（含 CHANGELOG 增补与打 tag；auto 模式验证全绿自动触发）；完成回报固定建议「回看需求组拆下一个」 |
   | sdd-board | Show initiative and proposal status overview | 查看状态（只读） | 可选：I-XXX / P-XXX | 无矩阵行：读 INDEX + INITIATIVE + design 任务表输出摘要（含需求组聚合），不改任何文档 |
   | sdd-archive | Archive accepted proposals into the archive area | 归档 | 可选：P-XXX（缺省全部 accepted） | 归档行 |
-  | sdd-config | Show and edit governance configuration | 查看或修改治理配置（`Acceptance mode` / `Verification retry limit` 等） | 可选：配置项与新值（缺省进入交互菜单，逐项现值呈现、循环切值） | 无矩阵行：读改 runtime「治理配置」区，写回后 mdLint 零 error 方回报 |
+  | sdd-config | Show and edit governance configuration | 查看或修改治理配置（`Acceptance mode` / `Verification retry limit` 等） | 可选：配置项与新值（缺省进入交互菜单，逐项现值呈现、循环切值） | 无矩阵行：读改 runtime「治理配置」区，写回后 mdLint 零 error 方回报；完成回报仅含本次查看或修改的配置项，不涉及工程约定其余字段（版本格式等 init 定型项非配置辖区） |
 
 - **文档受理（intake 文档输入条款）**：`$ARGUMENTS` 为一至多份文档（路径或粘贴；体裁不透明：需求文档、开发文档、可含测试套件；不建模材料来源）。流程：读材料（条目天然是需求，维护项仅在对账中现身）→ 拆解定界 → 拆解映射确认 → 落位，此后 intake 既有链接管
 - **拆解定界**：拆为提案粒度交付单元，立 I 锚定、拆多 P（`source: I-XXX`）；含言语行为分辨（建造目标与现状语境、外部约定区分，如「支付走微信支付」是约束非待建）；存量对账按需触发，仅当条目疑似与既有提案、活跃工作或存量代码重叠时查证记处置，取证治理账优先（INDEX 全状态提案、INITIATIVE），代码与 git 历史兜底，材料原项目不可见也不看；处置分类：治理账已覆盖不新立（部分覆盖则新 P 收窄为缺口）、代码已有账上无以现实为准（不立档，映射行记「已满足 + 证据」）或材料为准（立 P 改造）、偏差实现同前仲裁、未实现正常落位
