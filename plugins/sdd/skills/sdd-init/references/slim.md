@@ -2,7 +2,7 @@
 
 > 本文件是 slim edition 的唯一规格源（设计决策见仓库 `docs/` 目录的 `DESIGN-SDD.md` §十七）；slim = full 的真子集，full 侧规格（constitution-design / command-specs / upgrade / opencode-adapter）一字不改。edition 分叉只发生在 `SKILL.md` dispatch 层。
 
-## 一、生成清单（inline：7 治理文件 + 1 治理工具 + 1 版本标记 + 5 命令 + 8 适配 = 22 文件；standalone 再 +`CLAUDE.local.md` = 23）
+## 一、生成清单（inline：7 治理文件 + 1 治理工具 + 1 版本标记 + 5 命令 + 8 适配 = 22 文件；standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加与 inline 同数 = 22）
 
 ```
 <项目根>/
@@ -200,7 +200,7 @@
 ## 七、验证与提交（slim 全新安装）
 
 1. 失败处置总则同 `SKILL.md`「四、验证与回报」（失败修复后重跑全量验证，禁止带病提交）。
-2. 文件齐全、结构正确、必填项已填（inline 22 文件：7 治理文件 + 1 治理工具 + 1 版本标记 + 5 命令 + 8 适配；standalone 23 = 再 +`CLAUDE.local.md`）；`sdd/VERSION` 内容 = 插件清单 `version` + `+slim`；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单；standalone 另有内层 `sdd/.git/hooks/pre-commit`）。
+2. 文件齐全、结构正确、必填项已填（inline 22 文件：7 治理文件 + 1 治理工具 + 1 版本标记 + 5 命令 + 8 适配；standalone 同数 22，不写 `.gitignore`、改生成 `CLAUDE.local.md`）；`sdd/VERSION` 内容 = 插件清单 `version` + `+slim`；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单；standalone 另有内层 `sdd/.git/hooks/pre-commit`）。
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`，零 error。
 4. ID / 状态机 / 矩阵在 CONSTITUTION、INDEX、模板、5 命令间交叉一致。
 5. `git check-ignore` 与 OpenCode 三段验证同 `SKILL.md` 条款（存根 ×5 在位，description 与本文件 §五命令表逐字一致；`opencode run '/sdd-board'` 判据为退出码 0 且输出为看板摘要、不含未定义命令措辞；opencode 未安装时跳过并在回报注明）。
@@ -230,5 +230,5 @@
 - **原样不动**：`sdd/specs/` 全部文件、`sdd/exploring/journal.md`、`sdd/tools/mdlint.sh`、`sdd/runtime/opencode.md`。
 - **版本标记**：`VERSION` → `X.Y.Z+full`。
 - **提交**：前置校验 git 索引干净（`git diff --cached --quiet`）；两批显式列举：第一批治理资产（CONSTITUTION + `CLAUDE.md` + INDEX + INITIATIVE + amend + templates ×4 + 命令 ×8 + VERSION + archive/README），消息固定 `chore: 升级 SDD 治理体系至完整版（edition: full）`；第二批 OpenCode（存根 ×3），消息固定 `chore: 补齐 OpenCode 适配存根至完整版`；零变更批次跳过。
-- **验证**：按 full 清单全量验证（inline 33 文件齐备、standalone 34；OpenCode 三段验证同 `SKILL.md` 条款、mdLint 零 error）。
+- **验证**：按 full 清单全量验证（inline 33 文件齐备、standalone 同数 33；OpenCode 三段验证同 `SKILL.md` 条款、mdLint 零 error）。
 - **回报**：edition 去向（`0.1.0+slim → 0.2.0+full` 形态）+ 补齐清单 + 构想迁移对照表 + 跳过批次 + commit hash + mdLint 结论 + 验证结论 + 升级耗时。

@@ -10,8 +10,8 @@
 
 以下治理设计已全部确认，**直接执行，禁止重新设计、增删决策**。
 
-> 提示词版本：2.8.2（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION`（`version+full`）的值源）
-> **TL;DR**：① 前置检查（判定全新 / 升级模式与治理形态）→ ② 问必填项（仅全新，含治理形态，默认 inline 且 init 后不可切换）→ ③ 全新：四路并行生成 33 文件（standalone 34）；升级：按 §8 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；升级按实际变更）。
+> 提示词版本：2.8.3（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION`（`version+full`）的值源）
+> **TL;DR**：① 前置检查（判定全新 / 升级模式与治理形态）→ ② 问必填项（仅全新，含治理形态，默认 inline 且 init 后不可切换）→ ③ 全新：四路并行生成 33 文件（standalone 同数）；升级：按 §8 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；升级按实际变更）。
 > **三条禁忌**：禁止擅自覆盖既有文件；禁止重新设计、增删决策；禁止跳过任何验证。
 
 ## 二、初始化流程（四步，顺序固定）
@@ -48,7 +48,7 @@
 
 > **中断恢复**：会话中断后续跑时，已生成文件若与 §6 清单吻合即视为本初始化产物，跳过前置检查的冲突判定；对照其清单补齐缺失文件、已验证项不重跑、必填项从已生成文件回读（项目名/定位见 `CLAUDE.md`），回读不到才询问；若存在清单外文件，照常停止报告冲突。升级模式中断 → 直接重跑升级（幂等，见 §8）。
 
-## 三、文档结构（20 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件 = 33；standalone 再 +`CLAUDE.local.md` = 34）
+## 三、文档结构（20 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件 = 33；standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加同数 33）
 
 ```
 <项目根>/
@@ -80,7 +80,7 @@
 
 运行态目录不预建（见 §4「层级与分区」）。
 
-另生成不入库的 `.git/hooks/pre-commit`（R8 提交兜底，见 §4「校验」节）；standalone 形态另装内层 `sdd/.git/hooks/pre-commit`（辖区变体）、写 `.git/info/exclude` 六行排除清单、`git init sdd` 内层仓。不入 33 / 34 文件清单。
+另生成不入库的 `.git/hooks/pre-commit`（R8 提交兜底，见 §4「校验」节）；standalone 形态另装内层 `sdd/.git/hooks/pre-commit`（辖区变体）、写 `.git/info/exclude` 六行排除清单、`git init sdd` 内层仓。不入 33 文件清单（standalone 同数）。
 
 ## 四、治理体系核心设计（生成 `CONSTITUTION.md`，写入宪法，禁止改动）
 
@@ -363,7 +363,7 @@
 ## 六、验证与回报
 
 1. **失败处置（总则）**：任何验证失败，修复后必须重跑对应**全量**验证（mdLint 失败即对全部生成文件重跑，非仅复验出错项），全部通过方可进入下一步；禁止跳过任何验证步骤（明示豁免者除外）、禁止带病提交、禁止以「已修过」为由免检。
-2. 文件齐全、结构正确、必填项已填（inline 33 文件：20 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件；standalone 34 = 再 +`CLAUDE.local.md`）；`sdd/VERSION` 内容与本提示词顶部版本 + `+full` 一致；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 六行）；
+2. 文件齐全、结构正确、必填项已填（inline 33 文件：20 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件；standalone 同数 33，不写 `.gitignore`、改生成 `CLAUDE.local.md`）；`sdd/VERSION` 内容与本提示词顶部版本 + `+full` 一致；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 六行）；
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`（standalone 下追加 `CLAUDE.local.md`），零 error；
 4. ID/状态机/矩阵在 CONSTITUTION、INDEX、INITIATIVE、模板、8 命令间交叉一致；
 5. `git check-ignore -v .claude/settings.local.json .opencode/tmp.local.json`（后一文件名任取一个不存在的即可）→ 均命中；`git check-ignore .opencode/opencode.json` → inline 无输出（未被忽略）/ standalone 命中（排除清单生效）；

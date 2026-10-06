@@ -198,6 +198,7 @@ sdd/
    - **文档受理增补（2.7.0）**：`/sdd-intake` 输入扩展为一至多份文档（体裁不透明），拆解映射经确认后批量落位（判据不能少、不能多），材料严格消费不收编，I 条目记产物统计，未覆盖落构想池（§六 / 命令规格「文档受理」条款）。
    - **工具可用性实证增补（2.8.0）**：宪法新增「工具可用性实证」正文节（实际调用为唯一判据、自报前须调用实证、复核失败重派一次、反例清单两例），并行开发节实证句并入该节；init 回退判定实证化（§十三 / CONSTITUTION「工具可用性实证」）。
    - **OpenCode 验证面修复（2.8.1）**：opencode v2 起 `debug config` 仅列配置来源、不再呈现命令清单，SKILL / slim / PROMPT 验证改三段式（配置面 `debug config`、存根契约文件核验、命令发现 `opencode run '/sdd-board'` 输出与命令规格一致的看板摘要，sdd-* 同构一通俱通），命令目视归冒烟（opencode-adapter 机制依据更新核实记录）。
+   - **standalone 生成计数纠正（2.8.3）**：standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加与 inline 同数（full 33 / slim 22）；2.0.0 起「再 +`CLAUDE.local.md`」口径漏了对应减项，历次 standalone 计数（32 / 21、34 / 23）均多一，现行落点已全部纠正（§十八 / SKILL / slim / PROMPT）。
 
 ## 十六、插件生命周期：升级与卸载
 
@@ -243,7 +244,7 @@ sdd/
   9. init 验证与回报带形态变体（文件数、笔数、exclude、内层 hook、`CLAUDE.local.md`）。
   10. 升级按 `sdd/.git` 判形态；standalone 校准治理提交 `git -C sdd`、项目仓零治理提交（公开骨架变更例外，中性 message）、内层 hook 重装；inline 旧安装一次性迁移（规格见 `upgrade.md`）。
 
-- **生成计数**：inline full 31 / slim 20；standalone full 32 / slim 21（= 现基线 + runtime ×2，standalone 再 +`CLAUDE.local.md`，实现时逐文件核对）。自动化验证体系增补（2.6.0）：命令 +1、存根 +1，计数再 +2（inline full 33 / slim 22；standalone full 34 / slim 23，实现时逐文件核对）。
+- **生成计数**：inline full 31 / slim 20；standalone full 32 / slim 21（= 现基线 + runtime ×2，standalone 再 +`CLAUDE.local.md`，实现时逐文件核对）。自动化验证体系增补（2.6.0）：命令 +1、存根 +1，计数再 +2（inline full 33 / slim 22；standalone 与 inline 同数，2.8.3 纠正此前错写的 34 / 23），实现时逐文件核对。
 - **八面表（init 判据素材）**：
 
   | 受影响面 | inline | standalone |
