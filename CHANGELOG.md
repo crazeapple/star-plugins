@@ -2,6 +2,14 @@
 
 本仓发布以 tag 为版本，每个版本列出当次包含的 sdd 插件版本节点。格式参照 Keep a Changelog，条目分「新增 / 变更 / 修复 / 移除」四类，新版本在上。
 
+## [Unreleased]
+
+### sdd v2.8.3
+
+#### 修复
+
+- standalone 生成计数纠正：standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加与 inline 同数（full 33 / slim 22）；2.0.0 起「再 +`CLAUDE.local.md`」口径漏对应减项，历次 standalone 计数均多一，现行落点（§十八 / SKILL / slim / PROMPT）全部纠正
+
 ## [1.7.1] - 2026-10-06
 
 ### sdd v2.8.2
