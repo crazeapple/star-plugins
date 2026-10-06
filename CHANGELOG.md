@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### sdd v2.8.1
+
+#### 修复
+
+- OpenCode 验证面适配 v2：`opencode debug config` 自 v2 仅列配置来源、不再呈现命令，验证改三段式（配置面 debug config 断言 `"lsp": true` 与 `instructions`、存根契约文件核验、命令发现以 `opencode run '/sdd-board'` 的看板摘要与退出码为判据，模型或凭据未配置时跳过该段并回报注明）；机制依据更新核实记录（2026-10 实测 v2.0.22，命令注册无模型无关结构验证面）
+
 ### sdd v2.8.0
 
 #### 新增
