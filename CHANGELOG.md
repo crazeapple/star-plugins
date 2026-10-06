@@ -2,6 +2,14 @@
 
 本仓发布以 tag 为版本，每个版本列出当次包含的 sdd 插件版本节点。格式参照 Keep a Changelog，条目分「新增 / 变更 / 修复 / 移除」四类，新版本在上。
 
+## [Unreleased]
+
+### sdd v2.8.2
+
+#### 修复
+
+- sdd-config 完成回报辖区限定为配置项本身（`Acceptance mode` / `Verification retry limit`），工程约定其余字段（版本格式等 init 定型项）不再进入回报
+
 ## [1.7.0] - 2026-10-06
 
 ### sdd v2.8.1
