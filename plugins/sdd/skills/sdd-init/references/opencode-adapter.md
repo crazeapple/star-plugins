@@ -67,7 +67,9 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 ## 机制依据与禁改道清单
 
-机制依据（核实日期：2026-08，OpenCode 官方文档与源码；版本演进后如遇行为不符须复核，勿照单全收）：
+机制依据（核实日期：2026-10 实测 opencode v2.0.22，辅以官方文档；版本演进后如遇行为不符须复核，勿照单全收）：
+
+- `opencode debug config` 自 v2 起仅列配置来源清单，不再呈现命令；项目 `.opencode/opencode.json` 被发现且解析（`lsp` 与 `instructions` 在输出 `info` 中）。命令识别无模型无关的结构验证面（`--format json` 流仅含助手侧部件、用户消息不回显，会话存储为内部 SQLite），验证取行为级强约束证据：`opencode run '<命令>'` 双向实测（2026-10，v2.0.22），未注册命令被会话模型明示「未定义」且不读任何命令文件，已注册命令沿 `@` 引用读指令文件并按命令体产出
 
 - `.opencode/` 内主配置仅认 `opencode.json` / `opencode.jsonc`；缺失文件安全降级为空配置
 - 根 `AGENTS.md` 存在时 OpenCode 不再回退读 `CLAUDE.md`；2.0.0 起 `AGENTS.md` 为项目骨架，治理规则改经 `instructions` 加载 `sdd/runtime/` 两文件，不依赖 `CLAUDE.md`

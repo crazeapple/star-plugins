@@ -43,7 +43,7 @@
 
 1. 起始时间戳（`date +%s`）→ 触发判定（§一）→ 必填项回读（§三）
 2. 两路并行校准（§七）→ 主会话最后重写 `sdd/runtime/claude.md` 与 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/VERSION`（内容 = `${CLAUDE_SKILL_DIR}/../../.claude-plugin/plugin.json` 的 `version` 原样）
-3. 全量验证（复用 `SKILL.md`「四、验证与回报」全量项：mdLint 零 error + 交叉一致 + check-ignore + opencode debug config）→ 提交（§五）→ 回报（§五）
+3. 全量验证（复用 `SKILL.md`「四、验证与回报」全量项：mdLint 零 error + 交叉一致 + check-ignore + OpenCode 三段验证）→ 提交（§五）→ 回报（§五）
 
 **幂等**：校准按「现行规格 vs 磁盘现状」状态化执行，不依赖版本值分支；升级可安全重跑，中断恢复 = 直接重跑（中断不会造成签名集缺损，重跑仍命中升级模式）。
 

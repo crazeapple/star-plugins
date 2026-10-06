@@ -367,7 +367,7 @@
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`（standalone 下追加 `CLAUDE.local.md`），零 error；
 4. ID/状态机/矩阵在 CONSTITUTION、INDEX、INITIATIVE、模板、8 命令间交叉一致；
 5. `git check-ignore -v .claude/settings.local.json .opencode/tmp.local.json`（后一文件名任取一个不存在的即可）→ 均命中；`git check-ignore .opencode/opencode.json` → inline 无输出（未被忽略）/ standalone 命中（排除清单生效）；
-6. `opencode debug config` → 8 个 sdd 命令全部被发现（description 与 §5 命令规格表逐字一致、模板正确）且含 `"lsp": true`（opencode 未安装时跳过本条并在回报注明；其运行副产物被 `.opencode/.gitignore` 自忽略，不影响提交）；
+6. OpenCode 三段验证（`opencode` 未安装时整体跳过并在回报注明；其运行副产物被 `.opencode/.gitignore` 自忽略，不影响提交）：① 配置面——项目内 `opencode debug config` 输出含本项目 `.opencode/opencode.json`，其 `info` 含 `"lsp": true` 与 `instructions` 两路径；② 存根契约——存根 ×8 在位，frontmatter description 与 §5 命令规格表逐字一致，各存根 `@` 指向的 `.claude/commands/` 同名文件存在；③ 命令发现——`opencode run '/sdd-board'`，判据为退出码 0 且输出为与命令规格一致的看板摘要（提案总览或暂无提案说明）且不含「未定义命令」措辞；sdd-* 命令结构同构，一通俱通，输出未定义措辞或格式不符为失败；本段因模型或凭据未配置失败时跳过并在回报注明；
 7. git 提交均显式列举文件路径添加、禁用 `git add -A` 与 `git add .`：inline 两笔，第一笔仅 22 清单文件（20 治理 + 工具 + VERSION，含 runtime ×2），消息固定 `chore: 初始化 SDD 需求治理体系（20 治理文件 + mdlint 工具 + 版本标记）`；第二笔仅 11 适配文件（`AGENTS.md` + `.gitignore` + `opencode.json` + 存根 ×8），消息固定 `chore: 适配 OpenCode（命令存根 @ 引用 + .opencode 共享配置）`。standalone 两仓各一笔：项目仓仅 `CLAUDE.md` + `AGENTS.md`，message 固定 `docs: 项目协作入口`（中性，无 sdd 字样）；内仓 `git -C sdd` 提交 `sdd/` 全部，消息同 inline 第一笔。除清单文件与 hook 外禁止创建任何其他文件（评审/提示词等用户文档不入库）；
 8. 冒烟演练默认**不执行**，初始化完成后待命 `/sdd-intake` 接首个真实需求；后续冒烟（用户在 opencode TUI 手动）：输入 `/` 查看命令补全、执行任一只读命令（如 `/sdd-board`）、问「本项目会话必读是什么」应答 CONSTITUTION → INDEX → INITIATIVE（验证 runtime 注入链路：inline 为 `CLAUDE.md` @ 引用，standalone 为 `CLAUDE.local.md`）；
 9. 最终回报：文件清单 + commit hash（inline 两个 / standalone 两仓各一）+ mdLint 结论 + 各项验证结论 + 初始化耗时（总时长，人类可读格式）+ hook 安装结论（含 standalone 内层 hook）+ 治理形态 + 模式（全新 / 升级）与版本去向（升级回报项见 §8）。
@@ -441,7 +441,9 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 ### 机制依据与禁改道清单
 
-机制依据（核实日期：2026-08，OpenCode 官方文档与源码；版本演进后如遇行为不符须复核，勿照单全收）：
+机制依据（核实日期：2026-10 实测 opencode v2.0.22，辅以官方文档；版本演进后如遇行为不符须复核，勿照单全收）：
+
+- `opencode debug config` 自 v2 起仅列配置来源清单，不再呈现命令；项目 `.opencode/opencode.json` 被发现且解析（`lsp` 与 `instructions` 在输出 `info` 中）。命令识别无模型无关的结构验证面（`--format json` 流仅含助手侧部件、用户消息不回显，会话存储为内部 SQLite），验证取行为级强约束证据：`opencode run '<命令>'` 双向实测（2026-10，v2.0.22），未注册命令被会话模型明示「未定义」且不读任何命令文件，已注册命令沿 `@` 引用读指令文件并按命令体产出
 
 - `.opencode/` 内主配置仅认 `opencode.json` / `opencode.jsonc`；缺失文件安全降级为空配置
 - 根 `AGENTS.md` 存在时 OpenCode 不再回退读 `CLAUDE.md`；2.0.0 起 `AGENTS.md` 为项目骨架，治理规则改经 `instructions` 加载 `sdd/runtime/` 两文件，不依赖 `CLAUDE.md`
@@ -489,7 +491,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 1. 起始时间戳（`date +%s`）→ 触发判定 → 必填项回读
 2. 两路并行校准（见下）→ 主会话最后重写 `sdd/runtime/claude.md` 与 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/VERSION`（内容 = 本提示词顶部版本 + `+full`；经插件调用时取插件清单 `version` + `+full`）
-3. 全量验证（§6 全量项：mdLint 零 error + 交叉一致 + check-ignore + opencode debug config）→ 提交（见下）→ 回报（见下）
+3. 全量验证（§6 全量项：mdLint 零 error + 交叉一致 + check-ignore + OpenCode 三段验证）→ 提交（见下）→ 回报（见下）
 
 **幂等**：校准按「现行规格 vs 磁盘现状」状态化执行，不依赖版本值分支；升级可安全重跑，中断恢复 = 直接重跑（中断不会造成签名集缺损，重跑仍命中升级模式）。
 

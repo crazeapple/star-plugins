@@ -203,7 +203,7 @@
 2. 文件齐全、结构正确、必填项已填（inline 22 文件：7 治理文件 + 1 治理工具 + 1 版本标记 + 5 命令 + 8 适配；standalone 23 = 再 +`CLAUDE.local.md`）；`sdd/VERSION` 内容 = 插件清单 `version` + `+slim`；`.git/hooks/pre-commit` 已生成且可执行（不入库、不占清单；standalone 另有内层 `sdd/.git/hooks/pre-commit`）。
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`，零 error。
 4. ID / 状态机 / 矩阵在 CONSTITUTION、INDEX、模板、5 命令间交叉一致。
-5. `git check-ignore` 与 `opencode debug config` 同 `SKILL.md` 条款（5 个 sdd 命令全部被发现，description 与本文件 §五命令表逐字一致；opencode 未安装时跳过并在回报注明）。
+5. `git check-ignore` 与 OpenCode 三段验证同 `SKILL.md` 条款（存根 ×5 在位，description 与本文件 §五命令表逐字一致；`opencode run '/sdd-board'` 判据为退出码 0 且输出为看板摘要、不含未定义命令措辞；opencode 未安装时跳过并在回报注明）。
 6. git 提交（显式列举路径、禁用 `git add -A` 与 `git add .`）：inline 两笔，第一笔仅 14 清单文件（`CLAUDE.md` + INDEX + CONSTITUTION + VERSION + runtime ×2 + templates ×2 + mdlint + 命令 ×5），消息固定 `chore: 初始化 SDD 治理体系（slim 版：7 治理文件 + mdlint 工具 + 版本标记）`；第二笔仅 8 适配文件（`AGENTS.md` + `.gitignore` + `opencode.json` + 存根 ×5），消息固定 `chore: 适配 OpenCode（命令存根 @ 引用 + .opencode 共享配置）`。standalone 两仓各一笔：项目仓仅 `CLAUDE.md` + `AGENTS.md`，message 固定 `docs: 项目协作入口`（中性，无 sdd 字样）；内仓 `git -C sdd` 提交 `sdd/` 全部，消息同 inline 第一笔。除清单文件与 hook 外禁止创建任何其他文件。
 7. 最终回报：文件清单 + 两个 commit hash + mdLint 结论 + 各项验证结论 + 初始化耗时 + hook 安装结论 + 模式与版本 / edition 去向；冒烟默认不执行，待命 `/sdd-intake`。
 
@@ -230,5 +230,5 @@
 - **原样不动**：`sdd/specs/` 全部文件、`sdd/exploring/journal.md`、`sdd/tools/mdlint.sh`、`sdd/runtime/opencode.md`。
 - **版本标记**：`VERSION` → `X.Y.Z+full`。
 - **提交**：前置校验 git 索引干净（`git diff --cached --quiet`）；两批显式列举：第一批治理资产（CONSTITUTION + `CLAUDE.md` + INDEX + INITIATIVE + amend + templates ×4 + 命令 ×8 + VERSION + archive/README），消息固定 `chore: 升级 SDD 治理体系至完整版（edition: full）`；第二批 OpenCode（存根 ×3），消息固定 `chore: 补齐 OpenCode 适配存根至完整版`；零变更批次跳过。
-- **验证**：按 full 清单全量验证（inline 33 文件齐备、standalone 34；opencode debug config 8 命令、mdLint 零 error）。
+- **验证**：按 full 清单全量验证（inline 33 文件齐备、standalone 34；OpenCode 三段验证同 `SKILL.md` 条款、mdLint 零 error）。
 - **回报**：edition 去向（`0.1.0+slim → 0.2.0+full` 形态）+ 补齐清单 + 构想迁移对照表 + 跳过批次 + commit hash + mdLint 结论 + 验证结论 + 升级耗时。
