@@ -24,7 +24,9 @@
 
 - Proposal：`exploring → specified → implementing → verifying → accepted`；旁路 `on-hold`（任意态可入可回，排队/搁置两用）、`rejected`（终态，INDEX 备注列写原因）。
 - Task：`todo / doing / blocked / done / dropped`（done、dropped 为终态；doing 即锁定，禁重复派发）；design：`draft → finalized`。
-- **代码与 Task 绑定**：项目功能实现代码必须挂在 design 任务清单的具体 Task 上；Task 未拆分（exploring/specified）禁止写实现代码，仅产出探索与规格文档；代码随 Task 执行写入；验收未过的缺陷修复提交按 footer 规则记 `Fixes: T-XXX` 回链 Task（standalone 形态项目仓无痕化不记 footer，改以 design 任务详情回填关联）。
+- **无 Task 不写码**：限需求治理周期——实现代码必须挂在 design 任务清单的具体 Task 上，Task 未拆分（exploring / specified）禁止写实现代码，仅产出探索与规格文档；维护任务按受理分类直接做，不经本条
+- **提交以 Task 为界**：代码随 Task 执行写入，单个提交不混多 Task 改动；Task 完成即提交，单个 Task 内围绕它允许多次提交
+- **验收期修复回链**：验收未过的缺陷修复提交按 footer 规则记 `Fixes: T-XXX` 回链 Task（standalone 形态项目仓无痕化不记 footer，改以 design 任务详情回填关联）
 
 ## 受理与分流
 

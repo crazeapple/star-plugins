@@ -60,7 +60,9 @@
 - **implementing 进入门槛（/sdd-intake 拆分前软门）**：AC 全部可核对、范围内外明确、方案要点与关键选型已定、无疑虑；任一不满足则继续探索对话，不拆分、状态不动。
 - Task：`todo / doing / blocked / done / dropped`（转换 `todo → doing → blocked → todo / done`；done、dropped 为终态；doing 即锁定，禁重复派发）。design：`draft → finalized`。
 - **Task 质量要求**：Task 必须是具体、可直接执行的实现单元；探索、调研、决策类事项记录于 journal 与关键决策表，禁止立为 Task。
-- **代码与 Task 绑定**：项目功能实现代码必须挂在 design 任务清单的具体 Task 上；Task 未拆分（exploring）禁止写实现代码，仅产出规格与探索记录；代码随 Task 执行写入；验收未过的缺陷修复提交按 footer 规则记 `Fixes: T-XXX` 回链 Task（standalone 形态项目仓无痕化不记 footer，改以 design 任务详情回填关联）。
+- **无 Task 不写码**：限需求治理周期——实现代码必须挂在 design 任务清单的具体 Task 上，Task 未拆分（exploring）禁止写实现代码，仅产出规格与探索记录；维护任务按受理分类直接做，不经本条
+- **提交以 Task 为界**：代码随 Task 执行写入，单个提交不混多 Task 改动；Task 完成即提交，单个 Task 内围绕它允许多次提交
+- **验收期修复回链**：验收未过的缺陷修复提交按 footer 规则记 `Fixes: T-XXX` 回链 Task（standalone 形态项目仓无痕化不记 footer，改以 design 任务详情回填关联）
 
 ## 受理与分流
 

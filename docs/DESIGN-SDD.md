@@ -201,6 +201,7 @@ sdd/
    - **standalone 生成计数纠正（2.8.3）**：standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加与 inline 同数（full 33 / slim 22）；2.0.0 起「再 +`CLAUDE.local.md`」口径漏了对应减项，历次 standalone 计数（32 / 21、34 / 23）均多一，现行落点已全部纠正（§十八 / SKILL / slim / PROMPT）。
    - **文档受理消费与发号序完善（2.8.4）**：拆解映射确认明确材料消费一次穷尽、节奏控制在落位之后；多实体发号增依赖拓扑序（被依赖者先号，无依赖者按逻辑递进），发号后永不重排（CONSTITUTION「权威源、ID 与日期」/ 命令规格「文档受理」）。
    - **sdd-split 发号序引称补齐（2.8.5）**：任务表依赖拓扑序排列与 sdd-split 行引称，与 2.8.4 intake 侧对齐（宪法条款已泛化覆盖 T 发号，补执行面可见性）。
+   - **slim 提交粒度补齐与码律拆分（2.8.6）**：宪法状态机「代码与 Task 绑定」话题式标签拆为「无 Task 不写码 / 提交以 Task 为界 / 验收期修复回链」三则（限需求治理周期，维护不经本条），slim 补齐提交粒度（E2E 实证 slim + standalone 批量推进后外层仓提交稀疏）；§十七 明示提交粒度为通用纪律。
 
 ## 十六、插件生命周期：升级与卸载
 
@@ -219,7 +220,7 @@ sdd/
 - **术语**：概念英文名 edition（单用不译）；取值 `slim` / `full`；中文行文组合译「版」，即 slim 版 / full 版。
 - **单插件选 edition**：不做独立插件；sdd-init 初始化时选 edition（**默认 slim**：slim 可升 full 而反向无通道，默认取可逆方向），全部询问项默认兜底、无硬阻塞停止点（项目定位以候选制提供，标注默认，未答取默认）。slim 命令与 full 同名且为子集（intake / start / board / accept / config）；slim 规格独立成篇 `references/slim.md`（无条件分支、自成一篇），**edition 分叉只发生在 `SKILL.md` dispatch 层**，按 edition 决定读哪套规格，full 侧 references 一字不改。
 - **不变量与裁剪准则**：状态单一权威源（INDEX）、mdLint + pre-commit 机械兜底、需求 / 维护分类、验收标准 + 变更留痕，任何 edition 不可裁；裁剪准则 = 裁仪式，不裁纪律、权威与能力。
-- **git 拓扑按 edition**：分支拓扑（`dev/<slug>` 开发 + `test/<slug>` 验收 + worktree + 合并链）为 full 载体；slim 无分支、主工作区直写（主工作区即测试环境），提案推进天然串行（插单排队），rejected 代码由 git 历史兜底。通用的是验收语义链与纪律，不是拓扑；分支治理需求出现时升级 full 版。发布语义两 edition 同构：accept 打 annotated tag（full 在 main，slim 在当前分支 HEAD），tag 不属拓扑差异。
+- **git 拓扑按 edition**：分支拓扑（`dev/<slug>` 开发 + `test/<slug>` 验收 + worktree + 合并链）为 full 载体；slim 无分支、主工作区直写（主工作区即测试环境），提案推进天然串行（插单排队），rejected 代码由 git 历史兜底。通用的是验收语义链与纪律，不是拓扑；分支治理需求出现时升级 full 版。发布语义两 edition 同构：accept 打 annotated tag（full 在 main，slim 在当前分支 HEAD），tag 不属拓扑差异。提交粒度亦为通用纪律：两 edition 均以 Task 为界、Task 完成即提交（slim 直接落当前分支）。
 - **状态值子集**：slim 状态值 ⊆ full 状态值，不新造状态词（P：`exploring → implementing → accepted`，旁路 `on-hold` / `rejected`；`specified` / `verifying` 不用于 slim）；值不合适时改 full 对齐，运行态永无跨 edition 未知状态。
 - **单向可升**：slim → full 单向升级，无降档（文档不涉及降档）；切换频率极低，价值主体 = 初始选 edition + slim 常驻。
 - **升级闸门**：升 full 版要求周期空闲，INDEX 存在非终态 P（`exploring` / `implementing` / `on-hold`）时拒绝切换并回报「请完成当前需求周期后再升级」，**无 override**；同 edition 校准（含环境重建）不设周期闸门（幂等 + 运行态禁触 + 索引干净预检已覆盖）。
