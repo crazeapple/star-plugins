@@ -200,6 +200,7 @@ sdd/
    - **OpenCode 验证面修复（2.8.1）**：opencode v2 起 `debug config` 仅列配置来源、不再呈现命令清单，SKILL / slim / PROMPT 验证改三段式（配置面 `debug config`、存根契约文件核验、命令发现 `opencode run '/sdd-board'` 输出与命令规格一致的看板摘要，sdd-* 同构一通俱通），命令目视归冒烟（opencode-adapter 机制依据更新核实记录）。
    - **standalone 生成计数纠正（2.8.3）**：standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加与 inline 同数（full 33 / slim 22）；2.0.0 起「再 +`CLAUDE.local.md`」口径漏了对应减项，历次 standalone 计数（32 / 21、34 / 23）均多一，现行落点已全部纠正（§十八 / SKILL / slim / PROMPT）。
    - **文档受理消费与发号序完善（2.8.4）**：拆解映射确认明确材料消费一次穷尽、节奏控制在落位之后；多实体发号增依赖拓扑序（被依赖者先号，无依赖者按逻辑递进），发号后永不重排（CONSTITUTION「权威源、ID 与日期」/ 命令规格「文档受理」）。
+   - **sdd-split 发号序引称补齐（2.8.5）**：任务表依赖拓扑序排列与 sdd-split 行引称，与 2.8.4 intake 侧对齐（宪法条款已泛化覆盖 T 发号，补执行面可见性）。
 
 ## 十六、插件生命周期：升级与卸载
 

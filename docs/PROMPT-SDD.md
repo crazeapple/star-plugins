@@ -233,7 +233,7 @@
   |---|---|---|---|---|
   | sdd-intake | Capture a new requirement or requirement documents and shape them into initiatives or proposals | 新需求受理（含插单与回看拆解）；文档材料受理（一至多份） | 可选：需求描述，或一至多份文档（路径 / 粘贴） | 先跑维护/需求分类三问，判维护直接做并结束；再按单/多交付物分流：直接发 P 或立 I 拆解；文档输入严格消费（拆解映射经用户确认，判据不能少、不能多；材料不收编；未覆盖落构想池） |
   | sdd-finalize | Finalize an exploring proposal into a spec | 探索定稿 | 可选：P-XXX | exploring→specified 行；执行前过软门自查（`Acceptance mode` = auto 增自查项，全部 AC 已绑定验证命令方许定稿） |
-  | sdd-split | Split a finalized proposal into design tasks | 定稿后拆任务 | 必填：P-XXX | specified→implementing 行 |
+  | sdd-split | Split a finalized proposal into design tasks | 定稿后拆任务 | 必填：P-XXX | specified→implementing 行；任务按依赖拓扑序发号（见 §4「权威源、ID 与日期」） |
   | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX：从首个未完成 T 起顺序推进（doing → 实现 → 回填 → done）至全 done；接 T-XXX：仅该 Task；缺省：下一个 todo T；任一 Task 状态变化行；全任务 done → 执行 verifying 转换（见矩阵：合并 dev → test、删 worktree 与 dev 分支、交付 hash、列验收清单表格）+ 进入验证（自动验证按 spec 验证方式分派，已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认，映射失败按验证失败处理；重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻并上报），主工作区检出 test；auto 模式全绿即自动走 verifying→accepted 行，manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收（`Acceptance mode` = manual 时的发起接口；auto 模式自动走链，一般无需调用） | 必填：P-XXX | verifying→accepted 行（含 CHANGELOG 增补与打 tag；auto 模式验证全绿自动触发）；完成回报固定建议「回看需求组拆下一个」 |
   | sdd-board | Show initiative and proposal status overview | 查看状态（只读） | 可选：I-XXX / P-XXX | 无矩阵行：读 INDEX + INITIATIVE + design 任务表输出摘要（含需求组聚合），不改任何文档 |
@@ -319,7 +319,7 @@
 
   **`task.md`**（Task 条目格式定义，非任务文件）
 
-  - 表行字段顺序：`T-XXX | 标题 | 状态 | 分组 | 备注`
+  - 表行字段顺序：`T-XXX | 标题 | 状态 | 分组 | 备注`；任务表按依赖拓扑序排列（被依赖者先号，无依赖者按逻辑递进，见 §4「权威源、ID 与日期」）
   - 状态合法转换：`todo → doing → blocked → todo / done`；`done`、`dropped` 为终态；doing 即锁定，禁重复派发
   - 详情小节格式：说明（依据规格/设计节选）→ 实现记录（完成时回填：做法 + 证据）；完成判据 = 对照 spec 相关 AC 条目，验收核对统一在 /sdd-accept 进行（验收项不属于 Task）
   - 子智能体回报格式：做了什么 / 验收逐条结论 / 问题与规格偏差（走 R5 上报主会话）
