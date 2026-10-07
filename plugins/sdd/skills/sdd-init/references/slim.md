@@ -50,6 +50,7 @@
 
 - INDEX 是 Proposal 状态**唯一权威源**，状态变更即时同步（操作即同步，不攒批）；INDEX「构想」小节是念头唯一记录；Task 状态唯一权威 = design 任务表；规格版本唯一维护处 = spec frontmatter `version`。
 - P / T 两套编号各自全局递增，**永不复用、永不重排**（rejected 也占号）；发号计数器位于 INDEX 顶部；取号后立即递增写回。
+- **多实体发号按依赖拓扑序排列**：被依赖者先号，无依赖关系者按逻辑递进排列（基础在前、上层在后）；拆解产出即按此序发号，发号后永不重排不变。
 - **日期规则**：治理文档一切日期唯一源 = 执行写入的会话所在机器的系统日期（本地时区）；写入前必须以 `date +%F`（或等价）实取；禁止凭记忆或上下文推断；粒度 YYYY-MM-DD。
 
 ## 状态机（禁止跳跃）
@@ -187,7 +188,7 @@
 
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
-  | sdd-intake | Capture a new requirement, consume requirement documents, or continue planning an in-flight proposal, until it is split into concrete tasks; vague ideas park in the INDEX initiative list | 新念头与需求受理（含插单）、文档材料受理（一至多份）、在途 P 继续规划 | 可选：需求 / 念头描述 / P-XXX（在途 P 重入）/ 文档（路径 / 粘贴） | 一问分类：维护直接做并结束；受理或重入 → 探索澄清 + 定稿软门 + 拆 T（exploring→implementing 行）；尚模糊 → 构想小节加行；文档输入走文档受理，严格消费（映射确认判据不能少、不能多，材料不收编，未覆盖落构想小节） |
+  | sdd-intake | Capture a new requirement, consume requirement documents, or continue planning an in-flight proposal, until it is split into concrete tasks; vague ideas park in the INDEX initiative list | 新念头与需求受理（含插单）、文档材料受理（一至多份）、在途 P 继续规划 | 可选：需求 / 念头描述 / P-XXX（在途 P 重入）/ 文档（路径 / 粘贴） | 一问分类：维护直接做并结束；受理或重入 → 探索澄清 + 定稿软门 + 拆 T（exploring→implementing 行）；尚模糊 → 构想小节加行；文档输入走文档受理，确认通过后落位，严格消费（材料消费一次穷尽，映射确认判据不能少、不能多，材料不收编，未覆盖落构想小节） |
   | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX → 从首个未完成 T 起依次推进（doing → 实现 → 回填实现记录 → done）至全部完成；接 T-XXX → 仅该 Task；缺省 → 下一个 todo T；全任务 done → INDEX 更新 + 列验收清单表格 + 进入验证（主工作区即验证环境；已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认，映射失败按验证失败处理；重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻并上报）；auto 模式全绿即自动走 implementing→accepted 行，manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept；用户明确要求并行时切派发-回收（见宪法「并行开发」节）；遇 blocked 暂停推进并回报；期间 R5 / R7 照常 |
   | sdd-board | Show proposal status overview | 查看状态（只读） | 可选：P-XXX | 无矩阵行：读 INDEX 输出摘要（首行自报 edition 与版本），不改任何文档 |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收（`Acceptance mode` = manual 时的发起接口；auto 模式自动走链，一般无需调用） | 必填：P-XXX | implementing→accepted 行；完成回报建议受理下一个需求 |
