@@ -1,8 +1,8 @@
 {
   "name": "sdd",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "author": {
     "name": "hikari"
   },
-  "description": "SDD 需求治理体系：/sdd:sdd-init 在目标项目生成治理体系（inline / standalone 双治理形态，standalone 治理另立仓、项目仓零痕迹）并适配 OpenCode，安装 pre-commit 提交兜底 hook；重跑即校准或升级"
+  "description": "SDD 需求治理体系：/sdd:sdd-init 在目标项目生成治理体系（inline / standalone 双治理形态，standalone 治理另立仓、项目仓零痕迹）并适配 OpenCode，安装 `.githooks` 提交门禁 hook；重跑即校准或升级"
 }

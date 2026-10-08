@@ -12,7 +12,7 @@
 - `CLAUDE.md`、`.claude/commands/` 下任一 `sdd-*.md` 命令在位
 - `AGENTS.md`、`.opencode/opencode.json`
 
-`.gitignore`、`.git/hooks/pre-commit`、`.claude/commands/` 与 `.opencode/commands/` 的完备性不入签名集——缺失与差额由校准补齐、撤档删除（见 §二），这正是升级的职责。典型场景为环境重建：新主机 clone 后 hook 必缺，重跑 init 即补。命中后向用户明示「检测到既有安装，转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`；standalone 双仓均查），有预置暂存则停止。
+`.gitignore`、`.githooks/`（含 `core.hooksPath` 激活）、`.claude/commands/` 与 `.opencode/commands/` 的完备性不入签名集，缺失与差额由校准补齐、撤档删除（见 §二），这正是升级的职责。典型场景为环境重建：新主机 clone 后运行态（含入库的 `.githooks/pre-commit`）随仓齐全，唯 `core.hooksPath` 未激活，重跑 init 即补设激活。命中后向用户明示「检测到既有安装，转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`；standalone 双仓均查），有预置暂存则停止。
 
 **史前安装边界**：`.claude/commands/` 下的命令名与本仓现行命令集（intake / start / board / accept / archive / config）无交集者，属不受支持的史前结构，不自动升级——照常停止报告冲突，由用户手工清理或重建。
 
@@ -36,7 +36,7 @@
 
 | 档 | 文件 | 处置 |
 |---|---|---|
-| 静默覆盖 | `sdd/tools/mdlint.sh`、`.git/hooks/pre-commit`（重装并加可执行位；standalone 另装内层 `sdd/.git/hooks/pre-commit` 变体）、`sdd/templates/` ×4、`.claude/commands/` ×6、`.opencode/opencode.json`、`.opencode/commands/` ×6 | 按规格纯复制覆盖 |
+| 静默覆盖 | `sdd/tools/mdlint.sh`、`.githooks/pre-commit`（重写并加可执行位，设 `core.hooksPath`，README 增补激活行；旧 `.git/hooks/pre-commit` 同步撤除；standalone 另装内层 `sdd/.git/hooks/pre-commit` 变体）、`sdd/templates/` ×4、`.claude/commands/` ×6、`.opencode/opencode.json`、`.opencode/commands/` ×6 | 按规格纯复制覆盖 |
 | 撤档 | 现行规格不再生成的文件（3.0.0 前旧版的 `sdd-finalize` / `sdd-split` 命令与存根等） | 从目标项目删除，逐项列入回报；治理数据不涉 |
 | 扩容补齐 | 现行规格生成但磁盘缺失的文件（slim 旧装缺 INITIATIVE、amendments/amend.md、archive/README、templates proposal / task、archive 命令与存根等） | 按规格生成补齐；保护性写入档文件按保护性写入处置 |
 | 保护性写入 | `.gitignore`（inline）、`AGENTS.md`、`sdd/CONSTITUTION.md`、`sdd/runtime/claude.md` | 规格重生成 + 项目内容回读回填（见下） |
@@ -48,12 +48,12 @@
 - `.gitignore`（inline 形态）：三行逐行补缺，即 `# 本地文件不入库`、`*.local.*`、`.worktree/`；已有行不动，项目自有行禁删禁改，文件不存在才新建；**严禁整文件重写**。standalone 形态不写 `.gitignore`，改维护 `.git/info/exclude` 六行排除清单（逐行补缺，同款纪律）
 - `AGENTS.md`：按 `references/opencode-adapter.md` 逐字重生成，项目名回填（§四回读值）
 - `sdd/CONSTITUTION.md`：按 `references/constitution-design.md` 逐字重生成，项目名回填（§四回读值）；末尾生效日期保留原文件原值（识别原文件末尾 `YYYY-MM-DD` 日期行；回读失败以当日 `date +%F` 重置并在回报注明）
-- 治理配置区与验证命令区：runtime 骨架重写时插入，`Acceptance mode` 回读不到即 auto、`Verification retry limit` 缺省 3（不询问）；验证命令区插空后执行存量补记（扫描依赖清单、测试配置、CI 测试任务等验证类工具链，生成补记清单，交互同登记闸门：建议 / 选定 / 判「无」/ 试跑）
+- 治理配置区与验证命令区：runtime 骨架重写时插入，`Acceptance mode` 回读不到即 auto、`Verification retry limit` 缺省 3（不询问）；验证命令区插空后执行存量补记（扫描依赖清单、测试配置、CI 测试任务等验证类工具链，生成补记清单，交互同登记闸门：现场扫描后对照「登记案例」节匹配，命中确认套用 / 选定 / 判「无」/ 试跑）
 - 旧制度遗留的 CHANGELOG `[Unreleased]` 节：升级不自动修改（公开文件属项目自治，升级回报提示其存在）；首次 accept 时累积条目并入本次版本节，节随之移除
 
 ## 四、必填项回读（升级模式不询问）
 
-项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目定位一句话 ← `CLAUDE.md` 首段定位句；提交前校验命令 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节；版本格式 ← 同节；治理配置（`Acceptance mode` / `Verification retry limit`）← 治理配置区（回读不到按缺省 auto / 3，不询问）；验证命令区回读保留，插空后存量补记。前三项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
+项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目定位一句话 ← `CLAUDE.md` 首段定位句；版本格式 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节；治理配置（`Acceptance mode` / `Verification retry limit`）← 治理配置区（回读不到按缺省 auto / 3，不询问）；验证命令区回读保留，插空后存量补记；旧「提交前校验命令」字段取消（并入 staged 处置列），原值并入补记扫描起点不单独回读。前两项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
 
 ## 五、执行顺序与幂等
 

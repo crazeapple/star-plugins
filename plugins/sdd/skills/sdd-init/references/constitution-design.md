@@ -65,7 +65,7 @@
 
 ## 会话微流程 R1-R10（写入宪法）
 
-- **R1** 冷启动读 CONSTITUTION → INDEX → INITIATIVE，输出状态摘要（含构想池概览：活跃 I 数、待梳理条目、未立项里程碑）
+- **R1** 冷启动读 CONSTITUTION → INDEX → INITIATIVE，输出状态摘要（含构想池概览：活跃 I 数、待梳理条目、未立项里程碑）；冷启动断言 `core.hooksPath` 已指向 `.githooks`，未激活即回报 README 激活行
 - **R2** 新想法当场分类（维护/需求三问）：维护直接做并回报；需求一律经 /sdd-intake 受理，单交付物直接发号，多交付物先落构想池；当前工作永不因新想法自动中断
 - **R3** 探索期自顶向下、先发散后收敛、逐层留痕（实时写入底稿，用户给出内容同样落盘；过程全程落盘底稿，结论演进走 spec changelog）
 - **R4** 被否备选禁删，记入提案「否决记录」，留「方案 + 一句话原因」
@@ -76,7 +76,7 @@
 - **R9** 跨周期修正禁只改代码，走 amendments/
 - **R10** 分支开发主干发布：
   - P 状态从 exploring → implementing 时，从 main 切 `dev/<标题 slug>` 并建 worktree 开发（分支名不含治理 ID 与治理文件名），代码在 dev 分支开发，治理文档只在主干由主会话写，test / dev 检出中 sdd/ 只读
-  - 提交以 Task 为界、Task 完成即提交；代码提交前须通过项目提交前校验（lint、format、测试等，以项目工程约定为准）；本次提交涉及工具链工件（依赖清单、构建配置、迁移 SQL、语言脚本、测试框架与配置等）且该类未登记覆盖时，登记闸门启动：主会话给出候选工具建议，由用户选定并登记（落 runtime 验证命令区）或扩展校验命令，执行通过后方可提交；凡入库的工具链，其 lint 与 format 必配，此为工程化要求，闸门无跳过，登记后随技术栈定型更新
+  - 提交以 Task 为界、Task 完成即提交；提交由 `.githooks/pre-commit` 机械执法（staged 文件先本地写回后门禁断言，全仓统一）；本次提交涉及工具链工件（依赖清单、构建配置、迁移 SQL、语言脚本、测试框架与配置等）且该类未登记覆盖时，登记闸门启动：现场扫描后对照「登记案例」节匹配，命中经用户确认套用、未命中交互配置，登记落 runtime 验证命令区并增补 hook 路由段，执行通过后方可提交；凡入库的工具链，其 lint 与 format 必配，此为工程化要求，闸门无跳过，登记后随技术栈定型更新；spec 引入工具链相关技术决策时，定稿环节同款匹配先行（主时机）；人工登记随时可为（兜底）
   - test 串行：全流程同时至多一个 P 持有 test 分支，全任务 done 而他 P 持有 test 时留在 implementing 等待（任务表保持全 done，worktree 与 dev 分支保留），待其 accept 后再行 verifying 转换
   - 全任务 done（verifying）：从当前 main 切 `test/<标题 slug>` 合并 dev 代码（冲突一律在 test 解决），列验收清单表格交主工作区检出 test 验证（已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，manual 模式 UI 类用户人工操作，失败自动修复重验，重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻：P 置 on-hold、验收位释放、推进继续并上报）
   - 主干冻结：验收期（test 切出至 accept）内 main 代码不前进（治理文档主干直写照旧），一切修复（无论缺陷源自哪个 P 的范围，含不进 Proposal 的维护性修复）都落在当前 `test/<标题 slug>`，随本 P accept 一并进 main，验收期外维护照旧直接落 main
@@ -113,7 +113,23 @@
   - × 连接中文两侧加空格（状态转换 × 文档同步）；倍数写「模板 ×4」；计数比一律 `/`（3/8），`×` 禁表计数比或分隔
   - 流程用「→」；并列用「与/·」
 - **校验**：`sh sdd/tools/mdlint.sh <文件或目录>`（POSIX sh + awk + perl，macOS 自带零依赖）。检查集按 AI 作者错误分布校准，限于书写形态，内容治理不入检查集。error：反引号或 `**` 行内不配对、全角圆括号/直角引号文件级不配对；warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致（GFM 会静默补空或丢弃）、行内代码内出现治理 ID（执法 ID 禁包规则）。检查豁免代码围栏；行内代码内容除治理 ID 检查外豁免。零 error 方可回报，warning 逐条确认或忽略。
-- **提交兜底**：sdd-init 安装 `.git/hooks/pre-commit`（三端通用：Claude Code、OpenCode 与人工提交同受约束），staged 文件落于辖区（`sdd/` 下、`CLAUDE.md`、`CHANGELOG.md`、`.claude/commands/`、`AGENTS.md`、`.opencode/commands/`）时整体跑本工具，有 error 非零退出阻止提交；warning 不拦，工具缺失静默放行。standalone 形态另装 `sdd/.git/hooks/pre-commit` 内层变体（源 `scripts/pre-commit-inner.sh`，辖区 = 内层仓全部 staged `.md`），治理提交同受约束。
+- **提交门禁**：sdd-init 写入 `.githooks/pre-commit`（唯一载体、入库资产，hook = 激活说明注释 + 工具链路由段 + 内嵌 mdlint 段，逻辑内嵌、无外部引用）并设 `core.hooksPath` 指向 `.githooks`，README 运行说明记激活行 `git config core.hooksPath .githooks`（三端通用：Claude Code、OpenCode 与人工提交同受约束）；mdlint 辖区 = 全部 staged `.md`（不再限治理路径），有 error 非零退出阻止提交，warning 不拦；工具链路由按验证命令区 staged 处置执行（先写回后断言），无登记工具即静默跳过；standalone 形态另装 `sdd/.git/hooks/pre-commit` 内层变体（源 `scripts/pre-commit-inner.sh`，辖区 = 内层仓全部 staged `.md`），治理提交同受约束。
+- **登记案例**：案例是避免遗漏的自查表，是参考，不是照搬；触发后经对话由用户选择确认，不静默添加；新案例依同型往后追加
+- **frontend**
+  - 默认与候选：eslint + prettier，候选 oxlint、biome
+  - 触发：`package.json` 且含前端证据（框架依赖或前端文件模式成规模）
+  - 落地：devDependencies 增补并安装，scripts 增 `lint` / `lint:fix` / `format` / `format:check`
+- **sql**
+  - 默认与候选：sqlfluff，候选 sqlformat、pgFormatter、sql-lint，方言随基础设施（mysql / postgres）
+  - 触发：基础设施含数据库服务或连接串，或仓内 `*.sql`
+  - 坑：sqlfluff 须带 `--dialect`
+- **shell**
+  - 默认与候选：shellcheck（断言）+ shfmt（写回），全局工具由用户提供，缺失提示安装、路由缓登记
+  - 触发：`*.sh` / `*.bash`，或无扩展名文件 shebang 命中（pre-commit 自身即典型）
+  - 坑：shellcheck 对无扩展名脚本须 `-s sh`
+- **yaml**
+  - 默认与候选：yamllint（断言）+ yamlfmt（写回），全局工具检测同 shell
+  - 触发：仓内 `*.yml` / `*.yaml`
 
 `mdlint.sh` 实现后必须以下列向量自测全过方可视为达标：
 
@@ -125,17 +141,17 @@
 | 行内代码内包裹治理 ID（如反引号内写 T-001） | warning |
 | 「模板 ×4」倍数紧贴写法 | 无输出 |
 
-`pre-commit.sh` 实现后必须以下列向量自测全过方可视为达标（临时仓库：置 `sdd/tools/mdlint.sh`、hook 装入 `.git/hooks/` 并加可执行位）：
+`pre-commit.sh` 实现后必须以下列向量自测全过方可视为达标（临时仓库：写 `.githooks/pre-commit` 并设 `git config core.hooksPath .githooks`；路由向量以真值命令 `true` 与假值命令 `false` 充当登记工具）：
 
 | 自测向量 | 预期 |
 |---|---|
 | 无 staged 文件 | 静默退出 0 |
-| staged 辖区 `.md` 含 error | 非零退出 + stderr 列出问题 |
-| staged 辖区 `.md` 干净或仅 warning | 0 放行 |
-| staged 辖区外 `.md` 含 error | 0 放行 |
-| `sdd/tools/mdlint.sh` 缺失 | 静默退出 0 |
+| staged `.md` 含 error | 非零退出 + stderr 列出问题 |
+| staged `.md` 干净或仅 warning | 0 放行 |
+| staged 代码文件未命中路由 | 0 放行（无登记工具即跳过） |
+| 登记断言类命令失败 | 非零退出阻止提交 |
 
-内层变体（`pre-commit-inner.sh`）过同套向量，路径映射适配：临时仓根即治理根，mdlint 置 `tools/mdlint.sh`、staged 路径无 `sdd/` 前缀。
+内层变体（`pre-commit-inner.sh`）无路由段，过 mdlint 侧向量（前三行），路径映射适配：临时仓根即治理根，mdlint 置 `tools/mdlint.sh`、staged 路径无 `sdd/` 前缀。
 
 ## 修正机制（amendments/，跨周期）
 

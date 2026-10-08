@@ -1,10 +1,10 @@
 #!/bin/sh
-# mdlint.sh — SDD 治理 Markdown 规范校验
-# 用法：sh sdd/tools/mdlint.sh <文件或目录>...
-# 规格源：sdd/CONSTITUTION.md「Markdown 书写规范」校验节
+# mdlint.sh — Markdown 书写规范校验
+# 用法：sh mdlint.sh <文件或目录>...
 #   error  ：行内反引号不配对、`**` 行内不配对、全角圆括号/直角引号文件级不配对
-#   warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致、行内代码内出现治理 ID
-#   豁免   ：代码围栏；行内代码内容除治理 ID 检查外豁免（检查集限于书写形态，内容治理不入检查集）
+#   warning：中英文粘连（剥离行内代码后）、无序列表标记非 `-`、表格行列数与表头不一致、行内代码内出现 ID 形态
+#   豁免   ：代码围栏；行内代码内容除 ID 形态检查外豁免（检查集限于书写形态）
+# 注：本脚本另有内嵌变体（提交门禁 hook），改动两处同步并过同套自测向量
 # 退出码：存在 error 为 1，否则 0
 
 lint_file() {
@@ -58,10 +58,10 @@ for my $i (0 .. $#body) {
     printf "warning: %s:%d: 中英文粘连\n", $file, $n;
     $warn++;
   }
-  # warning：行内代码内出现治理 ID（执法 ID 禁包规则；裸写为合规态）
+  # warning：行内代码内出现 ID 形态（裸写为合规态）
   for my $span ($l =~ /`([^`]*)`/g) {
     if ($span =~ /[IPTA]-[0-9]{3}/) {
-      printf "warning: %s:%d: 行内代码内出现治理 ID\n", $file, $n;
+      printf "warning: %s:%d: 行内代码内出现 ID 形态\n", $file, $n;
       $warn++;
       last;
     }
@@ -123,7 +123,7 @@ PERL
 
 err_sum=0
 if [ $# -eq 0 ]; then
-  printf '用法：sh sdd/tools/mdlint.sh <文件或目录>...\n' >&2
+  printf '用法：sh mdlint.sh <文件或目录>...\n' >&2
   exit 2
 fi
 

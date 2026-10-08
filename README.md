@@ -23,8 +23,8 @@ Claude Code 插件 monorepo：一个 marketplace（`star-plugins`），多个插
 
 本 sdd 插件是面向智能体开发的 SDD 需求治理体系：模糊需求先进构想池，经探索收敛为可核对的规格，再沿受理、定稿、拆解、实现、验收、归档的状态机推进。范围契约（范围内 / 范围外 / 验收标准）与变更留痕防止实现漂移；验收标准前置、逐条标注验证方式与证据，使质量可核验、缺口可见。全程沉淀一套治理文档（规格、设计决策、探索档案、修正案、CHANGELOG），既可回溯开发过程，也是可交接的项目资产；对会话无状态的智能体而言，它同时充当外部记忆与约束，防止跨会话、跨智能体的遗忘与静默偏题。
 
-- **skill `sdd-init`**：可移植初始化器，在任意目标项目生成整套 SDD 治理体系（`sdd/` 治理文档与 runtime / mdLint 工具 / 命令 / 项目骨架 `CLAUDE.md` 与 `AGENTS.md`；**inline / standalone 双治理形态**：inline 治理随项目仓，standalone 治理另立 `sdd/` 内层仓、项目仓零痕迹，init 后不可切换）、完成 OpenCode 适配并安装 `.git/hooks/pre-commit` 提交兜底
-- **hook（提交兜底，纪律机制化）**：sdd-init 装进目标项目 `.git/hooks/pre-commit`，提交时对 staged 辖区 `.md` 跑 mdLint，有 error 阻止提交（三端通用：Claude Code、OpenCode、人工提交）
+- **skill `sdd-init`**：可移植初始化器，在任意目标项目生成整套 SDD 治理体系（`sdd/` 治理文档与 runtime / mdLint 工具 / 命令 / 项目骨架 `CLAUDE.md` 与 `AGENTS.md`；**inline / standalone 双治理形态**：inline 治理随项目仓，standalone 治理另立 `sdd/` 内层仓、项目仓零痕迹，init 后不可切换）、完成 OpenCode 适配并写入 `.githooks/pre-commit` 提交门禁（`core.hooksPath` 激活）
+- **hook（提交门禁，纪律机制化）**：sdd-init 写入目标项目 `.githooks/pre-commit`（入库、`core.hooksPath` 激活），提交时先按登记路由对 staged 文件执行 lint / format（可修复写回重暂存，不可修复断言阻断），再对全部 staged `.md` 跑内嵌 mdLint，有 error 阻止提交（三端通用：Claude Code、OpenCode、人工提交）
 - 插件**不含**工作流命令：命令由 sdd-init 生成于目标项目内（`.claude/commands/`），避免与项目内命令重复，且 OpenCode 存根依赖项目内文件
 
 ### 设计权威
@@ -38,8 +38,8 @@ Claude Code 插件 monorepo：一个 marketplace（`star-plugins`），多个插
 ### 生命周期
 
 - **升级**：目标项目内重跑 `/sdd:sdd-init`，检测到既有安装自动转升级模式（就地合并），机械资产静默更新、活文档差异仲裁、运行态（INDEX / INITIATIVE / specs 等）永不触碰；版本基线记录于 `sdd/VERSION`。规格见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
-- **环境重建**：项目在新主机 clone 后本地 `.git/hooks/pre-commit` 必然缺失（客户端 hook 不随 git 目录迁移）。重跑 `/sdd:sdd-init`，运行态齐全即自动转升级模式并补装 hook。
-- **卸载**：插件卸载对已初始化项目零影响（零运行时耦合，复制交付即断奶），仅失去后续升级通道；不做项目级拆除功能，停用体系删文件即可，pre-commit hook 自防御（`sdd/tools/mdlint.sh` 缺失即静默放行），git 历史保全一切。裁决见 `DESIGN-SDD.md` §十六。
+- **环境重建**：项目在新主机 clone 后运行态（含入库的 `.githooks/pre-commit`）随仓齐全，唯 `core.hooksPath` 为本地配置不随迁移。重跑 `/sdd:sdd-init` 即自动转升级模式补设激活（或按 README 激活行手动配置）。
+- **卸载**：插件卸载对已初始化项目零影响（零运行时耦合，复制交付即断奶），仅失去后续升级通道；不做项目级拆除功能，停用体系删文件即可，内层 hook 自防御（`sdd/tools/mdlint.sh` 缺失即静默放行），git 历史保全一切。裁决见 `DESIGN-SDD.md` §十六。
 
 ### 分层读取设计
 

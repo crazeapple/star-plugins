@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **设计总纲**：仓库 `docs/` 目录的 `DESIGN-SDD.md` 是 SDD 需求流程的设计权威；一切规格演进先修订它，再落插件规格。
 - **可移植提示词**：仓库 `docs/` 目录的 `PROMPT-SDD.md` 是单文件版初始化提示词，由 `DESIGN-SDD.md` 与插件规格提炼而来，改设计时须同步。
-- **插件内容**：skill `sdd-init`，可移植初始化器，在任意目标项目生成整套 SDD 治理体系、完成 OpenCode 适配并安装 `.git/hooks/pre-commit` 提交兜底，唯一机械强制 hook。
+- **插件内容**：skill `sdd-init`，可移植初始化器，在任意目标项目生成整套 SDD 治理体系、完成 OpenCode 适配并写入 `.githooks/pre-commit` 提交门禁，唯一机械强制 hook。
 - **插件刻意不含工作流命令**：命令由 sdd-init 生成于目标项目 `.claude/commands/`（OpenCode 存根依赖项目内文件）。不要把命令搬进插件。
 - **规格实现**：插件规格（`SKILL.md` / references ×4 / templates ×4）与 `DESIGN-SDD.md` 一致。
 
@@ -22,7 +22,7 @@ sh plugins/sdd/skills/sdd-init/scripts/mdlint.sh <文件或目录>
 - 修改 `mdlint.sh` 后必须过 5 条自测向量（见 `references/constitution-design.md`「校验」节）：行内反引号单只不闭合 → error；中英文粘连 → warning；同情形位于代码围栏/行内代码内 → 豁免；行内代码内包裹治理 ID → warning；「模板 ×4」→ 无输出。
 - 端到端试装：`/plugin marketplace add <本仓路径>` → `/plugin install sdd@star-plugins` → 在临时目标项目根运行 `/sdd:sdd-init` 验证生成流程。
 - 端到端试升级：同上装好插件后，在已初始化的临时项目重跑 `/sdd:sdd-init` 验证升级模式（机械资产更新、运行态未动、`sdd/VERSION` 更新）；细则见 `plugins/sdd/skills/sdd-init/references/upgrade.md`。
-- 试 pre-commit：临时仓库置 `sdd/tools/mdlint.sh` 并装入 `.git/hooks/pre-commit`（源 `plugins/sdd/skills/sdd-init/scripts/`），过 constitution-design「校验」节的自测向量。
+- 试 pre-commit：临时仓库写 `.githooks/pre-commit` 并设 `git config core.hooksPath .githooks`（源 `plugins/sdd/skills/sdd-init/scripts/`），过 constitution-design「校验」节的自测向量。
 - **打 tag**：tag = 仓库整体版本，message 列当次包含的插件版本（如 tag `1.0.0` → `sdd v0.1.0 初始发布`）；仓库版本随 marketplace 结构 / 元文档 / 插件集合递增，插件版本独立演进，两个数字勿混用。
 
 ## 编辑纪律
@@ -37,6 +37,6 @@ sh plugins/sdd/skills/sdd-init/scripts/mdlint.sh <文件或目录>
 
 - **两层分发结构**：`.claude-plugin/marketplace.json`（marketplace 清单）→ `plugins/sdd/.claude-plugin/plugin.json`（插件清单）→ skill + hook。
 - **skill 懒加载**：`SKILL.md` 只含主流程；规格在 `references/`，按步骤按需读取，禁止预载全部。资产以 `${CLAUDE_SKILL_DIR}/` 定位，复制（非引用）进目标项目。
-- **提交兜底链路**：sdd-init 复制 `skills/sdd-init/scripts/pre-commit.sh` 为目标项目 `.git/hooks/pre-commit`（不入库、不占清单）；staged 辖区 `.md` 有 error 非零退出阻止提交，为唯一机械强制 hook；自测向量见 `references/constitution-design.md`「校验」节。
-- **mdlint 契约**：error = 行内反引号/`**` 不配对、全角圆括号/直角引号文件级不配对；warning = 中英文粘连、无序列表标记非 `-`、表格列数与表头不一致、行内代码内出现治理 ID；豁免代码围栏，行内代码内容除治理 ID 检查外豁免；检查集限于书写形态，内容治理不入检查集；有 error 单文件退出 1、汇总退出 1。零依赖（POSIX sh + perl）。
-- **sdd-init 运行时不变量**：生成清单 29 文件（18 治理 + 1 工具 + 1 版本标记 `sdd/VERSION` + 9 适配；standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加同数 30）+ 不入库的 `.git/hooks/pre-commit`（提交兜底）；验证零 error；两次独立 git 提交（20 + 9 文件，消息固定，显式列举路径，禁 `git add -A`/`git add .`）；核心签名齐全转校准 / 升级模式（撤档与两支线见 `DESIGN-SDD.md` §十六）、部分存在才冲突即停、禁止覆盖既有文件；卸载插件对已初始化项目零影响。
+- **提交门禁链路**：sdd-init 复制 `skills/sdd-init/scripts/pre-commit.sh` 为目标项目 `.githooks/pre-commit`（入库占清单，`core.hooksPath` 激活，README 记激活行）；先按路由段执行 staged 文件登记的 lint / format（写回重暂存、断言阻断），再对全部 staged `.md` 跑内嵌 mdLint，有 error 非零退出阻止提交，为唯一机械强制 hook；自测向量见 `references/constitution-design.md`「校验」节。
+- **mdlint 契约**：error = 行内反引号/`**` 不配对、全角圆括号/直角引号文件级不配对；warning = 中英文粘连、无序列表标记非 `-`、表格列数与表头不一致、行内代码内出现治理 ID；豁免代码围栏，行内代码内容除治理 ID 检查外豁免；检查集限于书写形态，内容治理不入检查集；有 error 单文件退出 1、汇总退出 1。零依赖（POSIX sh + perl）；`pre-commit.sh` 内嵌 mdlint 段与 `mdlint.sh` 同源，改动两处同步并过同套自测向量。
+- **sdd-init 运行时不变量**：生成清单 31 文件（18 治理 + 1 工具 + 1 版本标记 `sdd/VERSION` + 1 门禁 hook + 1 README + 9 适配；standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加同数 32）；验证零 error；两次独立 git 提交（21 + 10 文件，消息固定，显式列举路径，禁 `git add -A`/`git add .`）；核心签名齐全转校准 / 升级模式（撤档与两支线见 `DESIGN-SDD.md` §十六）、部分存在才冲突即停、禁止覆盖既有文件；卸载插件对已初始化项目零影响。
