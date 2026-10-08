@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### sdd v3.0.0
+
+#### 变更
+
+- slim / full 双轨废止，合并为单一 edition：吸收 slim 的受理一站式与 4 态状态观（撤 `specified` 与 finalize / split 命令，定稿并入 intake、落位软门、可重入），保留 full 的分支 / worktree / test 泳道验收流水与治理面全套；存量安装经升级模式两支线迁移（`+full` 旧装撤档、`+slim` 旧装治理面扩容与构想小节迁出获发 I 号），周期空闲闸门照旧、治理数据零迁移；`sdd/VERSION` 单值化（旧 `+slim` / `+full` 后缀识别旧版）
+- 停驻 on-hold 化：验收重试达 `Verification retry limit` 的 P 置 on-hold（verifying 旁路），验收位释放、流水继续；恢复由对话承载——修复落 dev，重演 verifying 转换（自当前 main 切 `test/<slug-N>` 合并 `dev/<slug>`），或切 manual 人工验收放行；verifying 转换的 worktree 与 dev 分支删除时点后移至 accept
+- 升级新增撤档动作与存量补记：现行规格不再生成的文件从目标项目删除；验证命令区插空后按扫描清单补记；遗留 CHANGELOG `[Unreleased]` 节首次 accept 吸收后移除
+
 ### sdd v2.8.7
 
 #### 修复
