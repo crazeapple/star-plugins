@@ -7,7 +7,7 @@ description: Initialize the SDD requirements governance system (constitution / I
 
 本技能为分发规格，设计决策以仓库 `docs/` 目录的 `DESIGN-SDD.md` 为准。**直接执行，禁止重新设计、增删决策。**
 
-> **TL;DR**：① 前置检查（dispatch：全新 / 既有命中 / 冲突即停；形态按 `sdd/.git` 判定，既有低版本安装一律视为 inline）→ ② 询问（仅全新；全项默认兜底，治理形态默认 standalone 且 init 后不可切换、版本格式默认 SemVer、验收模式默认 auto）→ ③ 生成 30 文件（standalone 同数 31）；既有安装按 `references/upgrade.md` 就地合并（撤档与两支线）→ ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；校准按实际变更）。
+> **TL;DR**：① 前置检查（dispatch：全新 / 既有命中 / 冲突即停；形态按 `sdd/.git` 判定，既有低版本安装一律视为 inline）→ ② 询问（仅全新；全项默认兜底，治理形态默认 standalone 且 init 后不可切换、版本格式默认 SemVer、验收模式默认 auto）→ ③ 生成 30 文件（standalone 同数 30）；既有安装按 `references/upgrade.md` 就地合并（撤档与两支线）→ ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；校准按实际变更）。
 > **三条禁忌**：禁止擅自覆盖既有文件；禁止重新设计、增删决策；禁止跳过任何验证。
 
 ## 引用懒加载
@@ -95,7 +95,7 @@ description: Initialize the SDD requirements governance system (constitution / I
 ## 四、验证与回报
 
 1. **失败处置（总则）**：任何验证失败，修复后必须重跑对应**全量**验证（mdLint 失败即对全部生成文件重跑，非仅复验出错项），全部通过方可进入下一步；禁止跳过任何验证步骤（明示豁免者除外）、禁止带病提交、禁止以「已修过」为由免检。
-2. 文件齐全、结构正确、必填项已填（inline 30 文件：17 治理文件 + 1 治理工具 + 1 版本标记 + 1 门禁 hook + 1 README + 9 OpenCode 适配文件；standalone 同数 31，不写 `.gitignore`、改生成 `CLAUDE.local.md`）；`sdd/VERSION` 与插件清单 version 一致；`.githooks/pre-commit` 已生成且可执行、`git config core.hooksPath` 输出 `.githooks`（入库占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 排除清单）；README 含激活行；
+2. 文件齐全、结构正确、必填项已填（inline 30 文件：17 治理文件 + 1 治理工具 + 1 版本标记 + 1 门禁 hook + 1 README + 9 OpenCode 适配文件；standalone 同数 30，不写 `.gitignore`、改生成 `CLAUDE.local.md`）；`sdd/VERSION` 与插件清单 version 一致；`.githooks/pre-commit` 已生成且可执行、`git config core.hooksPath` 输出 `.githooks`（入库占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 排除清单）；README 含激活行；
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md AGENTS.md README.md .claude/commands/ .opencode/commands/`（standalone 下追加 `CLAUDE.local.md`），零 error；
 4. ID/状态机/矩阵在 CONSTITUTION、INDEX、INITIATIVE、模板、6 命令间交叉一致；
 5. `git check-ignore -v .claude/settings.local.json .opencode/tmp.local.json`（后一文件名任取一个不存在的即可）→ 均命中；`git check-ignore .opencode/opencode.json` → inline 无输出（未被忽略）/ standalone 命中（排除清单生效）；

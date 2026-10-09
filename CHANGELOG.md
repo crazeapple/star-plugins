@@ -2,6 +2,14 @@
 
 本仓发布以 tag 为版本，每个版本列出当次包含的 sdd 插件版本节点。格式参照 Keep a Changelog，条目分「新增 / 变更 / 修复 / 移除」四类，新版本在上。
 
+## [Unreleased]
+
+### sdd v3.3.1
+
+#### 修复
+
+- runtime 溯源行残留 `· edition：full`（command-specs 骨架节 3.0.0 合并漏改，与 upgrade「溯源去 edition」口径相抵）；连带修正 DESIGN 生成计数停于 3.0.0、PROMPT 的 VERSION 识别正则仍卡 `+slim` / `+full` 后缀、standalone 同数误写 31（一减一加应同数 30）
+
 ## [2.2.0] - 2026-10-09
 
 ### sdd v3.3.0

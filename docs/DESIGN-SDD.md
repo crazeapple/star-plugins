@@ -278,7 +278,7 @@ sdd/
   9. init 验证与回报带形态变体（文件数、笔数、exclude、内层 hook、`CLAUDE.local.md`）。
   10. 升级按 `sdd/.git` 判形态；standalone 校准治理提交 `git -C sdd`、项目仓零治理提交（公开骨架变更例外，中性 message）、内层 hook 重装；inline 旧安装一次性迁移（规格见 `upgrade.md`）。
 
-- **生成计数**：单一 edition（3.0.0）inline 29 / standalone 30（根 3 + 命令 6 + OpenCode 适配 7 + sdd 13；standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加同数，实现时逐文件核对）。历史计数（双轨期 inline full 31→33 / slim 20→22、standalone 32→34 / 21→23 诸值）见 §十五 沿革，随双轨废止失效。
+- **生成计数**：inline 30 / standalone 30（根 3 + 命令 6 + OpenCode 适配 9 + sdd 12；standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加同数，实现时逐文件核对）。历史计数（双轨期 inline full 31→33 / slim 20→22、standalone 32→34 / 21→23 诸值）见 §十五 沿革，随双轨废止失效。
 - **八面表（init 判据素材）**：
 
   | 受影响面 | inline | standalone |
