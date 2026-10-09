@@ -21,12 +21,12 @@
 
 注意：`.opencode/opencode.json` inline 形态受 git 管理，禁止加入忽略清单；standalone 形态经排除清单忽略。
 
-`AGENTS.md`（项目根，两形态同文；`<项目名>`、`<项目定位一句话>` 为 `SKILL.md` 第 2 节必填项）：
+`AGENTS.md`（项目根，两形态同文；`<项目名>`、`<项目描述>` 自 `SKILL.md` 第 2 节回填，描述可待定）：
 
 ```
 # <项目名> · OpenCode 入口
 
-<项目定位一句话>
+<项目描述>
 ```
 
 `.opencode/opencode.json`（两形态同文）：

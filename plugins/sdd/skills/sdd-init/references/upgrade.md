@@ -51,15 +51,15 @@
 - 治理配置区与验证命令区：runtime 骨架重写时插入，`Acceptance mode` 回读不到即 auto、`Verification retry limit` 缺省 3（不询问）；验证命令区插空后执行存量补记（扫描依赖清单、测试配置、CI 测试任务等验证类工具链，生成补记清单，交互同登记闸门：现场扫描后对照「登记案例」节匹配，命中确认套用 / 选定 / 判「无」/ 试跑）
 - 旧制度遗留的 CHANGELOG `[Unreleased]` 节：升级不自动修改（公开文件属项目自治，升级回报提示其存在）；首次 accept 时累积条目并入本次版本节，节随之移除
 
-## 四、必填项回读（升级模式不询问）
+## 四、字段回读（升级模式不询问）
 
-项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目定位一句话 ← `CLAUDE.md` 首段定位句；版本格式 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节；治理配置（`Acceptance mode` / `Verification retry limit`）← 治理配置区（回读不到按缺省 auto / 3，不询问）；验证命令区回读保留，插空后存量补记；旧「提交前校验命令」字段取消（并入 staged 处置列），原值并入补记扫描起点不单独回读。前两项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
+项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目描述 ← `CLAUDE.md` 首段描述；版本格式 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节；治理配置（`Acceptance mode` / `Verification retry limit`）← 治理配置区（回读不到按缺省 auto / 3，不询问）；验证命令区回读保留，插空后存量补记；旧「提交前校验命令」字段取消（并入 staged 处置列），原值并入补记扫描起点不单独回读。前两项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
 
 ## 五、执行顺序与幂等
 
-1. 起始时间戳（`date +%s`）→ 触发判定与安装识别（§一、§二）→ 必填项回读（§四）
+1. 触发判定与安装识别（§一、§二）→ 字段回读（§四）→ 记录起始时间戳（`date +%s`）
 2. 撤档 → 扩容补齐 → 两路并行校准（§七）→ 主会话最后重写 `sdd/runtime/claude.md` 与 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/VERSION`（内容 = `${CLAUDE_SKILL_DIR}/../../.claude-plugin/plugin.json` 的 `version` 原样）
-3. 全量验证（复用 `SKILL.md`「四、验证与回报」全量项：mdLint 零 error + 交叉一致 + check-ignore + OpenCode 三段验证）→ 提交（§六）→ 回报（§六）
+3. 全量验证（复用 `SKILL.md`「四、验证与回报」全量项：mdLint 零 error + 交叉一致 + check-ignore + OpenCode 两段验证）→ 提交（§六）→ 回报（§六）
 
 **幂等**：校准按「现行规格 vs 磁盘现状」状态化执行，不依赖版本值分支；升级可安全重跑，中断恢复 = 直接重跑（中断不会造成核心签名缺损，重跑仍命中升级模式）。
 
@@ -69,7 +69,7 @@
   - 第一批 = `CLAUDE.md` + 命令 ×6 + `sdd/CONSTITUTION.md` + `sdd/VERSION`，消息固定 `chore: 升级 SDD 治理体系（机械资产校准 + 活文档仲裁）`
   - 第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×6，消息固定 `chore: 升级 OpenCode 适配资产`
   - 某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）；standalone 形态：治理资产变更 `git -C sdd` 提交（消息同第一批固定文案），项目仓仅公开骨架（`CLAUDE.md` / `AGENTS.md`）有变更时一笔中性 message 固定 `docs: 更新项目协作入口`，无变更则项目仓零提交
-- 回报项：治理形态 + 模式与版本去向（含安装识别段，如 `2.8.6+full 旧版 → 3.0.0`）+ 撤档清单 + 扩容补齐清单 + 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（§九，无差异则注明）+ 跳过批次 + commit hash（standalone 为两仓各自）+ mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式）+ hook 重装结论（含 standalone 内层 hook）
+- 回报项：治理形态 + 模式与版本去向（含安装识别段，如 `2.8.6+full 旧版 → 3.0.0`）+ 撤档清单 + 扩容补齐清单 + 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（§九，无差异则注明）+ 跳过批次 + commit hash（standalone 为两仓各自）+ mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式；自模式判定完成起算）+ hook 重装结论（含 standalone 内层 hook）
 
 ## 七、`CLAUDE.md` 重写与回读规则
 

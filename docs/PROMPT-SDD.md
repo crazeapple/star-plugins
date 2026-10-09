@@ -10,35 +10,32 @@
 
 以下治理设计已全部确认，**直接执行，禁止重新设计、增删决策**。
 
-> 提示词版本：3.3.1（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION` 的值源）
-> **TL;DR**：① 前置检查（判定全新 / 升级模式与治理形态）→ ② 问必填项（仅全新，含治理形态，默认 standalone 且 init 后不可切换）→ ③ 全新：四路并行生成 30 文件（standalone 同数 30）；升级：按 §8 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；升级按实际变更）。
+> 提示词版本：3.4.0（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION` 的值源）
+> **TL;DR**：① 前置检查（判定全新 / 升级模式与治理形态）→ ② 询问（仅全新，含治理形态，默认 standalone 且 init 后不可切换）→ ③ 全新：生成 30 文件（standalone 同数 30）；升级：按 §8 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；升级按实际变更）。
 > **三条禁忌**：禁止擅自覆盖既有文件；禁止重新设计、增删决策；禁止跳过任何验证。
 
 ## 二、初始化流程（四步，顺序固定）
 
 1. **前置检查**：
-   - 记录起始时间戳（`date +%s`），收尾计算初始化耗时
    - 当前目录为项目根；非 git 仓库则自动执行 `git init`
    - 冲突检测：已存在 `sdd/`、`CLAUDE.md`、`CLAUDE.local.md`、`.claude/commands/sdd-*.md`、`AGENTS.md`、`.opencode/`、`.git/hooks/pre-commit`、`.githooks/` 或 `.husky/` 任一（`git config core.hooksPath` 已设亦同） → **停止并报告冲突清单**，由用户决定，禁止覆盖（标准处置二选一：跳过冲突项继续，或用户明示删除后重建；其余处置须用户逐项明示）；命中项构成全套签名文件（判定清单见 §8）时经用户确认转**升级模式**（就地合并），部分存在仍按本条停止，禁止补齐后覆盖。治理形态按 `sdd/` 是否为独立 git 仓判定（standalone / inline）；既有低版本安装一律视为 inline
-   - `opencode` 可用性：不可用则照常生成全部文件、最终回报中提示安装，禁止自动安装、不阻塞
-2. **询问必填项**（升级模式跳过本步，改按 §8 回读）：一次性向用户列出下表，等待回答；未回答项用默认值，必填项未获回答则再次询问、仍拒答则停止（启动日期不询问，`date +%F` 实取）：
+   - `opencode` 可用性检测以后台方式与询问并行：不可用则照常生成全部文件、最终回报中提示安装，禁止自动安装、不阻塞
+2. **询问**（升级模式跳过本步，改按 §8 回读）：一次性向用户列出下表，随后以后台方式计时 3 分钟：先答复按答复（计时器取消），到点未答按默认值继续（计时器唤醒时若答复已获则忽略），后台计时不可用即降级为等待答复、文案注明回复「默认」即按默认值继续；全部询问项均有默认值兜底（启动日期不询问，`date +%F` 实取）。询问完成（答复或到点）后记录起始时间戳（`date +%s`），收尾计算初始化耗时：
 
-   | 项 | 必填 | 默认值 / 说明 |
-   |---|---|---|
-   | 项目名 | 可默认 | 默认 = 当前目录名；用于 `CLAUDE.md` 与 `AGENTS.md` 标题 |
-   | 项目定位一句话 | 必填 | `CLAUDE.md` 首行：一句话说明项目是什么、目的 |
-   | 治理形态 | 可默认 | 默认 standalone。选项行固定：`inline 仓（内联，随项目仓）/ standalone 仓（独立，单独治理仓，默认；init 后不可切换，项目需对外无痕或治理不入项目仓时选此）`；形态 init 后不可切换 |
-   | 版本格式 | 可默认 | 默认 SemVer。CalVer（`YYYY.M.D` 验收日，同日多发如 `2026.10.9.2`）或 SemVer（`vX.Y.Z`，按变化递增）；交付型惯用 CalVer，库 / 产品惯用 SemVer；登记于「路径、ID 与工程约定」节 |
-   | 验收模式 | 可默认 | 默认 auto。`Acceptance mode`：auto 验证全绿自动走 accept 链，manual 验收由用户发起；登记于 runtime「治理配置」区 |
+   | 项 | 默认值 / 说明 |
+   |---|---|
+   | 项目名 | 默认 = 当前目录名；用于 `CLAUDE.md` 与 `AGENTS.md` 标题 |
+   | 项目描述 | 缺省「待定」（写入 `CLAUDE.md` 首行），第一个提案受理时仍待定则当场询问 |
+   | 治理形态 | 默认 standalone。选项行固定：`inline 仓（内联，随项目仓）/ standalone 仓（独立，单独治理仓，默认；init 后不可切换，项目需对外无痕或治理不入项目仓时选此）`；形态 init 后不可切换 |
+   | 版本格式 | 默认 SemVer。CalVer（`YYYY.M.D` 验收日，同日多发如 `2026.10.9.2`）或 SemVer（`vX.Y.Z`，按变化递增）；交付型惯用 CalVer，库 / 产品惯用 SemVer；登记于「路径、ID 与工程约定」节 |
+   | 验收模式 | 默认 auto。`Acceptance mode`：auto 验证全绿自动走 accept 链，manual 验收由用户发起；登记于 runtime「治理配置」区 |
 
-3. **生成（全新模式，默认四路并行）**：按回答生成填好的 17 治理文件（含 `sdd/runtime/` ×2）、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`），用 subagents 按文件组分派并行，各组自读本提示词对应章节。
+3. **生成（全新模式）**：按回答生成填好的 17 治理文件（含 `sdd/runtime/` ×2）、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`）。模板 ×4（按 §5 骨架生成）、`tools/mdlint.sh`（按 §4「校验」节实现并过自测向量）、`sdd/VERSION`（写版本值 `X.Y.Z`）、`.githooks/pre-commit`（按 §4「校验」节提交门禁生成并加可执行位，含内嵌 mdlint 段与路由段骨架）、`README.md`（运行说明，含 `git config core.hooksPath .githooks` 激活行；已存在则追加小节）由主会话直接生成与复制，与两路 subagents 并行分派同时进行，各组自读本提示词对应章节：
 
    | 组 | 生成物 | 自读章节 |
    |---|---|---|
-   | ① | CONSTITUTION、INDEX、INITIATIVE、`amendments/amend.md` | §4 全文 + §5 生成骨架 |
-   | ② | 命令 ×6（`.claude/commands/`） | §5 命令规格表 + §4「状态转换 × 文档同步矩阵」（定点读取） |
-   | ③ | 模板 ×4（按 §5 骨架生成）、`tools/mdlint.sh`（按 §4「校验」节实现并过自测向量）、`sdd/VERSION`（写版本值 `X.Y.Z`）、`.githooks/pre-commit`（按 §4「校验」节提交门禁生成并加可执行位，含内嵌 mdlint 段与路由段骨架）、`README.md`（运行说明，含 `git config core.hooksPath .githooks` 激活行；已存在则追加小节） | §4「校验」 |
-   | ④ | OpenCode 适配 ×9（含 `sdd/runtime/opencode.md`） | §7 全文 |
+   | ① | CONSTITUTION、INDEX、INITIATIVE、`amendments/amend.md`、命令 ×6（`.claude/commands/`） | §4 全文 + §5 生成骨架、命令规格表与「状态转换 × 文档同步矩阵」节 |
+   | ② | OpenCode 适配 ×9（含 `sdd/runtime/opencode.md`） | §7 全文 |
 
    **`sdd/runtime/claude.md` 与 `CLAUDE.md` 最后由主会话写**（引用全部生成物）；组 subagent 回报工具缺失时按 §4「工具可用性实证」节处置（调用实证复核、重派一次）；环境不支持 subagents 或重派仍败时按组序串行，步骤不变。写 `sdd/` 下文档的组完成时各自先跑 mdLint 自查。升级模式不走本步生成流程，改按 §8 就地合并（两路并行，`runtime/claude.md` 同样最后写）。
 
@@ -46,7 +43,7 @@
 
 4. **收尾**：对全部生成文件（含适配文件）按 §6 完成全量验证（零 error）、git 提交（inline 两笔 20+10；standalone 项目仓一笔中性 message 仅 `CLAUDE.md` + `AGENTS.md` + `README.md` + `.githooks/pre-commit`，内仓 `git -C sdd` 一笔全部治理资产）、计算初始化耗时与回报；两形态写 `.git/info/exclude` 排除行 `.export/`。升级模式收尾按 §8（复用全量验证，提交按实际变更分批）。
 
-> **中断恢复**：会话中断后续跑时，已生成文件若与 §6 清单吻合即视为本初始化产物，跳过前置检查的冲突判定；对照其清单补齐缺失文件、已验证项不重跑、必填项从已生成文件回读（项目名/定位见 `CLAUDE.md`），回读不到才询问；若存在清单外文件，照常停止报告冲突。升级模式中断 → 直接重跑升级（幂等，见 §8）。
+> **中断恢复**：会话中断后续跑时，已生成文件若与 §6 清单吻合即视为本初始化产物，跳过前置检查的冲突判定；对照其清单补齐缺失文件、已验证项不重跑、项目名与定位从已生成文件回读（见 `CLAUDE.md`），回读不到才询问（定位回读到「待定」即保持待定）；若存在清单外文件，照常停止报告冲突。升级模式中断 → 直接重跑升级（幂等，见 §8）。
 
 ## 三、文档结构（20 治理文件 + 1 治理工具 + 1 版本标记 + 11 OpenCode 适配文件 = 33；standalone 不写 `.gitignore`、改生成 `CLAUDE.local.md`，一减一加同数 33）
 
@@ -390,7 +387,7 @@
   （暂无修正案）
   ```
 
-- **`CLAUDE.md` 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目定位一句话（首行）。公开内容零 sdd 痕迹；形态差异仅一行，inline 末尾追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。四字段中的项目名与定位在此，提交前校验命令与版本格式属 runtime 工程约定节。
+- **`CLAUDE.md` 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目描述（首行）。公开内容零 sdd 痕迹；形态差异仅一行，inline 末尾追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。四字段中的项目名与定位在此，提交前校验命令与版本格式属 runtime 工程约定节。
 - **`sdd/runtime/claude.md` 骨架**（治理运行时唯一内容源，章节顺序固定，与 `CLAUDE.md` 同批最后由主会话写）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本>`）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」、验证命令区（名称 × 命令 × 类别 × 范围）、治理配置（`Acceptance mode`、`Verification retry limit`）、版本格式（CalVer 验收日或 SemVer））。硬规则必须含（7 条）：
   - ① INDEX 是状态唯一权威源、INITIATIVE 是构想唯一记录，变更即时同步
   - ② 新想法先分类：维护直接做；需求一律经 `/sdd-intake` 受理
@@ -407,13 +404,13 @@
 ## 六、验证与回报
 
 1. **失败处置（总则）**：任何验证失败，修复后必须重跑对应**全量**验证（mdLint 失败即对全部生成文件重跑，非仅复验出错项），全部通过方可进入下一步；禁止跳过任何验证步骤（明示豁免者除外）、禁止带病提交、禁止以「已修过」为由免检。
-2. 文件齐全、结构正确、必填项已填（inline 30 文件：17 治理文件 + 1 治理工具 + 1 版本标记 + 1 门禁 hook + 1 README + 9 OpenCode 适配文件；standalone 同数 30，不写 `.gitignore`、改生成 `CLAUDE.local.md`）；`sdd/VERSION` 内容与本提示词顶部版本一致；`.githooks/pre-commit` 已生成且可执行、`git config core.hooksPath` 输出 `.githooks`（入库占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 六行）；README 含激活行；
-3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`（standalone 下追加 `CLAUDE.local.md`），零 error；
+2. 文件齐全、结构正确、字段无占位残留（定位「待定」除外；inline 30 文件：17 治理文件 + 1 治理工具 + 1 版本标记 + 1 门禁 hook + 1 README + 9 OpenCode 适配文件；standalone 同数 30，不写 `.gitignore`、改生成 `CLAUDE.local.md`）；`sdd/VERSION` 内容与本提示词顶部版本一致；`.githooks/pre-commit` 已生成且可执行、`git config core.hooksPath` 输出 `.githooks`（入库占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 排除清单）；README 含激活行；
+3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md AGENTS.md README.md .claude/commands/ .opencode/commands/`（standalone 下追加 `CLAUDE.local.md`），零 error；
 4. ID/状态机/矩阵在 CONSTITUTION、INDEX、INITIATIVE、模板、6 命令间交叉一致；
 5. `git check-ignore -v .claude/settings.local.json .opencode/tmp.local.json`（后一文件名任取一个不存在的即可）→ 均命中；`git check-ignore .opencode/opencode.json` → inline 无输出（未被忽略）/ standalone 命中（排除清单生效）；
-6. OpenCode 三段验证（`opencode` 未安装时整体跳过并在回报注明；其运行副产物被 `.opencode/.gitignore` 自忽略，不影响提交）：① 配置面——项目内 `opencode debug config` 输出含本项目 `.opencode/opencode.json`，其 `info` 含 `"lsp": true` 与 `instructions` 两路径；② 存根契约——存根 ×6 在位，frontmatter description 与 §5 命令规格表逐字一致，各存根 `@` 指向的 `.claude/commands/` 同名文件存在；③ 命令发现——`opencode run '/sdd-board'`，判据为退出码 0 且输出为与命令规格一致的看板摘要（提案总览或暂无提案说明）且不含「未定义命令」措辞；sdd-* 命令结构同构，一通俱通，输出未定义措辞或格式不符为失败；本段因模型或凭据未配置失败时跳过并在回报注明；
-7. git 提交均显式列举文件路径添加、禁用 `git add -A` 与 `git add .`：inline 两笔，第一笔仅 20 清单文件（17 治理 + 工具 + VERSION + 门禁 hook，含 runtime ×2），消息固定 `chore: 初始化 SDD 需求治理体系（18 治理文件 + mdlint 工具 + 版本标记 + 提交门禁）`；第二笔仅 10 适配文件（`AGENTS.md` + `README.md` + `.gitignore` + `opencode.json` + 存根 ×6），消息固定 `chore: 适配 OpenCode（命令存根 @ 引用 + .opencode 共享配置 + 运行说明）`。standalone 两仓各一笔：项目仓仅 `CLAUDE.md` + `AGENTS.md` + `README.md` + `.githooks/pre-commit`，message 固定 `docs: 项目协作入口与提交门禁`（中性，无 sdd 字样）；内仓 `git -C sdd` 提交 `sdd/` 全部，消息同 inline 第一笔。除清单文件外禁止创建任何其他文件（评审/提示词等用户文档不入库）；
-8. 冒烟演练默认**不执行**，初始化完成后待命 `/sdd-intake` 接首个真实需求；后续冒烟（用户在 opencode TUI 手动）：输入 `/` 查看命令补全、执行任一只读命令（如 `/sdd-board`）、问「本项目会话必读是什么」应答 CONSTITUTION → INDEX → INITIATIVE（验证 runtime 注入链路：inline 为 `CLAUDE.md` @ 引用，standalone 为 `CLAUDE.local.md`）；
+6. OpenCode 两段验证（`opencode` 未安装时整体跳过并在回报注明；其运行副产物被 `.opencode/.gitignore` 自忽略，不影响提交）：① 配置面——项目内 `opencode debug config` 输出含本项目 `.opencode/opencode.json`，其 `info` 含 `"lsp": true` 与 `instructions` 两路径；② 存根契约——存根 ×6 在位，frontmatter description 与 §5 命令规格表逐字一致，各存根 `@` 指向的 `.claude/commands/` 同名文件存在；
+7. git 提交均显式列举文件路径添加、禁用 `git add -A` 与 `git add .`：inline 两笔，第一笔仅 20 清单文件（17 治理 + 工具 + VERSION + 门禁 hook，含 runtime ×2），消息固定 `chore: 初始化 SDD 需求治理体系（17 治理文件 + mdlint 工具 + 版本标记 + 提交门禁）`；第二笔仅 10 适配文件（`AGENTS.md` + `README.md` + `.gitignore` + `opencode.json` + 存根 ×6），消息固定 `chore: 适配 OpenCode（命令存根 @ 引用 + .opencode 共享配置 + 运行说明）`。standalone 两仓各一笔：项目仓仅 `CLAUDE.md` + `AGENTS.md` + `README.md` + `.githooks/pre-commit`，message 固定 `docs: 项目协作入口与提交门禁`（中性，无 sdd 字样）；内仓 `git -C sdd` 提交 `sdd/` 全部，消息同 inline 第一笔。除清单文件外禁止创建任何其他文件（评审/提示词等用户文档不入库）；
+8. 冒烟演练默认**不执行**，初始化完成后待命 `/sdd-intake` 接首个真实需求；后续冒烟（用户在 opencode TUI 手动）：输入 `/` 查看命令补全、执行任一只读命令（如 `/sdd-board`，期望退出码 0 且输出为看板摘要或暂无提案说明，不含「未定义命令」措辞；sdd-* 命令结构同构，一通俱通）、问「本项目会话必读是什么」应答 CONSTITUTION → INDEX → INITIATIVE（验证 runtime 注入链路：inline 为 `CLAUDE.md` @ 引用，standalone 为 `CLAUDE.local.md`）；
 9. 最终回报：文件清单 + commit hash（inline 两个 / standalone 两仓各一）+ mdLint 结论 + 各项验证结论 + 初始化耗时（总时长，人类可读格式）+ 门禁 hook 结论（激活状态含 standalone 内层 hook）+ 治理形态 + 模式（全新 / 升级）与版本去向（升级回报项见 §8）。
 
 ## 七、OpenCode 适配设计（生成与验证的唯一规格源）
@@ -439,12 +436,12 @@
 
 注意：`.opencode/opencode.json` inline 形态受 git 管理，禁止加入忽略清单；standalone 形态经排除清单忽略。
 
-`AGENTS.md`（项目根，两形态同文；`<项目名>`、`<项目定位一句话>` 为 §2 必填项）：
+`AGENTS.md`（项目根，两形态同文；`<项目名>`、`<项目描述>` 自 §2 回填，描述可待定）：
 
 ```
 # <项目名> · OpenCode 入口
 
-<项目定位一句话>
+<项目描述>
 ```
 
 `.opencode/opencode.json`（两形态同文）：
@@ -527,15 +524,15 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 保护性写入细则：`.gitignore`（仅 inline）三行逐行补缺，即 `# 本地文件不入库`、`*.local.*`、`.worktree/`，已有行不动、项目自有行禁删禁改、文件不存在才新建，严禁整文件重写（standalone 形态不写 `.gitignore`）；两形态均维护 `.git/info/exclude` 的 `.export/` 排除行（缺失即补），standalone 另维护治理排除清单七行（逐行补缺同款纪律）；`AGENTS.md` 按 §7 逐字重生成 + 项目名与定位回填；`sdd/CONSTITUTION.md` 按 §4 逐字重生成 + 项目名回填 + 末尾生效日期保留原文件原值（识别原文件末尾 `YYYY-MM-DD` 日期行；回读失败以当日 `date +%F` 重置并在回报注明）；`sdd/runtime/claude.md` 按 §5 runtime 骨架重生成；治理配置区插入后按缺省值生成（`Acceptance mode` = auto、`Verification retry limit` = 3，已有值回读保留），验证命令区插空后执行存量补记（扫描依赖清单、测试配置、CI 测试任务等验证类工具链，生成补记清单，交互同登记闸门：建议 / 选定 / 判「无」/ 试跑）。
 
-### 必填项回读（升级模式不询问）
+### 字段回读（升级模式不询问）
 
-项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目定位一句话 ← `CLAUDE.md` 首段定位句；版本格式 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节；治理配置 ← 治理配置区（`Acceptance mode` 回读不到即 auto、`Verification retry limit` 缺省 3，不询问）；旧「提交前校验命令」字段取消（并入验证命令区 staged 处置列），原值并入补记扫描起点不单独回读。前两项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
+项目名 ← `CLAUDE.md` 首行标题（备选 `AGENTS.md` 标题）；项目描述 ← `CLAUDE.md` 首段描述；版本格式 ← `sdd/runtime/claude.md`「路径、ID 与工程约定」节；治理配置 ← 治理配置区（`Acceptance mode` 回读不到即 auto、`Verification retry limit` 缺省 3，不询问）；旧「提交前校验命令」字段取消（并入验证命令区 staged 处置列），原值并入补记扫描起点不单独回读。前两项均回读不到时询问用户（升级模式唯一询问点），拒答按默认值生成并在回报注明。
 
 ### 执行顺序与幂等
 
-1. 起始时间戳（`date +%s`）→ 触发判定 → 必填项回读
-2. 两路并行校准（见下）→ 主会话最后重写 `sdd/runtime/claude.md` 与 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/VERSION`（内容 = 本提示词顶部版本 + `+full`；经插件调用时取插件清单 `version` + `+full`）
-3. 全量验证（§6 全量项：mdLint 零 error + 交叉一致 + check-ignore + OpenCode 三段验证）→ 提交（见下）→ 回报（见下）
+1. 触发判定 → 字段回读 → 记录起始时间戳（`date +%s`）
+2. 两路并行校准（见下）→ 主会话最后重写 `sdd/runtime/claude.md` 与 `CLAUDE.md`（同初始化的串行屏障）→ 写 `sdd/VERSION`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`）
+3. 全量验证（§6 全量项：mdLint 零 error + 交叉一致 + check-ignore + OpenCode 两段验证）→ 提交（见下）→ 回报（见下）
 
 **幂等**：校准按「现行规格 vs 磁盘现状」状态化执行，不依赖版本值分支；升级可安全重跑，中断恢复 = 直接重跑（中断不会造成签名集缺损，重跑仍命中升级模式）。
 
@@ -558,7 +555,7 @@ description: Capture a new requirement and shape it into initiatives or proposal
   - 第一批 = `CLAUDE.md` + 命令 ×6 + `sdd/CONSTITUTION.md` + `sdd/VERSION`，消息固定 `chore: 升级 SDD 治理体系（机械资产校准 + 活文档仲裁）`
   - 第二批 = `AGENTS.md` + `.gitignore` + `.opencode/opencode.json` + `.opencode/commands/` ×6，消息固定 `chore: 升级 OpenCode 适配资产`
   - 某批零变更 → 跳过并在回报注明（commit hash 为 0 / 1 / 2 个）；standalone 形态：治理资产变更 `git -C sdd` 提交（消息同第一批固定文案），项目仓仅公开骨架（`CLAUDE.md` / `AGENTS.md`）有变更时一笔中性 message 固定 `docs: 更新项目协作入口`，无变更则项目仓零提交
-- 回报项：治理形态 + 模式与版本去向（`X → Y`，或「旧版安装 → Y」）+ 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（无差异则注明）+ 迁移清单（2.0.0 一次性迁移）+ 跳过批次 + commit hash（standalone 为两仓各自）+ mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式）+ 门禁 hook 结论（激活状态含 standalone 内层 hook）。
+- 回报项：治理形态 + 模式与版本去向（`X → Y`，或「旧版安装 → Y」）+ 覆盖清单 + 仲裁结果（保留的项目字段与自有增补清单、被覆盖改动清单）+ 骨架差异报告（无差异则注明）+ 迁移清单（2.0.0 一次性迁移）+ 跳过批次 + commit hash（standalone 为两仓各自）+ mdLint 结论 + 各项验证结论 + 升级耗时（总时长，人类可读格式；自模式判定完成起算）+ 门禁 hook 结论（激活状态含 standalone 内层 hook）。
 
 ### 骨架差异比对与报告
 
