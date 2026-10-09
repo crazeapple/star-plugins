@@ -42,14 +42,14 @@
 
 | 转换 | 必做操作 |
 |---|---|
-| intake 判定单交付物 →exploring | 模板建 `exploring/P-XXX.md` 底稿 + `specs/P-XXX/`（`spec.md` 与 `design.md` 骨架）+ INDEX 加行 |
-| intake 判定多交付物 →构想池 | `INITIATIVE.md` 立 I 条目（原文保留 + 路线图） |
-| I 拆出发号 →exploring | 模板建 `exploring/P-XXX.md` 底稿（frontmatter `source: I-XXX`）+ `specs/P-XXX/`（`spec.md` 与 `design.md` 骨架）+ INDEX 加行 |
+| intake 判定单交付物 → exploring | 模板建 `exploring/P-XXX.md` 底稿 + `specs/P-XXX/`（`spec.md` 与 `design.md` 骨架）+ INDEX 加行 |
+| intake 判定多交付物 → 构想池 | `INITIATIVE.md` 立 I 条目（原文保留 + 路线图） |
+| I 拆出发号 → exploring | 模板建 `exploring/P-XXX.md` 底稿（frontmatter `source: I-XXX`）+ `specs/P-XXX/`（`spec.md` 与 `design.md` 骨架）+ INDEX 加行 |
 | intake 重入（exploring 在途） | 继续探索澄清 + spec / design 填实 + 任务表就绪，状态不变 |
 | exploring→implementing（/sdd-intake 落位，软门过 + 用户确认） | design 任务表生效 + 切 `.worktree/<标题 slug>` worktree（分支 `dev/<标题 slug>`）+ INDEX 更新 |
 | 任一 Task 状态变化 | 更新 design 任务表 + 任务详情小节回填 |
-| 全任务 done →verifying | test 串行检查（他 P 持有 test 分支则本次转换挂起：P 留在 implementing，任务表保持全 done，worktree 与 dev 分支保留，待其 accept 后重走本行）+ 从当前 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（冲突一律在 test 解决；worktree 与 dev 分支保留，删除时点后移至 accept）+ 交付 hash 记入 design + INDEX 置 verifying + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 验证步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 进入验证（主工作区检出 test；已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的由承接该简报的 subagent 执行并回报，否则由主会话执行；`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认（验证命令名 · 用例指认 · 输出摘要），指认不出覆盖用例即映射失败按验证失败处理；失败自动修复重验，重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻：P 置 on-hold（verifying 旁路入，备注记失败 AC 与轮数），验收位释放、推进继续，恢复由对话承载——修复落 dev 后重演 verifying 转换，或切 manual 人工验收放行）；`Acceptance mode` = auto 全绿即自动走 verifying→accepted 行（无需发起），manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
-| verifying→accepted（/sdd-accept；`Acceptance mode` = auto 时验证全绿自动触发，无需发起） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ 全过后主工作区检出 main + 合并 `test/<标题 slug>` → main（发布）+ design 置 finalized + 底稿正文追加 journal 后删除 `P-XXX.md` + 通过的验收清单表格追加 journal + INDEX 更新 + CHANGELOG 单次写入成文（条目两路与归类见「CHANGELOG」条），以 `[版本] - 验收日` 节插入顶部 + 治理提交（standalone 经 `git -C sdd` 落内层仓）后打 tag（永远打在外层项目仓）+ 删除全部 `test/<标题 slug>*` 残支 + 完成回报固定建议「回看需求组拆下一个」 |
+| 全任务 done → verifying | test 串行检查（他 P 持有 test 分支则本次转换挂起：P 留在 implementing，任务表保持全 done，worktree 与 dev 分支保留，待其 accept 后重走本行）+ 从当前 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（冲突一律在 test 解决；worktree 与 dev 分支保留，删除时点后移至 accept）+ 交付 hash 记入 design + INDEX 置 verifying + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 验证步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 进入验证（主工作区检出 test；已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的由承接该简报的 subagent 执行并回报，否则由主会话执行；`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认（验证命令名 · 用例指认 · 输出摘要），指认不出覆盖用例即映射失败按验证失败处理；失败自动修复重验，重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻：P 置 on-hold（verifying 旁路入，备注记失败 AC 与轮数），验收位释放、推进继续，恢复由对话承载——修复落 dev 后重演 verifying 转换，或切 manual 人工验收放行）；`Acceptance mode` = auto 全绿即自动走 verifying → accepted 行（无需发起），manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
+| verifying → accepted（/sdd-accept；`Acceptance mode` = auto 时验证全绿自动触发，无需发起） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ 全过后主工作区检出 main + 合并 `test/<标题 slug>` → main（发布）+ design 置 finalized + 底稿正文追加 journal 后删除 `P-XXX.md` + 通过的验收清单表格追加 journal + INDEX 更新 + CHANGELOG 单次写入成文（条目两路与归类见「CHANGELOG」条），以 `[版本] - 验收日` 节插入顶部 + 治理提交（standalone 经 `git -C sdd` 落内层仓）后打 tag（永远打在外层项目仓）+ 删除全部 `test/<标题 slug>*` 残支 + 完成回报固定建议「回看需求组拆下一个」 |
 | I 完结 | 组内全部 P accepted → I 条目标完结 |
 | →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支：未建分支（exploring）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删全部 `test/<标题 slug>*` 残支（main 零沾染）；on-hold worktree 与分支挂起保留 |
 | 定稿后需求变更 | 规格正文 + changelog + version 递增（v1.0 → v1.1）+ 受影响 Task 评估，禁静默覆盖 |

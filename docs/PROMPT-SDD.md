@@ -10,7 +10,7 @@
 
 以下治理设计已全部确认，**直接执行，禁止重新设计、增删决策**。
 
-> 提示词版本：3.4.0（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION` 的值源）
+> 提示词版本：3.5.0（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION` 的值源）
 > **TL;DR**：① 前置检查（判定全新 / 升级模式与治理形态）→ ② 询问（仅全新，含治理形态，默认 standalone 且 init 后不可切换）→ ③ 全新：生成 30 文件（standalone 同数 30）；升级：按 §8 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；升级按实际变更）。
 > **三条禁忌**：禁止擅自覆盖既有文件；禁止重新设计、增删决策；禁止跳过任何验证。
 
@@ -119,12 +119,12 @@
 
 | 转换 | 必做操作 |
 |---|---|
-| intake 判定单交付物 →exploring | 模板建 `exploring/P-XXX.md` + INDEX 加行 |
-| intake 判定多交付物 →构想池 | `INITIATIVE.md` 立 I 条目（原文保留 + 路线图） |
-| I 拆出发号 →exploring | 模板建 `exploring/P-XXX.md`（frontmatter `source: I-XXX`）+ INDEX 加行 |
+| intake 判定单交付物 → exploring | 模板建 `exploring/P-XXX.md` + INDEX 加行 |
+| intake 判定多交付物 → 构想池 | `INITIATIVE.md` 立 I 条目（原文保留 + 路线图） |
+| I 拆出发号 → exploring | 模板建 `exploring/P-XXX.md`（frontmatter `source: I-XXX`）+ INDEX 加行 |
 | 任一 Task 状态变化 | 更新 design 任务表 + 任务详情小节回填 |
-| 全任务 done →verifying | test 串行检查（他 P 持有 test 分支则本次转换挂起：P 留在 implementing，任务表保持全 done，worktree 与 dev 分支保留，待其 accept 后重走本行）+ 从当前 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（冲突一律在 test 解决；worktree 与 dev 分支保留，删除时点后移至 accept）+ 交付 hash 记入 design + INDEX 置 verifying + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 验证步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 进入验证（主工作区检出 test；已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的由承接该简报的 subagent 执行并回报，否则由主会话执行；`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认（验证命令名 · 用例指认 · 输出摘要），指认不出覆盖用例即映射失败按验证失败处理；失败自动修复重验，重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻：P 置 on-hold（verifying 旁路入，备注记失败 AC 与轮数），验收位释放、推进继续并上报，恢复由对话承载或切 manual 人工验收放行）；`Acceptance mode` = auto 全绿即自动走 verifying→accepted 行（无需发起），manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
-| verifying→accepted（/sdd-accept；`Acceptance mode` = auto 时验证全绿自动触发，无需发起） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ 全过后主工作区检出 main + 合并 `test/<标题 slug>` → main（发布）+ design 置 finalized + 底稿正文追加 journal 后删除 `P-XXX.md` + 通过的验收清单表格追加 journal + INDEX 更新 + CHANGELOG 单次写入成文（条目两路与归类见「CHANGELOG」条），以 `[版本] - 验收日` 节插入顶部 + 治理提交（standalone 经 `git -C sdd` 落内层仓）后打 tag（永远打在外层项目仓）+ 删除全部 `test/<标题 slug>*` 残支 + 完成回报固定建议「回看需求组拆下一个」 |
+| 全任务 done → verifying | test 串行检查（他 P 持有 test 分支则本次转换挂起：P 留在 implementing，任务表保持全 done，worktree 与 dev 分支保留，待其 accept 后重走本行）+ 从当前 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（冲突一律在 test 解决；worktree 与 dev 分支保留，删除时点后移至 accept）+ 交付 hash 记入 design + INDEX 置 verifying + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 验证步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 进入验证（主工作区检出 test；已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的由承接该简报的 subagent 执行并回报，否则由主会话执行；`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认（验证命令名 · 用例指认 · 输出摘要），指认不出覆盖用例即映射失败按验证失败处理；失败自动修复重验，重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻：P 置 on-hold（verifying 旁路入，备注记失败 AC 与轮数），验收位释放、推进继续并上报，恢复由对话承载或切 manual 人工验收放行）；`Acceptance mode` = auto 全绿即自动走 verifying → accepted 行（无需发起），manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
+| verifying → accepted（/sdd-accept；`Acceptance mode` = auto 时验证全绿自动触发，无需发起） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ 全过后主工作区检出 main + 合并 `test/<标题 slug>` → main（发布）+ design 置 finalized + 底稿正文追加 journal 后删除 `P-XXX.md` + 通过的验收清单表格追加 journal + INDEX 更新 + CHANGELOG 单次写入成文（条目两路与归类见「CHANGELOG」条），以 `[版本] - 验收日` 节插入顶部 + 治理提交（standalone 经 `git -C sdd` 落内层仓）后打 tag（永远打在外层项目仓）+ 删除全部 `test/<标题 slug>*` 残支 + 完成回报固定建议「回看需求组拆下一个」 |
 | I 完结 | 组内全部 P accepted → I 条目标完结 |
 | →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支：未建分支（exploring）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删全部 `test/<标题 slug>*` 残支（main 零沾染）；on-hold worktree 与分支挂起保留 |
 | 定稿后需求变更 | 规格正文 + changelog + version 递增（v1.0 → v1.1）+ 受影响 Task 评估，禁静默覆盖 |
@@ -270,16 +270,16 @@
 
 ## 五、命令、模板与语言规范
 
-- 6 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/start/accept/export/config）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本节命令规格表为唯一来源**，`CLAUDE.md` 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
+- 6 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**，另含 `argument-hint`（取下表参数提示列，frontmatter 原样）；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/start/accept/export/config）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本节命令规格表为唯一来源**，`CLAUDE.md` 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
 
-  | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
-  |---|---|---|---|---|
-  | sdd-intake | Capture a new requirement or requirement documents and shape them into initiatives or proposals | 新需求受理（含插单与回看拆解）；文档材料受理（一至多份） | 可选：需求描述，或一至多份文档（路径 / 粘贴） | 先跑维护/需求分类三问，判维护直接做并结束；再按单/多交付物分流：直接发 P 或立 I 拆解；文档输入严格消费（拆解映射经用户确认，判据不能少、不能多；材料不收编；未覆盖落构想池） |
-  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX：从首个未完成 T 起顺序推进（doing → 实现 → 回填 → done）至全 done；接 T-XXX：仅该 Task；缺省：下一个 todo T；任一 Task 状态变化行；全任务 done → 执行 verifying 转换（见矩阵：合并 dev → test、删 worktree 与 dev 分支、交付 hash、列验收清单表格）+ 进入验证（自动验证按 spec 验证方式分派，已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认，映射失败按验证失败处理；重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻并上报），主工作区检出 test；auto 模式全绿即自动走 verifying→accepted 行，manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
-  | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收（`Acceptance mode` = manual 时的发起接口；auto 模式自动走链，一般无需调用） | 必填：P-XXX | verifying→accepted 行（含 CHANGELOG 增补与打 tag；auto 模式验证全绿自动触发）；完成回报固定建议「回看需求组拆下一个」 |
-  | sdd-board | Show initiative and proposal status overview | 查看状态（只读） | 可选：I-XXX / P-XXX | 无矩阵行：读 INDEX + INITIATIVE + design 任务表输出摘要（含需求组聚合），不改任何文档 |
-  | sdd-export | Export project knowledge as standalone documents | 导出治理知识提炼件 | 可选：`req` / `tech`（缺省 all） | 无矩阵行：读治理状态产出 `.export/` 提炼件（§4「导出」节），零副作用 |
-  | sdd-config | Show and edit governance configuration | 查看或修改治理配置（`Acceptance mode` / `Verification retry limit` 等） | 可选：配置项与新值（缺省进入交互菜单，逐项现值呈现、循环切值） | 无矩阵行：读改 runtime「治理配置」区，写回后 mdLint 零 error 方回报；完成回报仅含本次查看或修改的配置项，不涉及工程约定其余字段（版本格式等 init 定型项非配置辖区） |
+  | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 参数提示（argument-hint 原样） | 动作依据（矩阵） |
+  |---|---|---|---|---|---|
+  | sdd-intake | Capture a new requirement or requirement documents and shape them into initiatives or proposals | 新需求受理（含插单与回看拆解）；文档材料受理（一至多份） | 可选：需求描述，或一至多份文档（路径 / 粘贴） | `[<需求描述>\|<文档路径>...]` | 见「状态转换 × 文档同步矩阵」的 intake 判定与 I 拆出发号各行（多交付物分流见「文档受理」条款） |
+  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | `[P-XXX\|T-XXX]` | 见「状态转换 × 文档同步矩阵」的「任一 Task 状态变化」与「全任务 done → verifying」 |
+  | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收（`Acceptance mode` = manual 时的发起接口；auto 模式自动走链，一般无需调用） | 必填：P-XXX | `<P-XXX>` | 见「状态转换 × 文档同步矩阵」的「verifying → accepted」 |
+  | sdd-board | Show initiative and proposal status overview | 查看状态（只读） | 可选：I-XXX / P-XXX | `[I-XXX\|P-XXX]` | 无矩阵行：读 INDEX + INITIATIVE + design 任务表输出摘要（含需求组聚合），不改任何文档 |
+  | sdd-export | Export project knowledge as standalone documents | 导出治理知识提炼件 | 可选：`req` / `tech`（缺省 all） | `[req\|tech\|all]` | 无矩阵行：读治理状态产出 `.export/` 提炼件（§4「导出」节），零副作用 |
+  | sdd-config | Show and edit governance configuration | 查看或修改治理配置（`Acceptance mode` / `Verification retry limit` 等） | 可选：配置项与新值（缺省进入交互菜单，逐项现值呈现、循环切值） | `[<配置项> <新值>]` | 无矩阵行：读改 runtime「治理配置」区，写回后 mdLint 零 error 方回报；完成回报仅含本次查看或修改的配置项，不涉及工程约定其余字段（版本格式等 init 定型项非配置辖区） |
 
 - 模板四件套（sdd/templates/ 下固定文件；P-XXX/T-XXX/I-XXX 为占位，建文件时替换为实际号；`source` 行仅提案源自 I-XXX 时生成，独立提案删除此行），**骨架即规格**，见下。**设计是实现的副产品，不是事前作文**：定稿后建骨架、每 Task 完成回填、verifying 时补全置 finalized。
 

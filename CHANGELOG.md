@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 
+### sdd v3.5.0
+
+#### 新增
+
+- 命令参数提示：command-specs 规格表增「参数提示」列，生成命令 frontmatter 增 `argument-hint`，输入命令时行内可见（intake `[<需求描述>|<文档路径>...]`、start `[P-XXX|T-XXX]`、accept `<P-XXX>`、board `[I-XXX|P-XXX]`、export `[req|tech|all]`、config `[<配置项> <新值>]`）
+
+#### 变更
+
+- 命令规格表「动作依据」列瘦身为矩阵指针：有矩阵行者只引行名（消除与矩阵的重复漂移，start cell 的旧停驻语义残留一并清除），board / config 无宪法专节、保留原 cell；矩阵行名 `→` 后统一补空格（宪法与 PROMPT 两份矩阵同步）
+
+### sdd v3.4.0
+
 ### sdd v3.4.0
 
 #### 变更

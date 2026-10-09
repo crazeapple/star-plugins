@@ -2,16 +2,16 @@
 
 > 生成 6 命令、模板、`CLAUDE.md`、INDEX、INITIATIVE 时以本文件为唯一规格源。
 
-- 6 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/start/accept/export/config）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本文件命令规格表为唯一来源**，`CLAUDE.md` 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
+- 6 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**，另含 `argument-hint`（取下表参数提示列，frontmatter 原样）；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/start/accept/export/config）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本文件命令规格表为唯一来源**，`CLAUDE.md` 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
 
-  | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
-  |---|---|---|---|---|
-  | sdd-intake | Capture a new requirement or requirement documents and shape them into initiatives or proposals | 新需求受理（含插单与回看拆解）；文档材料受理（一至多份） | 可选：需求描述，或一至多份文档（路径 / 粘贴） | 先跑维护/需求分类三问，判维护直接做并结束；再按单/多交付物分流：直接发 P 或立 I 拆解；文档输入走「文档受理」条款 |
-  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX：从首个未完成 T 起顺序推进（doing → 实现 → 回填 → done）至全 done；接 T-XXX：仅该 Task；缺省：下一个 todo T；任一 Task 状态变化行；全任务 done → 执行 verifying 转换（见矩阵：合并 dev → test、删 worktree 与 dev 分支、交付 hash、列验收清单表格）+ 进入验证（自动验证按 spec 验证方式分派，已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认，映射失败按验证失败处理；重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻并上报），主工作区检出 test；auto 模式全绿即自动走 verifying→accepted 行，manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
-  | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收（`Acceptance mode` = manual 时的发起接口；auto 模式自动走链，一般无需调用） | 必填：P-XXX | verifying→accepted 行（含 CHANGELOG 增补与打 tag；auto 模式验证全绿自动触发）；完成回报固定建议「回看需求组拆下一个」 |
-  | sdd-board | Show initiative and proposal status overview | 查看状态（只读） | 可选：I-XXX / P-XXX | 无矩阵行：读 INDEX + INITIATIVE + design 任务表输出摘要（含需求组聚合），不改任何文档 |
-  | sdd-export | Export project knowledge as standalone documents | 导出治理知识提炼件 | 可选：`req` / `tech`（缺省 all） | 无矩阵行：读治理状态产出 `.export/` 提炼件（宪法「导出」节），零副作用 |
-  | sdd-config | Show and edit governance configuration | 查看或修改治理配置（`Acceptance mode` / `Verification retry limit` 等） | 可选：配置项与新值（缺省进入交互菜单，逐项现值呈现、循环切值） | 无矩阵行：读改 runtime「治理配置」区，写回后 mdLint 零 error 方回报；完成回报仅含本次查看或修改的配置项，不涉及工程约定其余字段（版本格式等 init 定型项非配置辖区） |
+  | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 参数提示（argument-hint 原样） | 动作依据（矩阵） |
+  |---|---|---|---|---|---|
+  | sdd-intake | Capture a new requirement or requirement documents and shape them into initiatives or proposals | 新需求受理（含插单与回看拆解）；文档材料受理（一至多份） | 可选：需求描述，或一至多份文档（路径 / 粘贴） | `[<需求描述>\|<文档路径>...]` | 见「状态转换 × 文档同步矩阵」的 intake 判定与 I 拆出发号各行（多交付物分流见「文档受理」条款） |
+  | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | `[P-XXX\|T-XXX]` | 见「状态转换 × 文档同步矩阵」的「任一 Task 状态变化」与「全任务 done → verifying」 |
+  | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收（`Acceptance mode` = manual 时的发起接口；auto 模式自动走链，一般无需调用） | 必填：P-XXX | `<P-XXX>` | 见「状态转换 × 文档同步矩阵」的「verifying → accepted」 |
+  | sdd-board | Show initiative and proposal status overview | 查看状态（只读） | 可选：I-XXX / P-XXX | `[I-XXX\|P-XXX]` | 无矩阵行：读 INDEX + INITIATIVE + design 任务表输出摘要（含需求组聚合），不改任何文档 |
+  | sdd-export | Export project knowledge as standalone documents | 导出治理知识提炼件 | 可选：`req` / `tech`（缺省 all） | `[req\|tech\|all]` | 无矩阵行，宪法「导出」节 |
+  | sdd-config | Show and edit governance configuration | 查看或修改治理配置（`Acceptance mode` / `Verification retry limit` 等） | 可选：配置项与新值（缺省进入交互菜单，逐项现值呈现、循环切值） | `[<配置项> <新值>]` | 无矩阵行：读改 runtime「治理配置」区，写回后 mdLint 零 error 方回报；完成回报仅含本次查看或修改的配置项，不涉及工程约定其余字段（版本格式等 init 定型项非配置辖区） |
 
 - **文档受理（intake 文档输入条款）**：`$ARGUMENTS` 为一至多份文档（路径或粘贴；体裁不透明：需求文档、开发文档、可含测试套件；不建模材料来源）。流程：读材料（条目天然是需求，维护项仅在对账中现身）→ 拆解定界 → 拆解映射确认 → 落位，此后 intake 既有链接管
 - **拆解定界**：拆为提案粒度交付单元，立 I 锚定、拆多 P（`source: I-XXX`）；多实体按依赖拓扑序发号（见宪法「权威源、ID 与日期」节）；含言语行为分辨（建造目标与现状语境、外部约定区分，如「支付走微信支付」是约束非待建）；存量对账按需触发，仅当条目疑似与既有提案、活跃工作或存量代码重叠时查证记处置，取证治理账优先（INDEX 全状态提案、INITIATIVE），代码与 git 历史兜底，材料原项目不可见也不看；处置分类：治理账已覆盖不新立（部分覆盖则新 P 收窄为缺口）、代码已有账上无以现实为准（不立档，映射行记「已满足 + 证据」）或材料为准（立 P 改造）、偏差实现同前仲裁、未实现正常落位
