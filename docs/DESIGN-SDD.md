@@ -18,8 +18,8 @@
 
 | 类别 | 定案 |
 |---|---|
-| 命令（6 个） | `/sdd-intake` · `/sdd-start` · `/sdd-board` · `/sdd-accept` · `/sdd-archive` · `/sdd-config` |
-| 治理文档 | `CONSTITUTION.md`（宪法，根本法）· `INITIATIVE.md`（构想池）· `amendments/amend.md`（修正登记簿）· `INDEX.md` · `exploring/` · `specs/` · `archive/` · `templates/` · `tools/` · `journal.md` |
+| 命令（6 个） | `/sdd-intake` · `/sdd-start` · `/sdd-board` · `/sdd-accept` · `/sdd-export` · `/sdd-config` |
+| 治理文档 | `CONSTITUTION.md`（宪法，根本法）· `INITIATIVE.md`（构想池）· `amendments/amend.md`（修正登记簿）· `INDEX.md` · `exploring/` · `specs/` · `templates/` · `tools/` · `journal.md` |
 | ID 前缀 | `I-XXX`（Initiative）· `P-XXX`（Proposal）· `T-XXX`（Task）· `A-XXX`（Amendment） |
 | 状态 | Proposal：`exploring` / `implementing` / `verifying` / `accepted` / `on-hold` / `rejected`；`done` 唯一属于 Task；design：`draft → finalized` |
 
@@ -36,8 +36,7 @@ sdd/
 ├── exploring/        ← journal.md（探索档案）· P-XXX.md 底稿（运行态）
 ├── specs/            ← P-XXX/spec.md（稳定区）
 ├── templates/        ← 模板
-├── tools/            ← mdlint.sh
-└── archive/          ← 归档区
+└── tools/            ← mdlint.sh
 ```
 
 `amendments/amend.md` 为修正登记簿：条目追加式录入，只录**已完结提案（accepted 及之后）**实现后被推翻或替换的决策反转；被替换条目原位标 superseded，反转链在簿内纵览。
@@ -122,12 +121,12 @@ sdd/
 |---|---|
 | 自动执行，做完告知 | 维护/需求分类判断、维护直接做、新想法落池、三问执行、XS 产物极短化、R1 摘要、board 聚合、自动验收（`Acceptance mode` = auto，验证全绿则自动走 accept 链，见 §十九） |
 | 判断 + 明示理由，可一句话推翻 | 建议立项、on-hold 排队建议 |
-| 永远用户守门 | 发号（P）、授予 I、验收发起（`Acceptance mode` = manual，见 §十九）、停损升级、archive、决策反转入册（A）、写实现代码 |
+| 永远用户守门 | 发号（P）、授予 I、验收发起（`Acceptance mode` = manual，见 §十九）、停损升级、决策反转入册（A）、写实现代码 |
 
 ## 十一、滚动立项、完结联动与插单
 
-- **滚动立项**：「回看需求组拆下一个」随验收收尾回报固定追加，载体按模式分叉，manual 模式在 `/sdd-accept` 完成回报，auto 模式在自动验收回报（验收节点人工确认限 manual，见 §十九）；需求组最后一个 P accepted **不建议归档**，归档是项目尾声的整体动作，由用户主动发起。
-- **完结联动**：组内全部 P accepted → I 标完结 → 归档时条目内容并入 `requirements.md`（需求来源章节）后从 `INITIATIVE.md` 移除；丢弃条目同理。`INITIATIVE.md` 常态只保留活跃需求组。
+- **滚动立项**：「回看需求组拆下一个」随验收收尾回报固定追加，载体按模式分叉，manual 模式在 `/sdd-accept` 完成回报，auto 模式在自动验收回报（验收节点人工确认限 manual，见 §十九）。
+- **完结联动**：组内全部 P accepted → I 标完结；丢弃条目同理。`INITIATIVE.md` 常态只保留活跃需求组。
 - **插单四条**：
   1. 落池不打断，新想法当场判层：当前 P 范围内走 R5；组内新里程碑追加路线图备注；无关想法入 `INITIATIVE.md` 新条目（raw）。当前 P 永不因新想法自动中断。
   2. 处理时复用三问测试分流。
@@ -141,7 +140,6 @@ sdd/
 - 状态机 4 态骨架（旁路 on-hold / rejected）与禁止跳跃
 - INDEX 唯一权威源（不加列）
 - mdLint 契约与提交门禁（目标项目 `.githooks/pre-commit` 拦 error，凡入库必合规，工具无关；hook 入库，经 `core.hooksPath` 激活）
-- 归档四产物结构（仅并入完结条目内容）
 - 两级拆分动作（I 拆 P、P 拆 T）
 - 原始叙述保留用户原话
 - journal 探索档案（追加式）
@@ -155,7 +153,7 @@ sdd/
   |---|---|---|
   | ① | CONSTITUTION、INDEX、INITIATIVE、`amendments/amend.md` | constitution-design 全文 + command-specs（两个生成骨架） |
   | ② | 命令 ×6（`.claude/commands/`） | command-specs + constitution-design「状态转换 × 文档同步矩阵」节（定点读取） |
-  | ③ | 模板 ×4（纯复制）、`tools/mdlint.sh`（纯复制）、archive/README | 近乎零 |
+  | ③ | 模板 ×4（纯复制）、`tools/mdlint.sh`（纯复制） | 近乎零 |
   | ④ | OpenCode 适配 ×9 | opencode-adapter 全文 |
 
 - **串行屏障**：`sdd/runtime/claude.md` 与 `CLAUDE.md` 最后由主会话写（引用全部生成物）；汇合后必须由主会话执行「验证与回报」全量校验（mdLint 全量重跑 + 交叉一致），通过后按治理形态提交（§十八）。
@@ -184,7 +182,7 @@ sdd/
 - **CHANGELOG**：项目根公开文件，格式以 Keep a Changelog 为基准，不设常驻 `[Unreleased]` 节；实现期零写入，显著变化由 design 任务清单承载
   - accept 时单次写入成文，条目两路：对照 spec 与任务清单识别用户可感知变化按六类归类产出条目；自上次 tag 扫描 git log，将未收录的提交按六类归类补入条目，典型为提案外的维护修复落「修复」类
   - 条目用户语言 `-` 列表，不含治理 ID 与治理词汇，与治理形态无关
-  - 版本取本次 tag，节标题按版本格式：SemVer 为 `[版本] - 验收日`，CalVer 版本即验收日、节标题仅 `[版本]`（同日多验收追加当日序号）
+  - 版本取本次 tag，节标题按版本格式：SemVer 为 `[版本] - 验收日`，CalVer 版本即验收日、节标题仅 `[版本]`（同日多发如 `2026.10.9.2`）
   - SemVer 级别可于需求对话中议定并随提案记录（用户可修正），对话期不议的由 accept 按本次变化推导成号
   - 尾部链接区每版本一条 diff 对比链接（自项目远程推导，无远程省略）
   - 守门：随 accept 回报展示，用户可改；落仓 inline 随治理提交，standalone 外层公开文件随中性 message；辖区入外层 hook
@@ -247,7 +245,7 @@ sdd/
   - 机械资产静默覆盖：`mdlint.sh`、门禁 hook（`.githooks/pre-commit`）重写、standalone 内层 hook 重装、模板 ×4、命令 ×6、OpenCode 配置与存根
   - 保护性写入：`.gitignore` 逐行补缺或 standalone 排除清单维护、`AGENTS.md`、`sdd/runtime/claude.md` 与 CONSTITUTION 规格重生成 + 项目名回填、CONSTITUTION 生效日期保留原值
   - 活文档仲裁：`sdd/runtime/claude.md` 骨架节按规格重写，`CLAUDE.md` 公开骨架一并重写，被改写处以规格为准并在回报逐项列出；项目填写四字段回读保留，自有增补节原样保留
-  - 运行态禁触：INDEX、INITIATIVE、`amendments/amend.md` 内容与 specs/、exploring/、journal、archive/ 全部，骨架仅锚点只读比对，差异报告提示人工迁移，禁自动改
+  - 运行态禁触：INDEX、INITIATIVE、`amendments/amend.md` 内容与 specs/、exploring/、journal 全部，骨架仅锚点只读比对，差异报告提示人工迁移，禁自动改
 - **版本标记 `sdd/VERSION`**：纯文本单行，内容 = 初始化时插件清单 `plugin.json` 的 `version`（如 `2.8.6`；存量 `+slim` / `+full` 后缀为 3.0.0 前旧版，升级时改单值）；非 `.md`，mdLint 不涉、hook 辖区不拦；入生成清单与第一次提交。用途仅为回报与快速判断；**升级行为永不依版本值分支**：缺失或损坏按旧版安装处理，照常全量校准并回报注明。
 - **幂等**：校准按「现行规格 vs 磁盘现状」状态化执行，不询问必填项（从既有文件回读，回读失败为唯一询问点）；升级可安全重跑，中断恢复 = 直接重跑。
 - **执行策略**：两路并行，组 U① 治理组（CONSTITUTION 重生成 + INDEX / INITIATIVE / `amend.md` 骨架锚点只读比对），组 U② 机械资产组（命令 ×6、模板 ×4、`mdlint.sh`、hook 含 standalone 内层变体、OpenCode 适配 ×9）；`runtime/claude.md` 仲裁、全量验证、提交与回报由主会话操盘，`runtime/claude.md` 与 `CLAUDE.md` 最后写（同 init 串行屏障）；不支持 subagents 时按 U① → U② → 主会话串行。
@@ -273,8 +271,8 @@ sdd/
   2. `CLAUDE.md` 差一行 `@sdd/runtime/claude.md`，inline 有、standalone 无（公开文件零 sdd 痕迹）。
   3. `.gitignore`：inline 三行惯例照写，standalone 一字不动。
   4. 提交去向：inline 一切随项目仓；standalone 治理提交 `git -C sdd` 落内层仓，代码、分支、worktree、tag 永远在外层项目仓。
-  5. standalone 排除清单写 `.git/info/exclude` 六行，自足、不依赖项目 `.gitignore`：`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`。
-  6. init 提交：inline 两笔（20+9）；standalone 项目仓一笔中性 message（仅 `CLAUDE.md` + `AGENTS.md`，无 sdd 字样）+ 内仓一笔全量。
+  5. standalone 排除清单写 `.git/info/exclude` 七行，自足、不依赖项目 `.gitignore`：`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`、`.export/`；inline 同用 `info/exclude` 排除 `.export/` 一行。
+  6. init 提交：inline 两笔（20+10）；standalone 项目仓一笔中性 message（`CLAUDE.md` + `AGENTS.md` + `README.md` + `.githooks/pre-commit`，无 sdd 字样）+ 内仓一笔全量。
   7. 内层 hook 仅 standalone：`sdd/.git/hooks/pre-commit` 按辖区变体生成（内层仓根即治理根，全部 `.md` 入检，首行自防御 `[ -f tools/mdlint.sh ] || exit 0`）。
   8. 脱敏：inline 常规（title/body 无治理 ID、footer 治理引用照记）；standalone 项目仓无痕化（footer 治理引用一律不记、message 中性、分支名与 tag message 照常脱敏）；内层仓提交不设治理引用与脱敏条款（纯文档仓，代码与文档的关联不复存在）。
   9. init 验证与回报带形态变体（文件数、笔数、exclude、内层 hook、`CLAUDE.local.md`）。
@@ -324,3 +322,10 @@ sdd/
 - **载体**：`.githooks/pre-commit` 为唯一载体（激活说明注释 + 各端路由段 + 内嵌 mdlint 段，逻辑内嵌、无外部引用、无副本文件），`core.hooksPath` 指向 `.githooks`；hook 为生成资产，登记变更时增补路由段随提交入库；README 运行说明记激活行 `git config core.hooksPath .githooks`；R1 冷启动断言激活；既有 hook 设施（husky、已设 `core.hooksPath`）列为前置检查冲突项，命中即停交用户裁决。
 - **脱敏**：hook 注释与嵌入文案不含治理内容与 ID；代码仓 hook 的 mdlint 辖区 = 全部 staged `.md`（standalone 下 sdd/ 为嵌套仓，其文件不入外层暂存区，天然不暴露）；内层治理仓 `pre-commit-inner.sh` 与 `sdd/tools/mdlint.sh` 照旧。
 - **中性化与升级**：`mdlint.sh` 源注释与输出文案中性化（单一来源，sdd/tools 与嵌入段同源，逻辑与检查集零变化，五条自测向量照过）；升级撤档支线新增：旧 `.git/hooks/pre-commit` 撤除、`.githooks/pre-commit` 写入、`core.hooksPath` 设置或回报激活行。
+
+## 二十一、导出（/sdd-export）
+
+- **定位**：治理知识随时可导出为独立提炼件，零副作用（只读治理状态，不写 INDEX、不移除条目、不冻结任何区）；取走型，产物不入库，两形态同用 `.git/info/exclude` 排除项目根 `.export/`。
+- **参数与分层**：`req` = 需求知识提炼（产品与开发两层）；`tech` = req 全部 + 技术设计整合（关键决策表、接口、数据、关键流程）+ 项目目录结构 + 技术栈概览 + 构建与验证；无参 = `all` = tech 全部 + 修正演变链。单文件命名 `req|tech|all-YYYY-M-D+N.md`（同日第 N 发缀 `+N`，首发不缀）。
+- **概括生成**：产物是 Agent 读治理状态后的概括成文，非原文删减；忠实义务为覆盖全部提案（不分状态）与全部 I（含未开发），完成回报列覆盖清单（P / I 数量与状态分布），产物过 mdLint 零 error。
+- **去治理化**：产物说用户语言，不含治理 ID、状态词汇与源项目信息。

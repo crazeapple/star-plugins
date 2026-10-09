@@ -14,7 +14,7 @@
 
 `.gitignore`、`.githooks/`（含 `core.hooksPath` 激活）、`.claude/commands/` 与 `.opencode/commands/` 的完备性不入签名集，缺失与差额由校准补齐、撤档删除（见 §二），这正是升级的职责。典型场景为环境重建：新主机 clone 后运行态（含入库的 `.githooks/pre-commit`）随仓齐全，唯 `core.hooksPath` 未激活，重跑 init 即补设激活。命中后向用户明示「检测到既有安装，转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`；standalone 双仓均查），有预置暂存则停止。
 
-**史前安装边界**：`.claude/commands/` 下的命令名与本仓现行命令集（intake / start / board / accept / archive / config）无交集者，属不受支持的史前结构，不自动升级——照常停止报告冲突，由用户手工清理或重建。
+**史前安装边界**：`.claude/commands/` 下的命令名与本仓现行命令集（intake / start / board / accept / export / config）无交集者，属不受支持的史前结构，不自动升级——照常停止报告冲突，由用户手工清理或重建。
 
 **形态判定**：`sdd/` 为独立 git 仓（存在 `sdd/.git`）即 standalone 形态，否则 inline；standalone 安装预检双仓索引干净。升级永远维持当前形态，不提供形态切换。
 
@@ -37,15 +37,15 @@
 | 档 | 文件 | 处置 |
 |---|---|---|
 | 静默覆盖 | `sdd/tools/mdlint.sh`、`.githooks/pre-commit`（重写并加可执行位，设 `core.hooksPath`，README 增补激活行；旧 `.git/hooks/pre-commit` 同步撤除；standalone 另装内层 `sdd/.git/hooks/pre-commit` 变体）、`sdd/templates/` ×4、`.claude/commands/` ×6、`.opencode/opencode.json`、`.opencode/commands/` ×6 | 按规格纯复制覆盖 |
-| 撤档 | 现行规格不再生成的文件（3.0.0 前旧版的 `sdd-finalize` / `sdd-split` 命令与存根等） | 从目标项目删除，逐项列入回报；治理数据不涉 |
-| 扩容补齐 | 现行规格生成但磁盘缺失的文件（slim 旧装缺 INITIATIVE、amendments/amend.md、archive/README、templates proposal / task、archive 命令与存根等） | 按规格生成补齐；保护性写入档文件按保护性写入处置 |
+| 撤档 | 现行规格不再生成的文件（3.0.0 前旧版的 `sdd-finalize` / `sdd-split`、3.2.0 前的 `sdd-archive` 命令与存根及 `sdd/archive/README.md` 等） | 从目标项目删除，逐项列入回报；治理数据不涉 |
+| 扩容补齐 | 现行规格生成但磁盘缺失的文件（slim 旧装缺 INITIATIVE、amendments/amend.md、templates proposal / task 等） | 按规格生成补齐；保护性写入档文件按保护性写入处置 |
 | 保护性写入 | `.gitignore`（inline）、`AGENTS.md`、`sdd/CONSTITUTION.md`、`sdd/runtime/claude.md` | 规格重生成 + 项目内容回读回填（见下） |
 | 活文档仲裁 | `sdd/runtime/claude.md`（`CLAUDE.md` 公开骨架一并按规格重写） | 骨架节重写 + 项目内容保留（见下） |
-| 禁触 | `sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md` 内容；`sdd/specs/`、`sdd/exploring/`、`sdd/journal.md`、`sdd/archive/` 全部 | 一律不改（骨架仅按 §八锚点只读比对） |
+| 禁触 | `sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md` 内容；`sdd/specs/`、`sdd/exploring/`、`sdd/journal.md` 全部 | 一律不改（骨架仅按 §八锚点只读比对） |
 
 保护性写入细则：
 
-- `.gitignore`（inline 形态）：三行逐行补缺，即 `# 本地文件不入库`、`*.local.*`、`.worktree/`；已有行不动，项目自有行禁删禁改，文件不存在才新建；**严禁整文件重写**。standalone 形态不写 `.gitignore`，改维护 `.git/info/exclude` 六行排除清单（逐行补缺，同款纪律）
+- `.gitignore`（inline 形态）：三行逐行补缺，即 `# 本地文件不入库`、`*.local.*`、`.worktree/`；已有行不动，项目自有行禁删禁改，文件不存在才新建；**严禁整文件重写**。standalone 形态不写 `.gitignore`。两形态均维护 `.git/info/exclude` 的 `.export/` 排除行（缺失即补）；standalone 另维护治理排除清单七行（`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`、`.export/`），逐行补缺同款纪律
 - `AGENTS.md`：按 `references/opencode-adapter.md` 逐字重生成，项目名回填（§四回读值）
 - `sdd/CONSTITUTION.md`：按 `references/constitution-design.md` 逐字重生成，项目名回填（§四回读值）；末尾生效日期保留原文件原值（识别原文件末尾 `YYYY-MM-DD` 日期行；回读失败以当日 `date +%F` 重置并在回报注明）
 - 治理配置区与验证命令区：runtime 骨架重写时插入，`Acceptance mode` 回读不到即 auto、`Verification retry limit` 缺省 3（不询问）；验证命令区插空后执行存量补记（扫描依赖清单、测试配置、CI 测试任务等验证类工具链，生成补记清单，交互同登记闸门：现场扫描后对照「登记案例」节匹配，命中确认套用 / 选定 / 判「无」/ 试跑）

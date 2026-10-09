@@ -9,8 +9,8 @@
 - 三层实体：**Initiative（I-XXX，总纲）**，模糊需求的产品层澄清与路线图，不进状态机；**Proposal（P-XXX）**，可独立验收的开发单元（基础件或功能块），真正的开发循环从这里开始；**Task（T-XXX，可数十个、可分组）**，design 任务清单内，禁止单独建文件。
 - Proposal 粒度：必须是一个可独立验收的开发单元，禁止以产品版本形态立项（如「XX 第一版/首版」标题）；产品级、多交付物或模糊需求先入构想池拆解为总纲，再拆出 Proposal；两级拆分（I 拆 P、P 拆 T）不跨层。
 - 受理两路：单交付物需求由 `/sdd-intake` 直接发 P（无 source）；多交付物或模糊需求先入 `INITIATIVE.md` 立 I，拆解后发 P（frontmatter `source: I-XXX`）。
-- 分区治理：`sdd/exploring/`（探索区，格式宽松，含探索底稿 `P-XXX.md` 与 `journal.md`：底稿自提案创建起持续落盘探索与讨论过程，存活至验收通过或 rejected 终结，定稿不冻结）与 `sdd/specs/`（稳定区，格式严格、变更留痕，每提案一目录：`spec.md` 与 `design.md`）物理分离；修正隔离在 `amendments/` 与构想池；归档只从稳定区取材。
-- **探索档案 `journal.md`**：项目内永久档案（不入归档四产物），按提案分节追加，即 `## P-XXX <标题>` + 状态轨迹行 + 底稿除 frontmatter 外正文原样；只追加与原位标注、不重写历史。开发中新情况的探索讨论过程，属当前提案范围内且形成新 Task 的，按主题补录底稿相应小节（不必然追加于末尾）；结论写 spec（changelog + version），过程写底稿。验收通过或 rejected 终结时底稿整稿入档后删除，on-hold 底稿留原地。
+- 分区治理：`sdd/exploring/`（探索区，格式宽松，含探索底稿 `P-XXX.md` 与 `journal.md`：底稿自提案创建起持续落盘探索与讨论过程，存活至验收通过或 rejected 终结，定稿不冻结）与 `sdd/specs/`（稳定区，格式严格、变更留痕，每提案一目录：`spec.md` 与 `design.md`）物理分离；修正隔离在 `amendments/` 与构想池。
+- **探索档案 `journal.md`**：项目内永久档案（不入导出产物），按提案分节追加，即 `## P-XXX <标题>` + 状态轨迹行 + 底稿除 frontmatter 外正文原样；只追加与原位标注、不重写历史。开发中新情况的探索讨论过程，属当前提案范围内且形成新 Task 的，按主题补录底稿相应小节（不必然追加于末尾）；结论写 spec（changelog + version），过程写底稿。验收通过或 rejected 终结时底稿整稿入档后删除，on-hold 底稿留原地。
 - **不预建**运行态目录：exploring/、specs/、`journal.md` 均动态形成；`INITIATIVE.md` 与 `amendments/amend.md` 由初始化生成。
 
 ## 权威源、ID 与日期
@@ -50,15 +50,14 @@
 | 任一 Task 状态变化 | 更新 design 任务表 + 任务详情小节回填 |
 | 全任务 done →verifying | test 串行检查（他 P 持有 test 分支则本次转换挂起：P 留在 implementing，任务表保持全 done，worktree 与 dev 分支保留，待其 accept 后重走本行）+ 从当前 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（冲突一律在 test 解决；worktree 与 dev 分支保留，删除时点后移至 accept）+ 交付 hash 记入 design + INDEX 置 verifying + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 验证步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 进入验证（主工作区检出 test；已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的由承接该简报的 subagent 执行并回报，否则由主会话执行；`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认（验证命令名 · 用例指认 · 输出摘要），指认不出覆盖用例即映射失败按验证失败处理；失败自动修复重验，重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻：P 置 on-hold（verifying 旁路入，备注记失败 AC 与轮数），验收位释放、推进继续，恢复由对话承载——修复落 dev 后重演 verifying 转换，或切 manual 人工验收放行）；`Acceptance mode` = auto 全绿即自动走 verifying→accepted 行（无需发起），manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
 | verifying→accepted（/sdd-accept；`Acceptance mode` = auto 时验证全绿自动触发，无需发起） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ 全过后主工作区检出 main + 合并 `test/<标题 slug>` → main（发布）+ design 置 finalized + 底稿正文追加 journal 后删除 `P-XXX.md` + 通过的验收清单表格追加 journal + INDEX 更新 + CHANGELOG 单次写入成文（条目两路与归类见「CHANGELOG」条），以 `[版本] - 验收日` 节插入顶部 + 治理提交（standalone 经 `git -C sdd` 落内层仓）后打 tag（永远打在外层项目仓）+ 删除全部 `test/<标题 slug>*` 残支 + 完成回报固定建议「回看需求组拆下一个」 |
-| I 完结 | 组内全部 P accepted → I 条目标完结（归档时并入 `requirements.md` 后移除） |
+| I 完结 | 组内全部 P accepted → I 条目标完结 |
 | →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支：未建分支（exploring）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删全部 `test/<标题 slug>*` 残支（main 零沾染）；on-hold worktree 与分支挂起保留 |
 | 定稿后需求变更 | 规格正文 + changelog + version 递增（v1.0 → v1.1）+ 受影响 Task 评估，禁静默覆盖 |
-| 归档（/sdd-archive） | INDEX 置「已归档 + 日期」+ 四产物 + 完结 I 条目并入 `requirements.md` + sdd 全区只读 |
 
 - **CHANGELOG**：项目根 `CHANGELOG.md`（公开文件），格式以 Keep a Changelog 为基准。不存在则创建：H1 `# 更新日志` 与中文导语（记录本项目所有显著变化，格式基于 Keep a Changelog）；实现期零写入，显著变化由 design 任务清单承载
   - accept 时单次写入成文，条目两路：对照 spec 与任务清单识别本次验收的用户可感知变化，按六类「新增 / 变更 / 弃用 / 移除 / 修复 / 安全」（对应 Keep a Changelog 六类）归类产出条目；自上次 tag 扫描 git log，将未收录的提交按六类归类补入条目（典型为提案外的维护修复，落「修复」类）
   - 条目用户语言一行一条，统一不含治理 ID 与治理词汇，说用户语言，与治理形态无关
-  - 版本取本次 tag，节标题按版本格式：SemVer 为 `[版本] - 验收日`，CalVer 版本即验收日、节标题仅 `[版本]`（同日多验收追加当日序号）。SemVer 级别可于需求对话中议定并随提案记录（用户可修正），accept 自上次 tag 按议定级别递增成号；对话期不议的，accept 按本次变化推导级别成号
+  - 版本取本次 tag，节标题按版本格式：SemVer 为 `[版本] - 验收日`，CalVer 版本即验收日、节标题仅 `[版本]`（同日多发如 `2026.10.9.2`）。SemVer 级别可于需求对话中议定并随提案记录（用户可修正），accept 自上次 tag 按议定级别递增成号；对话期不议的，accept 按本次变化推导级别成号
   - 定稿随 accept 完成回报展示，用户守门可改
   - 文件尾部设链接区：每版本一条 diff 对比链接，自项目远程推导，无远程则省略
   - 落仓：inline 随治理提交，standalone 为外层公开文件随中性 message 提交；辖区入外层 hook
@@ -71,8 +70,8 @@
 - **R4** 被否备选禁删，记入提案「否决记录」，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
 - **R6** 更新任务表 + 回填 design；全任务 done 列出验收清单表格（由 spec 验收标准表派生，验证步骤按 spec 验证方式分派）并进入验证；已绑定命令的 AC 由登记命令自动验证：简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报；简报为单个 Task（任务级并发）或不使用并行推进的，由主会话执行；证据逐 AC 指认（验证命令名 · 用例指认 · 输出摘要），指认不出覆盖用例即映射失败按验证失败处理。失败自动修复重验，重试累计达治理配置 `Verification retry limit`（缺省 3）仍未全绿即停驻（P 置 on-hold、验收位释放并上报，恢复由对话承载）；`Acceptance mode` = auto 全绿即自动走 accept 链，manual 模式全绿且无人工类 AC 提示用户可验收
-- **R7** 关键节点（拆任务/定稿/归档）显式建议对应命令保人工确认，验收节点限 `Acceptance mode` = manual（显式建议 /sdd-accept 保人工确认；auto 模式验证全绿自动走 accept 链，无需发起）；accept 完成回报固定建议回看需求组（auto 模式随自动验收回报）
-- **R8** 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；归档后只读；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）
+- **R7** 关键节点（拆任务/定稿）显式建议对应命令保人工确认，验收节点限 `Acceptance mode` = manual（显式建议 /sdd-accept 保人工确认；auto 模式验证全绿自动走 accept 链，无需发起）；accept 完成回报固定建议回看需求组（auto 模式随自动验收回报）
+- **R8** 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）
 - **R9** 跨周期修正禁只改代码，走 amendments/
 - **R10** 分支开发主干发布：
   - P 状态从 exploring → implementing 时，从 main 切 `dev/<标题 slug>` 并建 worktree 开发（分支名不含治理 ID 与治理文件名），代码在 dev 分支开发，治理文档只在主干由主会话写，test / dev 检出中 sdd/ 只读
@@ -91,7 +90,7 @@
 |---|---|
 | 自动执行，做完告知 | 维护/需求分类判断、维护直接做、新想法落池、三问执行、XS 产物极短化、R1 摘要、board 聚合、自动验收（`Acceptance mode` = auto，验证全绿则自动走 accept 链） |
 | 判断 + 明示理由，可一句话推翻 | 建议立项、on-hold 排队建议 |
-| 永远用户守门 | 发号（P）、授予 I、验收发起（`Acceptance mode` = manual）、停损升级、archive、决策反转入册（A）、写实现代码 |
+| 永远用户守门 | 发号（P）、授予 I、验收发起（`Acceptance mode` = manual）、停损升级、决策反转入册（A）、写实现代码 |
 
 ## Markdown 书写规范（宪法此节以本节为唯一规格源；`mdlint.sh` 按此实现）
 
@@ -189,6 +188,6 @@
 
 /sdd-start 默认单智能体一步到位；仅用户明确要求时切「派发-回收」两段式：主会话组装自包含任务简报派发（简报范围按需组装：单个 Task 或提案全部任务清单，对应任务级与提案级并行；均含验收标准与规格/设计节选）；回收逐条核验、统一更新。约束：sdd/ 文档只允许主会话写入，子智能体只读文档、写代码、对话回报，发现规格问题回报主会话走 R5。并行派发与相关工具的可用性判定遵「工具可用性实证」节。
 
-## 归档（/sdd-archive）
+## 导出（/sdd-export）
 
-四产物：`requirements.md`（仅 accepted 项、剔 changelog/frontmatter、rejected 不出现，其信息由「范围外」章节承载，并含完结 I 条目内容作为需求来源章节）；`design.md`（整合全部 finalized design、剔任务表等过程内容）；`amendment-log.md`（整合全部修正案，按主题分组，保留完整 superseded 生命周期链）；`REUSE-GUIDE.md`（四步：归档时 AI 可按域或模块对 `requirements.md` 自由分组组织，无需预定义域枚举；在新项目安装 sdd 插件（marketplace `star-plugins`）并执行 `/sdd:sdd-init` 生成治理体系 → 逐提案比对差异（采纳/调整/排除，排除必须写入新项目修正记录说明原因）→ 参照旧设计制新设计（冲突时优先参考 superseded 链防重蹈覆辙）→ 正常推进）。
+随时可运行，零副作用：只读治理状态、产出提炼文件，不写 INDEX、不移除条目、不冻结任何区。参数 `req` / `tech`，无参即 `all`；文件落项目根 `.export/`（不入库，两形态同用 `info/exclude` 排除），命名 `req|tech|all-YYYY-M-D+N.md`（同日第 N 发缀 `+N`，首发不缀）。产物为概括生成而非原文删减，说用户语言，不含治理 ID、状态词汇与源项目信息；覆盖义务为全部提案（不分状态）与全部 I（含未开发）。完成回报列覆盖清单（P / I 数量与状态分布），产物过 mdLint 零 error。分层：`req` 为需求知识提炼（产品与开发两层）；`tech` 在 req 全部之上整合技术设计（关键决策表、接口、数据、关键流程）与项目目录结构、技术栈概览、构建与验证；`all` 在 tech 全部之上加修正演变链。

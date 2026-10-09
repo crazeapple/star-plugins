@@ -2,7 +2,7 @@
 
 ## 一、背景与目标
 
-目标项目为 Vibe Coding 模式：AI 主导编码，需求对话式动态探索、粒度不一、高频变更；项目尾声或结束时，可归档干净完整的需求与设计文档供新项目复用，全部治理文档由 AI 按工作流自动维护。
+目标项目为 Vibe Coding 模式：AI 主导编码，需求对话式动态探索、粒度不一、高频变更；全部治理文档由 AI 按工作流自动维护。
 
 本提示词为可移植初始化器：任意项目会话中输入，即生成治理体系并交互完成初始化；自然包含 OpenCode 适配（规格见 §7），实现 Claude Code ⇄ OpenCode 无缝衔接开发。
 
@@ -10,8 +10,8 @@
 
 以下治理设计已全部确认，**直接执行，禁止重新设计、增删决策**。
 
-> 提示词版本：3.2.0（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION` 的值源）
-> **TL;DR**：① 前置检查（判定全新 / 升级模式与治理形态）→ ② 问必填项（仅全新，含治理形态，默认 standalone 且 init 后不可切换）→ ③ 全新：四路并行生成 31 文件（standalone 同数 32）；升级：按 §8 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；升级按实际变更）。
+> 提示词版本：3.3.0（与插件 `plugin.json` 的 `version` 同步；可移植环境下为 `sdd/VERSION` 的值源）
+> **TL;DR**：① 前置检查（判定全新 / 升级模式与治理形态）→ ② 问必填项（仅全新，含治理形态，默认 standalone 且 init 后不可切换）→ ③ 全新：四路并行生成 30 文件（standalone 同数 31）；升级：按 §8 就地合并 → ④ 全量验证后提交（inline 全新两次；standalone 两仓各一笔；升级按实际变更）。
 > **三条禁忌**：禁止擅自覆盖既有文件；禁止重新设计、增删决策；禁止跳过任何验证。
 
 ## 二、初始化流程（四步，顺序固定）
@@ -28,23 +28,23 @@
    | 项目名 | 可默认 | 默认 = 当前目录名；用于 `CLAUDE.md` 与 `AGENTS.md` 标题 |
    | 项目定位一句话 | 必填 | `CLAUDE.md` 首行：一句话说明项目是什么、目的 |
    | 治理形态 | 可默认 | 默认 standalone。选项行固定：`inline 仓（内联，随项目仓）/ standalone 仓（独立，单独治理仓，默认；init 后不可切换，项目需对外无痕或治理不入项目仓时选此）`；形态 init 后不可切换 |
-   | 版本格式 | 可默认 | 默认 SemVer。CalVer（`YYYY.M.D` 验收日，同日多验收追加当日序号）或 SemVer（`vX.Y.Z`，按变化递增）；交付型惯用 CalVer，库 / 产品惯用 SemVer；登记于「路径、ID 与工程约定」节 |
+   | 版本格式 | 可默认 | 默认 SemVer。CalVer（`YYYY.M.D` 验收日，同日多发如 `2026.10.9.2`）或 SemVer（`vX.Y.Z`，按变化递增）；交付型惯用 CalVer，库 / 产品惯用 SemVer；登记于「路径、ID 与工程约定」节 |
    | 验收模式 | 可默认 | 默认 auto。`Acceptance mode`：auto 验证全绿自动走 accept 链，manual 验收由用户发起；登记于 runtime「治理配置」区 |
 
-3. **生成（全新模式，默认四路并行）**：按回答生成填好的 18 治理文件（含 `sdd/runtime/` ×2）、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`），用 subagents 按文件组分派并行，各组自读本提示词对应章节。
+3. **生成（全新模式，默认四路并行）**：按回答生成填好的 17 治理文件（含 `sdd/runtime/` ×2）、1 治理工具 `sdd/tools/mdlint.sh` 与版本标记 `sdd/VERSION`（内容 = 本提示词顶部版本；经插件调用时取插件清单 `version`），用 subagents 按文件组分派并行，各组自读本提示词对应章节。
 
    | 组 | 生成物 | 自读章节 |
    |---|---|---|
    | ① | CONSTITUTION、INDEX、INITIATIVE、`amendments/amend.md` | §4 全文 + §5 生成骨架 |
    | ② | 命令 ×6（`.claude/commands/`） | §5 命令规格表 + §4「状态转换 × 文档同步矩阵」（定点读取） |
-   | ③ | 模板 ×4（按 §5 骨架生成）、`tools/mdlint.sh`（按 §4「校验」节实现并过自测向量）、`sdd/VERSION`（写版本值 `X.Y.Z`）、`.githooks/pre-commit`（按 §4「校验」节提交门禁生成并加可执行位，含内嵌 mdlint 段与路由段骨架）、`README.md`（运行说明，含 `git config core.hooksPath .githooks` 激活行；已存在则追加小节）、archive/README（按 §4「归档」节生成） | §4「归档」+「校验」 |
+   | ③ | 模板 ×4（按 §5 骨架生成）、`tools/mdlint.sh`（按 §4「校验」节实现并过自测向量）、`sdd/VERSION`（写版本值 `X.Y.Z`）、`.githooks/pre-commit`（按 §4「校验」节提交门禁生成并加可执行位，含内嵌 mdlint 段与路由段骨架）、`README.md`（运行说明，含 `git config core.hooksPath .githooks` 激活行；已存在则追加小节） | §4「校验」 |
    | ④ | OpenCode 适配 ×9（含 `sdd/runtime/opencode.md`） | §7 全文 |
 
    **`sdd/runtime/claude.md` 与 `CLAUDE.md` 最后由主会话写**（引用全部生成物）；组 subagent 回报工具缺失时按 §4「工具可用性实证」节处置（调用实证复核、重派一次）；环境不支持 subagents 或重派仍败时按组序串行，步骤不变。写 `sdd/` 下文档的组完成时各自先跑 mdLint 自查。升级模式不走本步生成流程，改按 §8 就地合并（两路并行，`runtime/claude.md` 同样最后写）。
 
-   **standalone 形态专属动作**（治理形态选 standalone 时，主会话在生成组收尾执行）：`.gitignore` 不写（inline 三行惯例照旧）；写 `.git/info/exclude` 六行排除清单（`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`）；生成 `CLAUDE.local.md`（内容 `@sdd/runtime/claude.md`）；`git init sdd` 内层仓；内层 hook 按 §4「校验」节内层变体生成，装 `sdd/.git/hooks/pre-commit` 加可执行位。
+   **standalone 形态专属动作**（治理形态选 standalone 时，主会话在生成组收尾执行）：`.gitignore` 不写（inline 三行惯例照旧）；写 `.git/info/exclude` 排除清单七行（`sdd/`、`.claude/commands/sdd-*.md`、`.opencode/commands/sdd-*.md`、`.opencode/opencode.json`、`*.local.*`、`.worktree/`、`.export/`）；生成 `CLAUDE.local.md`（内容 `@sdd/runtime/claude.md`）；`git init sdd` 内层仓；内层 hook 按 §4「校验」节内层变体生成，装 `sdd/.git/hooks/pre-commit` 加可执行位。
 
-4. **收尾**：对全部生成文件（含适配文件）按 §6 完成全量验证（零 error）、git 提交（inline 两笔 21+10；standalone 项目仓一笔中性 message 仅 `CLAUDE.md` + `AGENTS.md` + `README.md` + `.githooks/pre-commit`，内仓 `git -C sdd` 一笔全部治理资产）、计算初始化耗时与回报。升级模式收尾按 §8（复用全量验证，提交按实际变更分批）。
+4. **收尾**：对全部生成文件（含适配文件）按 §6 完成全量验证（零 error）、git 提交（inline 两笔 20+10；standalone 项目仓一笔中性 message 仅 `CLAUDE.md` + `AGENTS.md` + `README.md` + `.githooks/pre-commit`，内仓 `git -C sdd` 一笔全部治理资产）、计算初始化耗时与回报；两形态写 `.git/info/exclude` 排除行 `.export/`。升级模式收尾按 §8（复用全量验证，提交按实际变更分批）。
 
 > **中断恢复**：会话中断后续跑时，已生成文件若与 §6 清单吻合即视为本初始化产物，跳过前置检查的冲突判定；对照其清单补齐缺失文件、已验证项不重跑、必填项从已生成文件回读（项目名/定位见 `CLAUDE.md`），回读不到才询问；若存在清单外文件，照常停止报告冲突。升级模式中断 → 直接重跑升级（幂等，见 §8）。
 
@@ -59,7 +59,7 @@
 ├── .claude/commands/              # 6 命令，sdd- 前缀（命令唯一源）
 │   ├── sdd-intake.md  sdd-start.md
 │   ├── sdd-board.md  sdd-accept.md
-│   ├── sdd-archive.md  sdd-config.md
+│   ├── sdd-export.md  sdd-config.md
 ├── .opencode/
 │   ├── opencode.json              # OpenCode 共享配置（lsp: true + instructions）
 │   └── commands/                  # 6 命令存根（@ 引用 .claude/commands/ 同名文件）
@@ -73,9 +73,8 @@
     │   ├── claude.md              # Claude 侧 sdd 运行时骨架（治理活文档，规格见 §5）
     │   └── opencode.md            # OpenCode 补充壳（规格见 §7）
     ├── templates/  proposal.md  spec.md  design.md  task.md
-    ├── tools/
-    │   └── mdlint.sh              # 治理工具（非治理文档）：Markdown 规范校验
-    └── archive/README.md          # 归档区说明（只读 + 四产物 + REUSE-GUIDE 用法）
+    └── tools/
+        └── mdlint.sh              # 治理工具（非治理文档）：Markdown 规范校验
 ```
 
 运行态目录不预建（见 §4「层级与分区」）。
@@ -91,8 +90,8 @@
 - 三层实体：**Initiative（I-XXX，总纲）**，模糊需求的产品层澄清与路线图，不进状态机；**Proposal（P-XXX）**，可独立验收的开发单元（基础件或功能块），真正的开发循环从这里开始；**Task（T-XXX，可数十个、可分组）**，design 任务清单内，禁止单独建文件。
 - Proposal 粒度：必须是一个可独立验收的开发单元，禁止以产品版本形态立项（如「XX 第一版/首版」标题）；产品级、多交付物或模糊需求先入构想池拆解为总纲，再拆出 Proposal；两级拆分（I 拆 P、P 拆 T）不跨层。
 - 受理两路：单交付物需求由 `/sdd-intake` 直接发 P（无 source）；多交付物或模糊需求先入 `INITIATIVE.md` 立 I，拆解后发 P（frontmatter `source: I-XXX`）。
-- 分区治理：`sdd/exploring/`（探索区，格式宽松，含探索底稿 `P-XXX.md` 与 `journal.md`：底稿自提案创建起持续落盘探索与讨论过程，存活至验收通过或 rejected 终结，定稿不冻结）与 `sdd/specs/`（稳定区，格式严格、变更留痕，每提案一目录：`spec.md` 与 `design.md`）物理分离；修正隔离在 `amendments/` 与构想池；归档只从稳定区取材。
-- **探索档案 `journal.md`**：项目内永久档案（不入归档四产物），按提案分节追加，即 `## P-XXX <标题>` + 状态轨迹行 + 底稿除 frontmatter 外正文原样；只追加与原位标注、不重写历史。开发中新情况的探索讨论过程，属当前提案范围内且形成新 Task 的，按主题补录底稿相应小节（不必然追加于末尾）；结论写 spec（changelog + version），过程写底稿。验收通过或 rejected 终结时底稿整稿入档后删除，on-hold 底稿留原地。
+- 分区治理：`sdd/exploring/`（探索区，格式宽松，含探索底稿 `P-XXX.md` 与 `journal.md`：底稿自提案创建起持续落盘探索与讨论过程，存活至验收通过或 rejected 终结，定稿不冻结）与 `sdd/specs/`（稳定区，格式严格、变更留痕，每提案一目录：`spec.md` 与 `design.md`）物理分离；修正隔离在 `amendments/` 与构想池。
+- **探索档案 `journal.md`**：项目内永久档案（不入导出产物），按提案分节追加，即 `## P-XXX <标题>` + 状态轨迹行 + 底稿除 frontmatter 外正文原样；只追加与原位标注、不重写历史。开发中新情况的探索讨论过程，属当前提案范围内且形成新 Task 的，按主题补录底稿相应小节（不必然追加于末尾）；结论写 spec（changelog + version），过程写底稿。验收通过或 rejected 终结时底稿整稿入档后删除，on-hold 底稿留原地。
 - **不预建**运行态目录：exploring/、specs/、`journal.md` 均动态形成；`INITIATIVE.md` 与 `amendments/amend.md` 由初始化生成。
 
 ### 权威源、ID 与日期
@@ -129,15 +128,14 @@
 | 任一 Task 状态变化 | 更新 design 任务表 + 任务详情小节回填 |
 | 全任务 done →verifying | test 串行检查（他 P 持有 test 分支则本次转换挂起：P 留在 implementing，任务表保持全 done，worktree 与 dev 分支保留，待其 accept 后重走本行）+ 从当前 main 切出 `test/<标题 slug>` 合并 `dev/<标题 slug>`（冲突一律在 test 解决；worktree 与 dev 分支保留，删除时点后移至 accept）+ 交付 hash 记入 design + INDEX 置 verifying + 列出验收清单表格（五列：AC / 验收标准 / 证据 / 验证步骤 / 结论；验收标准与 spec 逐字一致，会话输出不落盘）+ 进入验证（主工作区检出 test；已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的由承接该简报的 subagent 执行并回报，否则由主会话执行；`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认（验证命令名 · 用例指认 · 输出摘要），指认不出覆盖用例即映射失败按验证失败处理；失败自动修复重验，重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻：P 置 on-hold（verifying 旁路入，备注记失败 AC 与轮数），验收位释放、推进继续并上报，恢复由对话承载或切 manual 人工验收放行）；`Acceptance mode` = auto 全绿即自动走 verifying→accepted 行（无需发起），manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
 | verifying→accepted（/sdd-accept；`Acceptance mode` = auto 时验证全绿自动触发，无需发起） | AC 逐条**以实际证据**核对验收清单表格（结论通过置 ✅；未全过不置 accepted，Task 保持 done）+ 全过后主工作区检出 main + 合并 `test/<标题 slug>` → main（发布）+ design 置 finalized + 底稿正文追加 journal 后删除 `P-XXX.md` + 通过的验收清单表格追加 journal + INDEX 更新 + CHANGELOG 单次写入成文（条目两路与归类见「CHANGELOG」条），以 `[版本] - 验收日` 节插入顶部 + 治理提交（standalone 经 `git -C sdd` 落内层仓）后打 tag（永远打在外层项目仓）+ 删除全部 `test/<标题 slug>*` 残支 + 完成回报固定建议「回看需求组拆下一个」 |
-| I 完结 | 组内全部 P accepted → I 条目标完结（归档时并入 `requirements.md` 后移除） |
+| I 完结 | 组内全部 P accepted → I 条目标完结 |
 | →on-hold / rejected | INDEX 改状态 + journal 追加处置行（rejected 须写原因）；rejected 底稿整稿入档（标注 rejected）后删除，on-hold 底稿留原地；rejected 分环节清理分支：未建分支（exploring）仅删文档，implementing 删 worktree 与 `dev/<标题 slug>`，verifying 删全部 `test/<标题 slug>*` 残支（main 零沾染）；on-hold worktree 与分支挂起保留 |
 | 定稿后需求变更 | 规格正文 + changelog + version 递增（v1.0 → v1.1）+ 受影响 Task 评估，禁静默覆盖 |
-| 归档（/sdd-archive） | INDEX 置「已归档 + 日期」+ 四产物 + 完结 I 条目并入 `requirements.md` + sdd 全区只读 |
 
 - **CHANGELOG**：项目根 `CHANGELOG.md`（公开文件），格式以 Keep a Changelog 为基准。不存在则创建：H1 `# 更新日志` 与中文导语（记录本项目所有显著变化，格式基于 Keep a Changelog）；实现期零写入，显著变化由 design 任务清单承载
   - accept 时单次写入成文，条目两路：对照 spec 与任务清单识别本次验收的用户可感知变化，按六类「新增 / 变更 / 弃用 / 移除 / 修复 / 安全」（对应 Keep a Changelog 六类）归类产出条目；自上次 tag 扫描 git log，将未收录的提交按六类归类补入条目（典型为提案外的维护修复，落「修复」类）
   - 条目用户语言一行一条，统一不含治理 ID 与治理词汇，说用户语言
-  - 版本取本次 tag，节标题按版本格式：SemVer 为 `[版本] - 验收日`，CalVer 版本即验收日、节标题仅 `[版本]`（同日多验收追加当日序号）。SemVer 级别可于需求对话中议定并随提案记录（用户可修正），accept 自上次 tag 按议定级别递增成号；对话期不议的，accept 按本次变化推导级别成号
+  - 版本取本次 tag，节标题按版本格式：SemVer 为 `[版本] - 验收日`，CalVer 版本即验收日、节标题仅 `[版本]`（同日多发如 `2026.10.9.2`）。SemVer 级别可于需求对话中议定并随提案记录（用户可修正），accept 自上次 tag 按议定级别递增成号；对话期不议的，accept 按本次变化推导级别成号
   - 定稿随 accept 完成回报展示，用户守门可改
   - 文件尾部设链接区：每版本一条 diff 对比链接，自项目远程推导，无远程则省略
   - 落仓：inline 随治理提交，standalone 为外层公开文件随中性 message 提交；辖区入外层 hook
@@ -150,8 +148,8 @@
 - **R4** 被否备选禁删，记入提案「否决记录」，留「方案 + 一句话原因」
 - **R5** 实现中新需求：小则 Task 内消化回填，改验收标准则停手上报由用户定
 - **R6** 更新任务表 + 回填 design；全任务 done 列出验收清单表格（由 spec 验收标准表派生，验证步骤按 spec 验证方式分派）并进入验证；已绑定命令的 AC 由登记命令自动验证：简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报；简报为单个 Task（任务级并发）或不使用并行推进的，由主会话执行；证据逐 AC 指认（验证命令名 · 用例指认 · 输出摘要），指认不出覆盖用例即映射失败按验证失败处理。失败自动修复重验，重试累计达治理配置 `Verification retry limit`（缺省 3）仍未全绿即停驻（P 置 on-hold、验收位释放、推进继续并上报）；`Acceptance mode` = auto 全绿即自动走 accept 链，manual 模式全绿且无人工类 AC 提示用户可验收
-- **R7** 关键节点（拆任务/定稿/归档）显式建议对应命令保人工确认，验收节点限 `Acceptance mode` = manual（显式建议 /sdd-accept 保人工确认；auto 模式验证全绿自动走 accept 链，无需发起）；accept 完成回报固定建议回看需求组（auto 模式随自动验收回报）
-- **R8** 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；归档后只读；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）
+- **R7** 关键节点（拆任务/定稿）显式建议对应命令保人工确认，验收节点限 `Acceptance mode` = manual（显式建议 /sdd-accept 保人工确认；auto 模式验证全绿自动走 accept 链，无需发起）；accept 完成回报固定建议回看需求组（auto 模式随自动验收回报）
+- **R8** 不改 templates/，tools/ 仅随 Markdown 规范演进修改；稳定区禁自由格式；写/改任何 sdd 文档后必须运行 mdLint，零 error 方可回报完成（warning 逐条确认或忽略）
 - **R9** 跨周期修正禁只改代码，走 amendments/
 - **R10** 分支开发主干发布：
   - P 状态从 exploring → implementing 时，从 main 切 `dev/<标题 slug>` 并建 worktree 开发（分支名不含治理 ID 与治理文件名），代码在 dev 分支开发，治理文档只在主干由主会话写，test / dev 检出中 sdd/ 只读
@@ -171,7 +169,7 @@
 |---|---|
 | 自动执行，做完告知 | 维护/需求分类判断、维护直接做、新想法落池、三问执行、XS 产物极短化、R1 摘要、board 聚合、自动验收（`Acceptance mode` = auto，验证全绿则自动走 accept 链） |
 | 判断 + 明示理由，可一句话推翻 | 建议立项、on-hold 排队建议 |
-| 永远用户守门 | 发号（P）、授予 I、finalize、验收发起（`Acceptance mode` = manual）、停损升级、archive、决策反转入册（A）、写实现代码 |
+| 永远用户守门 | 发号（P）、授予 I、验收发起（`Acceptance mode` = manual）、停损升级、决策反转入册（A）、写实现代码 |
 
 ### Markdown 书写规范（宪法此节以本节为唯一规格源；`mdlint.sh` 按此实现）
 
@@ -269,13 +267,13 @@
 
 /sdd-start 默认单智能体一步到位；仅用户明确要求时切「派发-回收」两段式：主会话组装自包含任务简报派发（简报范围按需组装：单个 Task 或提案全部任务清单，对应任务级与提案级并行；均含验收标准与规格/设计节选）；回收逐条核验、统一更新。约束：sdd/ 文档只允许主会话写入，子智能体只读文档、写代码、对话回报，发现规格问题回报主会话走 R5。并行派发与相关工具的可用性判定遵「工具可用性实证」节。
 
-### 归档（/sdd-archive）
+### 导出（/sdd-export）
 
-四产物：`requirements.md`（仅 accepted 项、剔 changelog/frontmatter、rejected 不出现，其信息由「范围外」章节承载，并含完结 I 条目内容作为需求来源章节）；`design.md`（整合全部 finalized design、剔任务表等过程内容）；`amendment-log.md`（整合全部修正案，按主题分组，保留完整 superseded 生命周期链）；`REUSE-GUIDE.md`（四步：归档时 AI 可按域或模块对 `requirements.md` 自由分组组织，无需预定义域枚举；在新项目安装 sdd 插件（marketplace `star-plugins`）并执行 `/sdd:sdd-init` 生成治理体系 → 逐提案比对差异（采纳/调整/排除，排除必须写入新项目修正记录说明原因）→ 参照旧设计制新设计（冲突时优先参考 superseded 链防重蹈覆辙）→ 正常推进）。
+随时可运行，零副作用：只读治理状态、产出提炼文件，不写 INDEX、不移除条目、不冻结任何区。参数 `req` / `tech`，无参即 `all`；文件落项目根 `.export/`（不入库，两形态同用 `info/exclude` 排除），命名 `req|tech|all-YYYY-M-D+N.md`（同日第 N 发缀 `+N`，首发不缀）。产物为概括生成而非原文删减，说用户语言，不含治理 ID、状态词汇与源项目信息；覆盖义务为全部提案（不分状态）与全部 I（含未开发）。完成回报列覆盖清单（P / I 数量与状态分布），产物过 mdLint 零 error。分层：`req` 为需求知识提炼（产品与开发两层）；`tech` 在 req 全部之上整合技术设计（关键决策表、接口、数据、关键流程）与项目目录结构、技术栈概览、构建与验证；`all` 在 tech 全部之上加修正演变链。
 
 ## 五、命令、模板与语言规范
 
-- 6 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/start/accept/archive/config）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本节命令规格表为唯一来源**，`CLAUDE.md` 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
+- 6 命令统一 `sdd-` 前缀；每命令正文必含：角色、前置检查、动作序列、完成回报格式，正文中文；**frontmatter description 英文**；均支持 `$ARGUMENTS`（约定见下表）；写 sdd 文档的命令（intake/start/accept/export/config）在完成回报前必须运行 mdLint 且零 error；命令与状态的对应关系以宪法「状态转换 × 文档同步矩阵」为唯一来源；**description 与参数约定以本节命令规格表为唯一来源**，`CLAUDE.md` 命令一览表、各命令 frontmatter、.opencode 存根描述一律由此复制，禁止另编。
 
   | 命令 | description（英文，frontmatter 原样） | 触发时机 | $ARGUMENTS 约定 | 动作依据（矩阵） |
   |---|---|---|---|---|
@@ -283,7 +281,7 @@
   | sdd-start | Implement tasks from the design task list | 实现推进（默认单 Agent 开发，可派发多 Agent 并行开发） | 可选：P-XXX（批量推进该提案全部未完成 T）/ T-XXX（仅推进该 Task，并行派发用）；缺省推进下一个 todo T | 接 P-XXX：从首个未完成 T 起顺序推进（doing → 实现 → 回填 → done）至全 done；接 T-XXX：仅该 Task；缺省：下一个 todo T；任一 Task 状态变化行；全任务 done → 执行 verifying 转换（见矩阵：合并 dev → test、删 worktree 与 dev 分支、交付 hash、列验收清单表格）+ 进入验证（自动验证按 spec 验证方式分派，已绑定命令的 AC 由登记命令自动验证，简报范围为提案全部任务清单的，由承接该简报的 subagent 执行并回报，否则由主会话执行，失败自动修复重验，`Acceptance mode` = manual 时 UI 类用户人工操作；证据逐 AC 指认，映射失败按验证失败处理；重试累计达 `Verification retry limit`（缺省 3）仍未全绿即停驻并上报），主工作区检出 test；auto 模式全绿即自动走 verifying→accepted 行，manual 模式全绿且无人工类 AC 提示用户可发起 /sdd-accept |
   | sdd-accept | Verify acceptance criteria and mark the proposal accepted | 全任务 done 后验收（`Acceptance mode` = manual 时的发起接口；auto 模式自动走链，一般无需调用） | 必填：P-XXX | verifying→accepted 行（含 CHANGELOG 增补与打 tag；auto 模式验证全绿自动触发）；完成回报固定建议「回看需求组拆下一个」 |
   | sdd-board | Show initiative and proposal status overview | 查看状态（只读） | 可选：I-XXX / P-XXX | 无矩阵行：读 INDEX + INITIATIVE + design 任务表输出摘要（含需求组聚合），不改任何文档 |
-  | sdd-archive | Archive accepted proposals into the archive area | 归档 | 可选：P-XXX（缺省全部 accepted） | 归档行 |
+  | sdd-export | Export project knowledge as standalone documents | 导出治理知识提炼件 | 可选：`req` / `tech`（缺省 all） | 无矩阵行：读治理状态产出 `.export/` 提炼件（§4「导出」节），零副作用 |
   | sdd-config | Show and edit governance configuration | 查看或修改治理配置（`Acceptance mode` / `Verification retry limit` 等） | 可选：配置项与新值（缺省进入交互菜单，逐项现值呈现、循环切值） | 无矩阵行：读改 runtime「治理配置」区，写回后 mdLint 零 error 方回报；完成回报仅含本次查看或修改的配置项，不涉及工程约定其余字段（版本格式等 init 定型项非配置辖区） |
 
 - 模板四件套（sdd/templates/ 下固定文件；P-XXX/T-XXX/I-XXX 为占位，建文件时替换为实际号；`source` 行仅提案源自 I-XXX 时生成，独立提案删除此行），**骨架即规格**，见下。**设计是实现的副产品，不是事前作文**：定稿后建骨架、每 Task 完成回填、verifying 时补全置 finalized。
@@ -393,15 +391,14 @@
   ```
 
 - **`CLAUDE.md` 项目骨架**（公开面，内容固定，与 runtime 同批最后由主会话写）：`# <项目名>` + 项目定位一句话（首行）。公开内容零 sdd 痕迹；形态差异仅一行，inline 末尾追加 `@sdd/runtime/claude.md`（Claude Code 对该 @ 引用注入 runtime 规则全文），standalone 无此行（runtime 经 `CLAUDE.local.md` 指针接入）。四字段中的项目名与定位在此，提交前校验命令与版本格式属 runtime 工程约定节。
-- **`sdd/runtime/claude.md` 骨架**（治理运行时唯一内容源，章节顺序固定，与 `CLAUDE.md` 同批最后由主会话写）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本>`）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」、验证命令区（名称 × 命令 × 类别 × 范围）、治理配置（`Acceptance mode`、`Verification retry limit`）、版本格式（CalVer 验收日或 SemVer））。硬规则必须含（8 条）：
+- **`sdd/runtime/claude.md` 骨架**（治理运行时唯一内容源，章节顺序固定，与 `CLAUDE.md` 同批最后由主会话写）：标题 `# <项目名> · SDD 协作规则` → 溯源行（`> sdd@star-plugins <版本>`）→ 需求层级（三层 Initiative/Proposal/Task）→ 会话必读（CONSTITUTION → INDEX → INITIATIVE，冷启动摘要含构想池概览）→ 命令一览（表：命令 × 用途，表下注明：调用即文件名形式 `/sdd-intake` 等）→ 硬规则 → 路径、ID 与工程约定（分区路径、I/P/T/A 发号、日期唯一源 `date +%F`、提交前校验命令或「无」、验证命令区（名称 × 命令 × 类别 × 范围）、治理配置（`Acceptance mode`、`Verification retry limit`）、版本格式（CalVer 验收日或 SemVer））。硬规则必须含（7 条）：
   - ① INDEX 是状态唯一权威源、INITIATIVE 是构想唯一记录，变更即时同步
   - ② 新想法先分类：维护直接做；需求一律经 `/sdd-intake` 受理
   - ③ 定稿后需求变更留痕升版，禁静默覆盖
   - ④ 被否备选记入提案否决记录；已完结决策的推翻替换记入 `amendments/amend.md`，禁删漏记
   - ⑤ 写改 sdd 文档后运行 mdLint，零 error 方可回报
-  - ⑥ 归档后 sdd 全区只读
-  - ⑦ 命令文件（`.claude/commands/*.md`）新增或删除后必须同步增删 `.opencode/commands/` 同名存根，`description` 变更须同步存根描述行，正文永不复制
-  - ⑧ 治理文档只在主干演进：代码在 `dev/<标题 slug>` 分支开发、`test/<标题 slug>` 分支验收（split 切 dev、全任务 done 合并 test、accept 发布主干），治理文档只在主干由主会话写；提交信息 title 与 body 不含治理 ID，需要引用时按 trailer 惯例置 footer（Task 完成 `Closes: T-XXX`、验收修复 `Fixes: T-XXX`、仅关联引用 `Refs: T-XXX`）；footer 区可并存项目自有 trailer，也可有多个 trailer；standalone 形态 footer 句整体替换为「提交信息不含治理 ID、治理引用与 sdd 字样（项目仓无痕化），内层治理仓提交不受此限」
+  - ⑥ 命令文件（`.claude/commands/*.md`）新增或删除后必须同步增删 `.opencode/commands/` 同名存根，`description` 变更须同步存根描述行，正文永不复制
+  - ⑦ 治理文档只在主干演进：代码在 `dev/<标题 slug>` 分支开发、`test/<标题 slug>` 分支验收（split 切 dev、全任务 done 合并 test、accept 发布主干），治理文档只在主干由主会话写；提交信息 title 与 body 不含治理 ID，需要引用时按 trailer 惯例置 footer（Task 完成 `Closes: T-XXX`、验收修复 `Fixes: T-XXX`、仅关联引用 `Refs: T-XXX`）；footer 区可并存项目自有 trailer，也可有多个 trailer；standalone 形态 footer 句整体替换为「提交信息不含治理 ID、治理引用与 sdd 字样（项目仓无痕化），内层治理仓提交不受此限」
 
 - **INDEX 结构**：项目状态行 → 发号计数器（next-P/next-T）→ 提案总览单表（ID/标题/规模（S≤5 任务 / M 6-20 / L>20，未预判留空）/状态/任务进度 done/total（如 3/8）/规格版本/更新日期/备注；不设来源列，组归属由 frontmatter `source` 推导）。
 
@@ -410,12 +407,12 @@
 ## 六、验证与回报
 
 1. **失败处置（总则）**：任何验证失败，修复后必须重跑对应**全量**验证（mdLint 失败即对全部生成文件重跑，非仅复验出错项），全部通过方可进入下一步；禁止跳过任何验证步骤（明示豁免者除外）、禁止带病提交、禁止以「已修过」为由免检。
-2. 文件齐全、结构正确、必填项已填（inline 31 文件：18 治理文件 + 1 治理工具 + 1 版本标记 + 1 门禁 hook + 1 README + 9 OpenCode 适配文件；standalone 同数 32，不写 `.gitignore`、改生成 `CLAUDE.local.md`）；`sdd/VERSION` 内容与本提示词顶部版本一致；`.githooks/pre-commit` 已生成且可执行、`git config core.hooksPath` 输出 `.githooks`（入库占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 六行）；README 含激活行；
+2. 文件齐全、结构正确、必填项已填（inline 30 文件：17 治理文件 + 1 治理工具 + 1 版本标记 + 1 门禁 hook + 1 README + 9 OpenCode 适配文件；standalone 同数 31，不写 `.gitignore`、改生成 `CLAUDE.local.md`）；`sdd/VERSION` 内容与本提示词顶部版本一致；`.githooks/pre-commit` 已生成且可执行、`git config core.hooksPath` 输出 `.githooks`（入库占清单，初始化提交经其实测；standalone 另有内层 `sdd/.git/hooks/pre-commit` 与 `.git/info/exclude` 六行）；README 含激活行；
 3. 对全部生成文件运行 `sh sdd/tools/mdlint.sh sdd/ CLAUDE.md .claude/commands/ AGENTS.md .opencode/commands/`（standalone 下追加 `CLAUDE.local.md`），零 error；
 4. ID/状态机/矩阵在 CONSTITUTION、INDEX、INITIATIVE、模板、6 命令间交叉一致；
 5. `git check-ignore -v .claude/settings.local.json .opencode/tmp.local.json`（后一文件名任取一个不存在的即可）→ 均命中；`git check-ignore .opencode/opencode.json` → inline 无输出（未被忽略）/ standalone 命中（排除清单生效）；
 6. OpenCode 三段验证（`opencode` 未安装时整体跳过并在回报注明；其运行副产物被 `.opencode/.gitignore` 自忽略，不影响提交）：① 配置面——项目内 `opencode debug config` 输出含本项目 `.opencode/opencode.json`，其 `info` 含 `"lsp": true` 与 `instructions` 两路径；② 存根契约——存根 ×6 在位，frontmatter description 与 §5 命令规格表逐字一致，各存根 `@` 指向的 `.claude/commands/` 同名文件存在；③ 命令发现——`opencode run '/sdd-board'`，判据为退出码 0 且输出为与命令规格一致的看板摘要（提案总览或暂无提案说明）且不含「未定义命令」措辞；sdd-* 命令结构同构，一通俱通，输出未定义措辞或格式不符为失败；本段因模型或凭据未配置失败时跳过并在回报注明；
-7. git 提交均显式列举文件路径添加、禁用 `git add -A` 与 `git add .`：inline 两笔，第一笔仅 21 清单文件（18 治理 + 工具 + VERSION + 门禁 hook，含 runtime ×2），消息固定 `chore: 初始化 SDD 需求治理体系（18 治理文件 + mdlint 工具 + 版本标记 + 提交门禁）`；第二笔仅 10 适配文件（`AGENTS.md` + `README.md` + `.gitignore` + `opencode.json` + 存根 ×6），消息固定 `chore: 适配 OpenCode（命令存根 @ 引用 + .opencode 共享配置 + 运行说明）`。standalone 两仓各一笔：项目仓仅 `CLAUDE.md` + `AGENTS.md` + `README.md` + `.githooks/pre-commit`，message 固定 `docs: 项目协作入口与提交门禁`（中性，无 sdd 字样）；内仓 `git -C sdd` 提交 `sdd/` 全部，消息同 inline 第一笔。除清单文件外禁止创建任何其他文件（评审/提示词等用户文档不入库）；
+7. git 提交均显式列举文件路径添加、禁用 `git add -A` 与 `git add .`：inline 两笔，第一笔仅 20 清单文件（17 治理 + 工具 + VERSION + 门禁 hook，含 runtime ×2），消息固定 `chore: 初始化 SDD 需求治理体系（18 治理文件 + mdlint 工具 + 版本标记 + 提交门禁）`；第二笔仅 10 适配文件（`AGENTS.md` + `README.md` + `.gitignore` + `opencode.json` + 存根 ×6），消息固定 `chore: 适配 OpenCode（命令存根 @ 引用 + .opencode 共享配置 + 运行说明）`。standalone 两仓各一笔：项目仓仅 `CLAUDE.md` + `AGENTS.md` + `README.md` + `.githooks/pre-commit`，message 固定 `docs: 项目协作入口与提交门禁`（中性，无 sdd 字样）；内仓 `git -C sdd` 提交 `sdd/` 全部，消息同 inline 第一笔。除清单文件外禁止创建任何其他文件（评审/提示词等用户文档不入库）；
 8. 冒烟演练默认**不执行**，初始化完成后待命 `/sdd-intake` 接首个真实需求；后续冒烟（用户在 opencode TUI 手动）：输入 `/` 查看命令补全、执行任一只读命令（如 `/sdd-board`）、问「本项目会话必读是什么」应答 CONSTITUTION → INDEX → INITIATIVE（验证 runtime 注入链路：inline 为 `CLAUDE.md` @ 引用，standalone 为 `CLAUDE.local.md`）；
 9. 最终回报：文件清单 + commit hash（inline 两个 / standalone 两仓各一）+ mdLint 结论 + 各项验证结论 + 初始化耗时（总时长，人类可读格式）+ 门禁 hook 结论（激活状态含 standalone 内层 hook）+ 治理形态 + 模式（全新 / 升级）与版本去向（升级回报项见 §8）。
 
@@ -511,9 +508,9 @@ description: Capture a new requirement and shape it into initiatives or proposal
 
 - `sdd/CONSTITUTION.md`、`sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md`
 - `sdd/templates/` 下 proposal / spec / design / task ×4 全在
-- `sdd/tools/mdlint.sh`、`sdd/archive/README.md`
-- `CLAUDE.md`、`.claude/commands/` 下 7 命令全在（签名基线计数，2.6.0 起现行生成 8，新增命令由校准补齐）
-- `AGENTS.md`、`.opencode/opencode.json`、`.opencode/commands/` 下 7 存根全在
+- `sdd/tools/mdlint.sh`
+- `CLAUDE.md`、`.claude/commands/` 下 6 命令全在
+- `AGENTS.md`、`.opencode/opencode.json`、`.opencode/commands/` 下 6 存根全在
 
 `.gitignore` 与 `.githooks/`（含 `core.hooksPath` 激活）不入签名集（补装语义：缺失即补，存在即覆盖 / 补行）。典型场景为环境重建：项目于新主机 clone 后运行态（含入库的 `.githooks/pre-commit`）随仓齐全，唯 `core.hooksPath` 未激活，全套签名文件在库即命中本模式，补设激活即补。命中后向用户明示「检测到既有安装（版本见 `sdd/VERSION`），转入升级模式」并等待确认；确认后校验 git 索引干净（`git diff --cached --quiet`），有预置暂存则停止，请用户先处理（防混入升级提交）。
 
@@ -526,9 +523,9 @@ description: Capture a new requirement and shape it into initiatives or proposal
 | 静默覆盖 | `sdd/tools/mdlint.sh`、`.githooks/pre-commit`（重写并加可执行位，设 `core.hooksPath`，README 增补激活行；旧 `.git/hooks/pre-commit` 同步撤除；standalone 另装内层 `sdd/.git/hooks/pre-commit` 变体）、`sdd/templates/` ×4、`.claude/commands/` ×6、`.opencode/opencode.json`、`.opencode/commands/` ×6 | 按规格纯复制覆盖 |
 | 保护性写入 | `.gitignore`（inline）、`AGENTS.md`、`sdd/CONSTITUTION.md`、`sdd/runtime/claude.md` | 规格重生成 + 项目内容回读回填（见下） |
 | 活文档仲裁 | `sdd/runtime/claude.md`（`CLAUDE.md` 公开骨架一并按规格重写） | 骨架节重写 + 项目内容保留（见下） |
-| 禁触 | `sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md` 内容；`sdd/specs/`、`sdd/exploring/`、`sdd/journal.md`、`sdd/archive/` 全部 | 一律不改（骨架仅按本节「骨架差异比对」锚点只读比对） |
+| 禁触 | `sdd/INDEX.md`、`sdd/INITIATIVE.md`、`sdd/amendments/amend.md` 内容；`sdd/specs/`、`sdd/exploring/`、`sdd/journal.md` 全部 | 一律不改（骨架仅按本节「骨架差异比对」锚点只读比对） |
 
-保护性写入细则：`.gitignore`（仅 inline）三行逐行补缺，即 `# 本地文件不入库`、`*.local.*`、`.worktree/`，已有行不动、项目自有行禁删禁改、文件不存在才新建，严禁整文件重写（standalone 形态不写 `.gitignore`，改维护 `.git/info/exclude` 六行排除清单）；`AGENTS.md` 按 §7 逐字重生成 + 项目名与定位回填；`sdd/CONSTITUTION.md` 按 §4 逐字重生成 + 项目名回填 + 末尾生效日期保留原文件原值（识别原文件末尾 `YYYY-MM-DD` 日期行；回读失败以当日 `date +%F` 重置并在回报注明）；`sdd/runtime/claude.md` 按 §5 runtime 骨架重生成；治理配置区插入后按缺省值生成（`Acceptance mode` = auto、`Verification retry limit` = 3，已有值回读保留），验证命令区插空后执行存量补记（扫描依赖清单、测试配置、CI 测试任务等验证类工具链，生成补记清单，交互同登记闸门：建议 / 选定 / 判「无」/ 试跑）。
+保护性写入细则：`.gitignore`（仅 inline）三行逐行补缺，即 `# 本地文件不入库`、`*.local.*`、`.worktree/`，已有行不动、项目自有行禁删禁改、文件不存在才新建，严禁整文件重写（standalone 形态不写 `.gitignore`）；两形态均维护 `.git/info/exclude` 的 `.export/` 排除行（缺失即补），standalone 另维护治理排除清单七行（逐行补缺同款纪律）；`AGENTS.md` 按 §7 逐字重生成 + 项目名与定位回填；`sdd/CONSTITUTION.md` 按 §4 逐字重生成 + 项目名回填 + 末尾生效日期保留原文件原值（识别原文件末尾 `YYYY-MM-DD` 日期行；回读失败以当日 `date +%F` 重置并在回报注明）；`sdd/runtime/claude.md` 按 §5 runtime 骨架重生成；治理配置区插入后按缺省值生成（`Acceptance mode` = auto、`Verification retry limit` = 3，已有值回读保留），验证命令区插空后执行存量补记（扫描依赖清单、测试配置、CI 测试任务等验证类工具链，生成补记清单，交互同登记闸门：建议 / 选定 / 判「无」/ 试跑）。
 
 ### 必填项回读（升级模式不询问）
 
